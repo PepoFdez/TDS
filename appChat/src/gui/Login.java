@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JRadioButton;
 import java.awt.BorderLayout;
+import javax.swing.JButton;
 
 public class Login {
 
@@ -43,6 +44,9 @@ public class Login {
 		
 		JRadioButton rdbtnNewRadioButton = new JRadioButton("Botón de prueba");
 		frame.getContentPane().add(rdbtnNewRadioButton, BorderLayout.CENTER);
+		
+		JButton btnNewButton = new JButton("JC Gay");
+		frame.getContentPane().add(btnNewButton, BorderLayout.EAST);
 	}
 
 }
