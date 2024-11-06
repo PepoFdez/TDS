@@ -3,6 +3,8 @@ package gui;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
+import javax.swing.JRadioButton;
+import java.awt.BorderLayout;
 
 public class Login {
 
@@ -38,6 +40,9 @@ public class Login {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		JRadioButton rdbtnNewRadioButton = new JRadioButton("Botón de prueba");
+		frame.getContentPane().add(rdbtnNewRadioButton, BorderLayout.CENTER);
 	}
 
 }
