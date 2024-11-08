@@ -47,6 +47,9 @@ public class Login {
 		
 		JButton btnNewButton = new JButton("JC Gay");
 		frame.getContentPane().add(btnNewButton, BorderLayout.EAST);
+		
+		JButton btnNewButton_1 = new JButton("Pepo más gay");
+		frame.getContentPane().add(btnNewButton_1, BorderLayout.SOUTH);
 	}
 
 }
