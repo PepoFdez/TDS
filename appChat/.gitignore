@@ -3,3 +3,4 @@ bin/           # Ignora la carpeta bin dentro de appChat
 *.log           # Ignora archivos de logs
 *.tmp           # Ignora archivos temporales
 /bin/
+/target/
