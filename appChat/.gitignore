@@ -2,3 +2,4 @@ bin/           # Ignora la carpeta bin dentro de appChat
 *.class         # Ignora todos los archivos .class
 *.log           # Ignora archivos de logs
 *.tmp           # Ignora archivos temporales
+/bin/
