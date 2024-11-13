@@ -22,7 +22,7 @@ public final class TDSUsuarioDAO implements UsuarioDAO {
 
 	private static final String USUARIO = "Usuario";
 	/*Añadido por pepo*/
-	private static final String IMAGEN = "url.jpg";
+	private static final String IMAGEN = "url";
 	private static final String NOMBRE = "nombre";
 	private static final String APELLIDOS = "apellidos";
 	private static final String EMAIL = "email";
