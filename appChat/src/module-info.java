@@ -4,6 +4,6 @@
 /**
  * 
  */
-module appChat {
+/*module appChat {
 	requires java.desktop;
-}
+}*/

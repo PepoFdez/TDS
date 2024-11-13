@@ -8,10 +8,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 
-import tds.driver.ServicioPersistencia;
+//import tds.driver.ServicioPersistencia;
 import dominio.Usuario;
+import tds.driver.FactoriaServicioPersistencia;
+import tds.driver.ServicioPersistencia;
 import beans.Entidad;
 import beans.Propiedad;
+
+//import beans.Entidad;
+//import beans.Propiedad;
 
 /**
  * 
