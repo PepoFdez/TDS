@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import tds.driver.FactoriaServicioPersistencia;
+
 import tds.driver.ServicioPersistencia;
 import dominio.Usuario;
 import beans.Entidad;
