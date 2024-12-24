@@ -104,7 +104,7 @@ public class Login {
 		panelCampos.add(panelCampoUsuario);
 		panelCampoUsuario.setLayout(new BorderLayout(0, 0));
 
-		JLabel lblUsuario = new JLabel("Usuario: ");
+		JLabel lblUsuario = new JLabel("Teléfono: ");
 		panelCampoUsuario.add(lblUsuario);
 		lblUsuario.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblUsuario.setFont(new Font("Tahoma", Font.PLAIN, 12));
@@ -189,7 +189,7 @@ public class Login {
 					principal.mostrarVentana();
 					frame.dispose();
 				} else
-					JOptionPane.showMessageDialog(frame, "Nombre de usuario o contraseña no valido",
+					JOptionPane.showMessageDialog(frame, "Teléfono o contraseña no valido",
 							"Error", JOptionPane.ERROR_MESSAGE);
 			}
 		});
