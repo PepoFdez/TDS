@@ -34,6 +34,8 @@ public final class TDSUsuarioDAO implements UsuarioDAO {
 	private static final String LOGIN = "login";
 	private static final String PASSWORD = "password";
 	private static final String FECHA_NACIMIENTO = "fechaNacimiento";
+	private static final String MOVIL = "movil";
+	private static final String SALUDO = "saludo";
 
 	private ServicioPersistencia servPersistencia;
 	private SimpleDateFormat dateFormat;
@@ -44,27 +46,32 @@ public final class TDSUsuarioDAO implements UsuarioDAO {
 	}
 
 	private Usuario entidadToUsuario(Entidad eUsuario) {
-
+/*public Usuario(String nombre, String apellidos, String email, String login, int movil, String saludo, String password,
+			String fechaNacimiento, String imagen) {*/
 		String nombre = servPersistencia.recuperarPropiedadEntidad(eUsuario, NOMBRE);
+		String imagen = servPersistencia.recuperarPropiedadEntidad(eUsuario, IMAGEN);
 		String apellidos = servPersistencia.recuperarPropiedadEntidad(eUsuario, APELLIDOS);
 		String email = servPersistencia.recuperarPropiedadEntidad(eUsuario, EMAIL);
 		String login = servPersistencia.recuperarPropiedadEntidad(eUsuario, LOGIN);
 		String password = servPersistencia.recuperarPropiedadEntidad(eUsuario, PASSWORD);
 		String fechaNacimiento = servPersistencia.recuperarPropiedadEntidad(eUsuario, FECHA_NACIMIENTO);
+		//Añadido por pepo
+		String movil = servPersistencia.recuperarPropiedadEntidad(eUsuario, MOVIL);
+		String saludo = servPersistencia.recuperarPropiedadEntidad(eUsuario, SALUDO);
 
-		Usuario usuario = new Usuario(nombre, apellidos, email, login, password, fechaNacimiento);
+		Usuario usuario = new Usuario(nombre, apellidos, email, login, Integer.parseInt(movil),/*login,*/ saludo, password, fechaNacimiento, imagen);
 		usuario.setId(eUsuario.getId());
 
 		return usuario;
 	}
-
+	//TODO: Añadir las transformaciones para movilm saludo e imagen.
 	private Entidad usuarioToEntidad(Usuario usuario) {
 		Entidad eUsuario = new Entidad();
 		eUsuario.setNombre(USUARIO);
 
 		eUsuario.setPropiedades(new ArrayList<Propiedad>(Arrays.asList(new Propiedad(NOMBRE, usuario.getNombre()),
 				new Propiedad(APELLIDOS, usuario.getApellidos()), new Propiedad(EMAIL, usuario.getEmail()),
-				new Propiedad(LOGIN, usuario.getLogin()), new Propiedad(PASSWORD, usuario.getPassword()),
+				/*new Propiedad(LOGIN, usuario.getLogin()),*/ new Propiedad(PASSWORD, usuario.getPassword()),
 				new Propiedad(FECHA_NACIMIENTO, usuario.getFechaNacimiento()))));
 		return eUsuario;
 	}

@@ -6,13 +6,17 @@ public class Usuario {
 	private int id;
 	private String nombre;
 	private String apellidos;
-	private String email;
-	private String login;
+	private String email; //Se convierte en movil en la interfaz
+	private String login; //Se convierte en saludo en la interfaz
 	private String password;
 	private String fechaNacimiento;
+	//Añadidos por Pepo
+	private int movil;
+	private String imagen;
+	private String saludo;
 
-	public Usuario(String nombre, String apellidos, String email, String login, String password,
-			String fechaNacimiento) {
+	public Usuario(String nombre, String apellidos, String email, String login, int movil, String saludo, String password,
+			String fechaNacimiento, String imagen) {
 		this.id = 0;
 		this.nombre = nombre;
 		this.apellidos = apellidos;
@@ -20,6 +24,9 @@ public class Usuario {
 		this.login = login;
 		this.password = password;
 		this.fechaNacimiento = fechaNacimiento;
+		this.movil = movil;
+		this.saludo = saludo;
+		this.imagen = imagen;
 	}
 
 	public int getId() {
@@ -45,7 +52,7 @@ public class Usuario {
 	public void setApellidos(String apellidos) {
 		this.apellidos = apellidos;
 	}
-
+	
 	public String getEmail() {
 		return email;
 	}
@@ -53,7 +60,6 @@ public class Usuario {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-
 	public String getLogin() {
 		return login;
 	}
@@ -77,6 +83,32 @@ public class Usuario {
 	public void setFechaNacimiento(String fechaNacimiento) {
 		this.fechaNacimiento = fechaNacimiento;
 	}
+
+	public int getMovil() {
+		return movil;
+	}
+
+	public void setMovil(int movil) {
+		this.movil = movil;
+	}
+
+	public String getImagen() {
+		return imagen;
+	}
+
+	public void setImagen(String imagen) {
+		this.imagen = imagen;
+	}
+
+	public String getSaludo() {
+		return saludo;
+	}
+
+	public void setSaludo(String saludo) {
+		this.saludo = saludo;
+	}
+	
+	
 
 }
 

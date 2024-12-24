@@ -192,13 +192,13 @@ public class Registro extends JDialog {
 		panelCamposUsuario = new JPanel();
 		lineaUsuario.add(panelCamposUsuario, BorderLayout.CENTER);
 
-		lblUsuario = new JLabel("Usuario: ", JLabel.RIGHT);
+		lblUsuario = new JLabel("Teléfono: ", JLabel.RIGHT);
 		panelCamposUsuario.add(lblUsuario);
 		fixedSize(lblUsuario, 75, 20);
 		txtUsuario = new JTextField();
 		panelCamposUsuario.add(txtUsuario);
 		fixedSize(txtUsuario, 270, 20);
-		lblUsuarioError = new JLabel("El usuario ya existe", SwingConstants.CENTER);
+		lblUsuarioError = new JLabel("El teléfono ya está registrado", SwingConstants.CENTER);
 		fixedSize(lblUsuarioError, 150, 15);
 		lblUsuarioError.setForeground(Color.RED);
 		lineaUsuario.add(lblUsuarioError, BorderLayout.SOUTH);
@@ -335,7 +335,7 @@ public class Registro extends JDialog {
 			salida = false;
 		}
 		if (txtUsuario.getText().trim().isEmpty()) {
-			lblUsuarioError.setText("El usuario es obligatorio");
+			lblUsuarioError.setText("El teléfono es obligatorio");
 			lblUsuarioError.setVisible(true);
 			lblUsuario.setForeground(Color.RED);
 			txtUsuario.setBorder(BorderFactory.createLineBorder(Color.RED));
@@ -368,7 +368,7 @@ public class Registro extends JDialog {
 		}
 		/* Comprobar que no exista otro usuario con igual login */
 		if (!lblUsuarioError.getText().isEmpty() && Controlador.INSTANCE.esUsuarioRegistrado(txtUsuario.getText())) {
-			lblUsuarioError.setText("Ya existe ese usuario");
+			lblUsuarioError.setText("Ya existe ese teléfono");
 			lblUsuarioError.setVisible(true);
 			lblUsuario.setForeground(Color.RED);
 			txtUsuario.setBorder(BorderFactory.createLineBorder(Color.RED));
