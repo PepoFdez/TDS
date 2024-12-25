@@ -62,7 +62,7 @@ public class Login {
 		JButton btnNewButton_1 = new JButton("Pepo más gay");
 		frame.getContentPane().add(btnNewButton_1, BorderLayout.SOUTH);*/
 		
-		frame.setTitle("Login AppVideo");
+		frame.setTitle("Login AppChat");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new BorderLayout());
 
@@ -74,15 +74,29 @@ public class Login {
 	}
 
 	private void crearPanelTitulo() {
-		JPanel panel_Norte = new JPanel();
-		frame.getContentPane().add(panel_Norte, BorderLayout.NORTH);
-		panel_Norte.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 15));
+	    JPanel panel_Norte = new JPanel();
+	    frame.getContentPane().add(panel_Norte, BorderLayout.NORTH);
+	    panel_Norte.setLayout(new BoxLayout(panel_Norte, BoxLayout.Y_AXIS));
 
-		JLabel lblTitulo = new JLabel("AppChat");
-		lblTitulo.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		lblTitulo.setForeground(Color.DARK_GRAY);
-		panel_Norte.add(lblTitulo);
+	    // Rótulo de "AppChat"
+	    JLabel lblTitulo = new JLabel("AppChat");
+	    lblTitulo.setFont(new Font("Tahoma", Font.PLAIN, 20));
+	    lblTitulo.setForeground(Color.DARK_GRAY);
+	    lblTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
+	    panel_Norte.add(lblTitulo);
+
+	    // Espaciado entre el título y el logo
+	    panel_Norte.add(Box.createRigidArea(new Dimension(0, 10)));
+
+	    // Logo de "AppChat"
+	    JLabel lblLogo = new JLabel();
+	    ImageIcon icono = new ImageIcon("resources/logo.png");
+	    Image imgEscalada = icono.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+	    lblLogo.setIcon(new ImageIcon(imgEscalada));
+	    lblLogo.setAlignmentX(Component.CENTER_ALIGNMENT);
+	    panel_Norte.add(lblLogo);
 	}
+
 
 	private void crearPanelLogin() {
 		JPanel panelLogin = new JPanel();
