@@ -405,6 +405,7 @@ public class Registro extends JDialog {
         txtPassword.setBorder(new JTextField().getBorder());
         txtPasswordChk.setBorder(new JTextField().getBorder());
         txtFechaNacimiento.setBorder(new JTextField().getBorder());
+        lblSaludo.setBorder(new JTextField().getBorder());
 
         lblNombre.setForeground(Color.BLACK);
         lblApellidos.setForeground(Color.BLACK);
@@ -413,6 +414,7 @@ public class Registro extends JDialog {
         lblPassword.setForeground(Color.BLACK);
         lblPasswordChk.setForeground(Color.BLACK);
         lblFechaNacimiento.setForeground(Color.BLACK);
+        lblSaludo.setForeground(Color.BLACK);
     }
 
     private void fixedSize(JComponent o, int x, int y) {
