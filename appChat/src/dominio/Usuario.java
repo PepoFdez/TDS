@@ -6,14 +6,15 @@ public class Usuario {
 	private int id;
 	private String nombre;
 	private String apellidos;
-	private String email; //Se convierte en movil en la interfaz
-	private String login; //Se convierte en saludo en la interfaz
+	private String email; 
+	private String login; //Se convierte en movil en la interfaz
 	private String password;
 	private String fechaNacimiento;
 	//Añadidos por Pepo
 	private int movil;
-	private String imagen;
+	private String imagen; //No sé si las imágenes tienen que ser URLS o estar localmente, porque el aula virtual se contradice
 	private String saludo;
+	private boolean isPremium;
 
 	public Usuario(String nombre, String apellidos, String email, String login, int movil, String saludo, String password,
 			String fechaNacimiento, String imagen) {
@@ -27,6 +28,7 @@ public class Usuario {
 		this.movil = movil;
 		this.saludo = saludo;
 		this.imagen = imagen;
+		this.isPremium = false;
 	}
 
 	public int getId() {
