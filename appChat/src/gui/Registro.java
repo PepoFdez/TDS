@@ -405,7 +405,7 @@ public class Registro extends JDialog {
         txtPassword.setBorder(new JTextField().getBorder());
         txtPasswordChk.setBorder(new JTextField().getBorder());
         txtFechaNacimiento.setBorder(new JTextField().getBorder());
-        lblSaludo.setBorder(new JTextField().getBorder());
+        txtSaludo.setBorder(new JTextField().getBorder());
 
         lblNombre.setForeground(Color.BLACK);
         lblApellidos.setForeground(Color.BLACK);
