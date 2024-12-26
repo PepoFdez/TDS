@@ -21,6 +21,7 @@ import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.SwingConstants;
+import com.toedter.calendar.JDateChooser;
 
 import controlador.Controlador;
 
@@ -63,6 +64,7 @@ public class Registro extends JDialog {
 
     //Añadido por Pepo
     private JFrame owner;
+    private JDateChooser dateChooser; // Campo para la selección de la fecha
     
     public Registro(JFrame owner) {
         super(owner, "Registro Usuario", true);
@@ -217,7 +219,7 @@ public class Registro extends JDialog {
         return lineaPassword;
     }
 
-    private JPanel crearLineaFechaNacimiento() {
+    /*private JPanel crearLineaFechaNacimiento() {
         JPanel lineaFechaNacimiento = new JPanel();
         lineaFechaNacimiento.setAlignmentX(JLabel.LEFT_ALIGNMENT);
         lineaFechaNacimiento.setLayout(new BorderLayout(0, 0));
@@ -231,6 +233,43 @@ public class Registro extends JDialog {
         txtFechaNacimiento = new JTextField();
         panelCamposFechaNacimiento.add(txtFechaNacimiento);
         fixedSize(txtFechaNacimiento, 215, 20);
+        lblFechaNacimientoError = new JLabel("Introduce la fecha de nacimiento", SwingConstants.CENTER);
+        fixedSize(lblFechaNacimientoError, 150, 15);
+        lblFechaNacimientoError.setForeground(Color.RED);
+        lineaFechaNacimiento.add(lblFechaNacimientoError, BorderLayout.SOUTH);
+
+        return lineaFechaNacimiento;
+    }*/
+    
+    private JPanel crearLineaFechaNacimiento() {
+        JPanel lineaFechaNacimiento = new JPanel();
+        lineaFechaNacimiento.setAlignmentX(JLabel.LEFT_ALIGNMENT);
+        lineaFechaNacimiento.setLayout(new BorderLayout(0, 0));
+
+        panelCamposFechaNacimiento = new JPanel();
+        lineaFechaNacimiento.add(panelCamposFechaNacimiento, BorderLayout.CENTER);
+
+        lblFechaNacimiento = new JLabel("Fecha de Nacimiento: ", JLabel.RIGHT);
+        panelCamposFechaNacimiento.add(lblFechaNacimiento);
+        fixedSize(lblFechaNacimiento, 130, 20);
+
+        // Sustituimos el JTextField por JDateChooser
+        dateChooser = new JDateChooser();
+        dateChooser.setDateFormatString("dd/MM/yyyy"); // Formato de la fecha
+        panelCamposFechaNacimiento.add(dateChooser);
+        fixedSize(dateChooser, 215, 20);
+
+        // Evento para reflejar la fecha seleccionada en el cuadro de texto
+        dateChooser.addPropertyChangeListener("date", evt -> {
+            if (dateChooser.getDate() != null) {
+                txtFechaNacimiento.setText(((JTextField) dateChooser.getDateEditor().getUiComponent()).getText());
+            }
+        });
+
+        // Campo de texto oculto para almacenamiento (si es necesario)
+        txtFechaNacimiento = new JTextField();
+        txtFechaNacimiento.setVisible(false); // Lo ocultamos porque ahora usamos JDateChooser
+
         lblFechaNacimientoError = new JLabel("Introduce la fecha de nacimiento", SwingConstants.CENTER);
         fixedSize(lblFechaNacimientoError, 150, 15);
         lblFechaNacimientoError.setForeground(Color.RED);
