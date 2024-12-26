@@ -1,6 +1,6 @@
 package dominio;
 
-public class DescuentoPorMenssaje implements Descuento {
+public class DescuentoPorMensaje implements Descuento {
 
 	@Override
 	public double getDescuento(double precioInicial) {
