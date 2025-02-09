@@ -36,12 +36,14 @@ public class Registro extends JDialog {
     private JLabel lblPassword;
     private JLabel lblPasswordChk;
     private JLabel lblSaludo;
+    private JLabel lblImagen;
     private JTextField txtNombre;
     private JTextField txtApellidos;
     private JTextField txtFechaNacimiento;
     private JTextField txtEmail;
     private JTextField txtUsuario;
     private JTextField txtSaludo;
+    private JTextField txtImagen;
     private JPasswordField txtPassword;
     private JPasswordField txtPasswordChk;
     private JButton btnRegistrar;
@@ -61,6 +63,7 @@ public class Registro extends JDialog {
     private JPanel panelCamposUsuario;
     private JPanel panelCamposFechaNacimiento;
     private JPanel panelCamposSaludo;
+    private JPanel panelCamposImagen;
 
     //Añadido por Pepo
     private JFrame owner;
@@ -92,6 +95,7 @@ public class Registro extends JDialog {
         datosPersonales.add(crearLineaPassword());
         datosPersonales.add(crearLineaFechaNacimiento());
         datosPersonales.add(crearLineaSaludo());
+        datosPersonales.add(crearLineaImagen());
 
         this.crearPanelBotones();
 
@@ -295,6 +299,24 @@ public class Registro extends JDialog {
 
         return lineaSaludo;
     }
+    
+    private JPanel crearLineaImagen() {
+        JPanel lineaImagen = new JPanel();
+        lineaImagen.setAlignmentX(JLabel.LEFT_ALIGNMENT);
+        lineaImagen.setLayout(new BorderLayout(0, 0));
+
+        panelCamposImagen = new JPanel();
+        lineaImagen.add(panelCamposImagen, BorderLayout.CENTER);
+
+        lblImagen = new JLabel("Imagen de perfil: ", JLabel.RIGHT);
+        panelCamposImagen.add(lblImagen);
+        fixedSize(lblImagen, 75, 20);
+        txtImagen = new JTextField();
+        panelCamposImagen.add(txtImagen);
+        fixedSize(txtImagen, 270, 20);
+
+        return lineaImagen;
+    }
 
     private void crearPanelBotones() {
         JPanel lineaBotones = new JPanel();
@@ -325,7 +347,7 @@ public class Registro extends JDialog {
                     boolean registrado = false;
                     registrado = Controlador.INSTANCE.registrarUsuario(txtNombre.getText(), txtApellidos.getText(),
                             txtEmail.getText(), txtUsuario.getText(), new String(txtPassword.getPassword()),
-                            txtFechaNacimiento.getText());
+                            txtFechaNacimiento.getText(), txtSaludo.getText(), txtImagen.getText(), "N");
                     if (registrado) {
                         JOptionPane.showMessageDialog(Registro.this, "Usuario registrado correctamente.",
                                 "Registro", JOptionPane.INFORMATION_MESSAGE);
@@ -445,6 +467,7 @@ public class Registro extends JDialog {
         txtPasswordChk.setBorder(new JTextField().getBorder());
         txtFechaNacimiento.setBorder(new JTextField().getBorder());
         txtSaludo.setBorder(new JTextField().getBorder());
+        txtImagen.setBorder(new JTextField().getBorder());
 
         lblNombre.setForeground(Color.BLACK);
         lblApellidos.setForeground(Color.BLACK);
@@ -454,6 +477,7 @@ public class Registro extends JDialog {
         lblPasswordChk.setForeground(Color.BLACK);
         lblFechaNacimiento.setForeground(Color.BLACK);
         lblSaludo.setForeground(Color.BLACK);
+        lblImagen.setForeground(Color.BLACK);
     }
 
     private void fixedSize(JComponent o, int x, int y) {

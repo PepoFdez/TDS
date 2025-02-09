@@ -27,15 +27,15 @@ public final class TDSUsuarioDAO implements UsuarioDAO {
 
 	private static final String USUARIO = "Usuario";
 	/*Añadido por pepo*/
-	private static final String IMAGEN = "url";
 	private static final String NOMBRE = "nombre";
 	private static final String APELLIDOS = "apellidos";
 	private static final String EMAIL = "email";
-	private static final String LOGIN = "login";
+	private static final String MOVIL = "movil";
 	private static final String PASSWORD = "password";
 	private static final String FECHA_NACIMIENTO = "fechaNacimiento";
-	private static final String MOVIL = "movil";
+	private static final String IMAGEN = "url";
 	private static final String SALUDO = "saludo";
+	private static final String PREMIUM = "isPremium";
 
 	private ServicioPersistencia servPersistencia;
 	private SimpleDateFormat dateFormat;
@@ -49,17 +49,18 @@ public final class TDSUsuarioDAO implements UsuarioDAO {
 /*public Usuario(String nombre, String apellidos, String email, String login, int movil, String saludo, String password,
 			String fechaNacimiento, String imagen) {*/
 		String nombre = servPersistencia.recuperarPropiedadEntidad(eUsuario, NOMBRE);
-		String imagen = servPersistencia.recuperarPropiedadEntidad(eUsuario, IMAGEN);
 		String apellidos = servPersistencia.recuperarPropiedadEntidad(eUsuario, APELLIDOS);
 		String email = servPersistencia.recuperarPropiedadEntidad(eUsuario, EMAIL);
-		String login = servPersistencia.recuperarPropiedadEntidad(eUsuario, LOGIN);
+		String movil = servPersistencia.recuperarPropiedadEntidad(eUsuario, MOVIL);
 		String password = servPersistencia.recuperarPropiedadEntidad(eUsuario, PASSWORD);
 		String fechaNacimiento = servPersistencia.recuperarPropiedadEntidad(eUsuario, FECHA_NACIMIENTO);
 		//Añadido por pepo
-		String movil = servPersistencia.recuperarPropiedadEntidad(eUsuario, MOVIL);
+		String imagen = servPersistencia.recuperarPropiedadEntidad(eUsuario, IMAGEN);
 		String saludo = servPersistencia.recuperarPropiedadEntidad(eUsuario, SALUDO);
-
-		Usuario usuario = new Usuario(nombre, apellidos, email, login, Integer.parseInt(movil),/*login,*/ saludo, password, fechaNacimiento, imagen);
+		String isPremium = servPersistencia.recuperarPropiedadEntidad(eUsuario, PREMIUM);
+		
+		Usuario usuario = new Usuario(nombre, apellidos, email, movil,
+				password, fechaNacimiento, imagen, saludo, isPremium);
 		usuario.setId(eUsuario.getId());
 
 		return usuario;
@@ -71,8 +72,9 @@ public final class TDSUsuarioDAO implements UsuarioDAO {
 
 		eUsuario.setPropiedades(new ArrayList<Propiedad>(Arrays.asList(new Propiedad(NOMBRE, usuario.getNombre()),
 				new Propiedad(APELLIDOS, usuario.getApellidos()), new Propiedad(EMAIL, usuario.getEmail()),
-				/*new Propiedad(LOGIN, usuario.getLogin()),*/ new Propiedad(PASSWORD, usuario.getPassword()),
-				new Propiedad(FECHA_NACIMIENTO, usuario.getFechaNacimiento()))));
+				new Propiedad(MOVIL, usuario.getMovil()), new Propiedad(PASSWORD, usuario.getPassword()),
+				new Propiedad(FECHA_NACIMIENTO, usuario.getFechaNacimiento()), new Propiedad(IMAGEN, usuario.getImagen()),
+				new Propiedad(SALUDO, usuario.getSaludo()), new Propiedad(PREMIUM, usuario.getIsPremium()))));
 		return eUsuario;
 	}
 
@@ -104,11 +106,18 @@ public final class TDSUsuarioDAO implements UsuarioDAO {
 				prop.setValor(usuario.getNombre());
 			} else if (prop.getNombre().equals(APELLIDOS)) {
 				prop.setValor(usuario.getApellidos());
-			} else if (prop.getNombre().equals(LOGIN)) {
-				prop.setValor(usuario.getLogin());
+			} else if (prop.getNombre().equals(MOVIL)) {
+				prop.setValor(usuario.getMovil());
 			} else if (prop.getNombre().equals(FECHA_NACIMIENTO)) {
 				prop.setValor(dateFormat.format(usuario.getFechaNacimiento()));
+			} else if (prop.getNombre().equals(SALUDO)) {
+				prop.setValor(usuario.getSaludo());
+			} else if (prop.getNombre().equals(IMAGEN)) {
+				prop.setValor(usuario.getImagen());
+			} else if (prop.getNombre().equals(PREMIUM)) {
+				prop.setValor(usuario.getIsPremium());
 			}
+			
 			servPersistencia.modificarPropiedad(prop);
 		}
 	}

@@ -36,12 +36,12 @@ public enum Controlador {
 		return false;
 	}
 
-	public boolean registrarUsuario(String nombre, String apellidos, String email, String login, String password,
-			String fechaNacimiento) {
+	public boolean registrarUsuario(String nombre, String apellidos, String email, String movil, String password,
+			String fechaNacimiento, String saludo, String imagen, String isPremium) {
 
-		if (esUsuarioRegistrado(login))
+		if (esUsuarioRegistrado(movil))
 			return false;
-		Usuario usuario = new Usuario(nombre, apellidos, email, login, password, fechaNacimiento);
+		Usuario usuario = new Usuario(nombre, apellidos, email, movil, password, fechaNacimiento, saludo, imagen, isPremium);
 
 		UsuarioDAO usuarioDAO = factoria
 				.getUsuarioDAO(); /* Adaptador DAO para almacenar el nuevo Usuario en la BD */
@@ -52,7 +52,7 @@ public enum Controlador {
 	}
 
 	public boolean borrarUsuario(Usuario usuario) {
-		if (!esUsuarioRegistrado(usuario.getLogin()))
+		if (!esUsuarioRegistrado(usuario.getMovil()))
 			return false;
 
 		UsuarioDAO usuarioDAO = factoria.getUsuarioDAO(); /* Adaptador DAO para borrar el Usuario de la BD */

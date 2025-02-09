@@ -7,28 +7,26 @@ public class Usuario {
 	private String nombre;
 	private String apellidos;
 	private String email; 
-	private String login; //Se convierte en movil en la interfaz
+	private String movil; //Se convierte en movil en la interfaz
 	private String password;
 	private String fechaNacimiento;
 	//Añadidos por Pepo
-	private int movil;
 	private String imagen; //No sé si las imágenes tienen que ser URLS o estar localmente, porque el aula virtual se contradice
 	private String saludo;
-	private boolean isPremium;
+	private String isPremium;
 
-	public Usuario(String nombre, String apellidos, String email, String login, int movil, String saludo, String password,
-			String fechaNacimiento, String imagen) {
+	public Usuario(String nombre, String apellidos, String email, String movil, String password,
+			String fechaNacimiento, String imagen, String saludo, String isPremium) {
 		this.id = 0;
 		this.nombre = nombre;
 		this.apellidos = apellidos;
 		this.email = email;
-		this.login = login;
+		this.movil = movil;
 		this.password = password;
 		this.fechaNacimiento = fechaNacimiento;
-		this.movil = movil;
 		this.saludo = saludo;
 		this.imagen = imagen;
-		this.isPremium = false;
+		this.isPremium = isPremium;
 	}
 
 	public int getId() {
@@ -62,13 +60,15 @@ public class Usuario {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public String getLogin() {
-		return login;
+	
+	public String getMovil() {
+		return movil;
 	}
 
-	public void setLogin(String login) {
-		this.login = login;
+	public void setMovil(String movil) {
+		this.movil = movil;
 	}
+
 
 	public String getPassword() {
 		return password;
@@ -86,13 +86,7 @@ public class Usuario {
 		this.fechaNacimiento = fechaNacimiento;
 	}
 
-	public int getMovil() {
-		return movil;
-	}
-
-	public void setMovil(int movil) {
-		this.movil = movil;
-	}
+	
 
 	public String getImagen() {
 		return imagen;
@@ -108,6 +102,14 @@ public class Usuario {
 
 	public void setSaludo(String saludo) {
 		this.saludo = saludo;
+	}
+
+	public String getIsPremium() {
+		return isPremium;
+	}
+
+	public void setIsPremium(String isPremium) {
+		this.isPremium = isPremium;
 	}
 	
 	
