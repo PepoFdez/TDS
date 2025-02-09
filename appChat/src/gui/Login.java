@@ -90,8 +90,8 @@ public class Login {
 
 	    // Logo de "AppChat"
 	    JLabel lblLogo = new JLabel();
-	    ImageIcon icono = new ImageIcon("resources/logo.png");
-	    Image imgEscalada = icono.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+	    ImageIcon icono = new ImageIcon("resources/logo_tr.png");
+	    Image imgEscalada = icono.getImage().getScaledInstance(75, 50, Image.SCALE_SMOOTH);
 	    lblLogo.setIcon(new ImageIcon(imgEscalada));
 	    lblLogo.setAlignmentX(Component.CENTER_ALIGNMENT);
 	    panel_Norte.add(lblLogo);
