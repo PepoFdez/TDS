@@ -1,5 +1,6 @@
 package dominio;
 
+import java.util.LinkedList;
 
 public class Usuario {
 	
@@ -14,6 +15,9 @@ public class Usuario {
 	private String imagen; //No sé si las imágenes tienen que ser URLS o estar localmente, porque el aula virtual se contradice
 	private String saludo;
 	private String isPremium;
+	
+	//Coleccion de contactos
+	private LinkedList<Contacto> contactos;
 
 	public Usuario(String nombre, String apellidos, String email, String movil, String password,
 			String fechaNacimiento, String imagen, String saludo, String isPremium) {
@@ -27,6 +31,8 @@ public class Usuario {
 		this.saludo = saludo;
 		this.imagen = imagen;
 		this.isPremium = isPremium;
+		
+		this.contactos = new LinkedList<Contacto>();
 	}
 
 	public int getId() {
@@ -63,6 +69,10 @@ public class Usuario {
 	
 	public String getMovil() {
 		return movil;
+	}
+
+	public LinkedList<Contacto> getContactos() {
+		return contactos;
 	}
 
 	public void setMovil(String movil) {
@@ -110,6 +120,10 @@ public class Usuario {
 
 	public void setIsPremium(String isPremium) {
 		this.isPremium = isPremium;
+	}
+
+	public void setContactos(LinkedList<Contacto> contactos) {
+		this.contactos = contactos;
 	}
 	
 	

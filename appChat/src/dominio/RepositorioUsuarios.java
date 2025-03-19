@@ -35,8 +35,8 @@ public enum RepositorioUsuarios {
 		return new LinkedList<Usuario>(usuariosPorMovil.values());
 	}
 	
-	public Usuario findUsuario(String login) {
-		return usuariosPorMovil.get(login);
+	public Usuario findUsuario(String movil) {
+		return usuariosPorMovil.get(movil);
 	}
 
 	public Usuario findUsuario(int id) {

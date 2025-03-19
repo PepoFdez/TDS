@@ -6,7 +6,7 @@ package dao;
 
 public abstract class FactoriaDAO {
 	
-	public static final String DAO_TDS = "umu.tds.dao.TDSFactoriaDAO";
+	public static final String DAO_TDS = "dao.TDSFactoriaDAO";
 
 	private static FactoriaDAO unicaInstancia = null;
 	
@@ -17,9 +17,10 @@ public abstract class FactoriaDAO {
 	public static FactoriaDAO getInstancia(String tipo) throws DAOException{
 		if (unicaInstancia == null)
 			try { 
+				System.out.println("Intentando cargar la factoría: " + tipo);
 				unicaInstancia=(FactoriaDAO) Class.forName(tipo).newInstance();
 			} catch (Exception e) {	
-				throw new DAOException(e.getMessage());
+				throw new DAOException("Error al instanciar la factoría DAO: " + e.getMessage());
 		} 
 		return unicaInstancia;
 	}

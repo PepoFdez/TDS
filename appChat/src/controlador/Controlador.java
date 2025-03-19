@@ -1,8 +1,13 @@
 package controlador;
 import dao.UsuarioDAO;
+
+import java.util.LinkedList;
+import java.util.List;
+
 import dao.DAOException;
 import dao.FactoriaDAO;
 import dominio.Usuario;
+import dominio.Contacto;
 import dominio.RepositorioUsuarios;
 
 public enum Controlador {
@@ -16,6 +21,7 @@ public enum Controlador {
 			factoria = FactoriaDAO.getInstancia();
 		} catch (DAOException e) {
 			e.printStackTrace();
+			throw new RuntimeException("Error al inicializar la factoría DAO", e);
 		}
 	}
 
@@ -23,12 +29,12 @@ public enum Controlador {
 		return usuarioActual;
 	}
 
-	public boolean esUsuarioRegistrado(String login) {
-		return RepositorioUsuarios.INSTANCE.findUsuario(login) != null;
+	public boolean esUsuarioRegistrado(String movil) {
+		return RepositorioUsuarios.INSTANCE.findUsuario(movil) != null;
 	}
 
-	public boolean loginUsuario(String nombre, String password) {
-		Usuario usuario = RepositorioUsuarios.INSTANCE.findUsuario(nombre);
+	public boolean loginUsuario(String movil, String password) {
+		Usuario usuario = RepositorioUsuarios.INSTANCE.findUsuario(movil);
 		if (usuario != null && usuario.getPassword().equals(password)) {
 			this.usuarioActual = usuario;
 			return true;
@@ -60,5 +66,10 @@ public enum Controlador {
 
 		RepositorioUsuarios.INSTANCE.removeUsuario(usuario);
 		return true;
+	}
+	
+	public LinkedList<Contacto> getContactosUsuario() {
+		this.usuarioActual.getContactos();
+		return new LinkedList<Contacto>();
 	}
 }

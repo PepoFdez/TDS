@@ -108,7 +108,7 @@ public class AñadirContacto {
         txtUsuario = new JTextField();
         panelCamposUsuario.add(txtUsuario);
         fixedSize(txtUsuario, 270, 20);
-        lblUsuarioError = new JLabel("El teléfono ya está registrado", SwingConstants.CENTER);
+        lblUsuarioError = new JLabel("El teléfono no está registrado", SwingConstants.CENTER);
         fixedSize(lblUsuarioError, 150, 15);
         lblUsuarioError.setForeground(Color.RED);
         lineaUsuario.add(lblUsuarioError, BorderLayout.SOUTH);

@@ -437,12 +437,12 @@ public class Registro extends JDialog {
             txtPasswordChk.setBorder(BorderFactory.createLineBorder(Color.RED));
             salida = false;
         }
-        if (txtFechaNacimiento.getText().isEmpty()) {
+        /*if (txtFechaNacimiento.getText().isEmpty()) {
             lblFechaNacimientoError.setVisible(true);
             lblFechaNacimiento.setForeground(Color.RED);
             txtFechaNacimiento.setBorder(BorderFactory.createLineBorder(Color.RED));
             salida = false;
-        }
+        }*/
 
         this.revalidate();
         this.pack();
