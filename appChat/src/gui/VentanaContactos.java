@@ -24,12 +24,16 @@ public class VentanaContactos {
 		initialize();
 	}
 
+	public void mostrarVentana() {
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
+	}
 	/**
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
 		frame = new JFrame("Gestión de Contactos y Grupos");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(600, 400);
         frame.setLayout(new BorderLayout());
 
