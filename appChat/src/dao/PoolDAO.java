@@ -2,22 +2,15 @@ package dao;
 
 import java.util.HashMap;
 
-public class PoolDAO {
+public enum PoolDAO {
 /*Hay que crear una colección genérica para almacenar todos los objetos que se hayan recuperado de la 
  * base de datos. Para comprobar si están recuperados y no recuperarlos de nuevo*/
-	private static PoolDAO instance = null;
+	INSTANCE;
+	
 	private HashMap<Integer, Object> pool;
 	
 	private PoolDAO () {
 		pool = new HashMap<Integer, Object>();
-		
-	}
-	
-	public static PoolDAO getInstance() {
-		if (instance == null) {
-			instance = new PoolDAO();
-		}
-		return instance;
 	}
 	
 	public void addObject(int id, Object object) {
