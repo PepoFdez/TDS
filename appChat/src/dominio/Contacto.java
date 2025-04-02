@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public abstract class Contacto {
-	private int codigo; //Esto de momento no sirve
+
 	private String nombre;
 	private List<Mensaje> mensajes;
 	
@@ -22,15 +22,21 @@ public abstract class Contacto {
 		return nombre;
 	}
 	
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+	
 	public List<Mensaje> getMensajesEnviados() {
 		return mensajes;
 	}
 	
-	public int getCodigo() {
-		return codigo;
+	public void addMensaje(Mensaje mensaje) {
+		this.mensajes.add(mensaje);
 	}
+	
+	public abstract String getInfo();
+	
+	
+	
 
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
 }
