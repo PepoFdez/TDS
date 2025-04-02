@@ -23,8 +23,8 @@ public class Grupo extends Contacto {
 		this.miembros = miembros;
 	}
 	
-	public void addMiembro(agregableGrupos miembro) {
-		this.miembros.add((Contacto) miembro);
+	public Boolean addMiembro(agregableGrupos miembro) {
+		return this.miembros.add((Contacto) miembro);
     }
 	
 
