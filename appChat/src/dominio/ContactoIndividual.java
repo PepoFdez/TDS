@@ -3,7 +3,7 @@ package dominio;
 import java.util.LinkedList;
 
 
-public class ContactoIndividual extends Contacto implements agregableGrupos {
+public class ContactoIndividual extends Contacto implements AgregableGrupos {
 
 	private Usuario usuario;
 	

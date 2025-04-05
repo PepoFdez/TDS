@@ -9,7 +9,7 @@ public class Grupo extends Contacto {
 
 	private HashSet<Contacto> miembros; //para asegurarnos desde la implementación que no hay repes
 	
-	public Grupo(String nombre, agregableGrupos...miembros) { //aseguramos que sólo se metan miembros que sean contactos individuales
+	public Grupo(String nombre, AgregableGrupos...miembros) { //aseguramos que sólo se metan miembros que sean contactos individuales
 		super(nombre);//usamos este stream en lugar de un forEach.
 		this.miembros = Arrays.stream(miembros)
 				.map(miembro -> (Contacto) miembro)
@@ -23,7 +23,7 @@ public class Grupo extends Contacto {
 		this.miembros = miembros;
 	}
 	
-	public Boolean addMiembro(agregableGrupos miembro) {
+	public Boolean addMiembro(AgregableGrupos miembro) {
 		return this.miembros.add((Contacto) miembro);
     }
 	
