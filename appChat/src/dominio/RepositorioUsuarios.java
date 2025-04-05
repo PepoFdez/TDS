@@ -9,8 +9,9 @@ import dao.FactoriaDAO;
 
 public enum RepositorioUsuarios {
 	INSTANCE;
+	
 	private FactoriaDAO factoria;
-
+	
 	private HashMap<Integer, Usuario> usuariosPorID;
 	private HashMap<String, Usuario> usuariosPorMovil;
 

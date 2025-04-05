@@ -1,6 +1,10 @@
 package dominio;
 
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 
 public class Usuario {
 	
@@ -8,20 +12,21 @@ public class Usuario {
 	private String nombre;
 	private String apellidos;
 	private String email; 
-	private String movil; //Se convierte en movil en la interfaz
+	private String movil;
 	private String password;
-	private String fechaNacimiento;
-	//Añadidos por Pepo
-	private String imagen; //No sé si las imágenes tienen que ser URLS o estar localmente, porque el aula virtual se contradice
+	private Date fechaNacimiento;
+	private String URLimagen; //falta comprobar este atributo
 	private String saludo;
-	private String isPremium;
+	private boolean premium;
+	//private Descuento descuento;???
+	private final LocalDate fechaRegistro;
+	private final Set<Contacto> contactos = new HashSet<Contacto>(); //necesario definir los .equals y hashCode, pero aseguramos no duplicidad
+	//podemos usar listas auxiliares para v.acceso
 	
-	//Coleccion de contactos
-	private LinkedList<Contacto> contactos;
-
+	//completo para usarlo en la persistencia
 	public Usuario(String nombre, String apellidos, String email, String movil, String password,
-			String fechaNacimiento, String imagen, String saludo, String isPremium) {
-		this.id = 0;
+			Date fechaNacimiento, String URLimagen, String saludo, boolean premium) {
+		
 		this.nombre = nombre;
 		this.apellidos = apellidos;
 		this.email = email;
@@ -29,10 +34,16 @@ public class Usuario {
 		this.password = password;
 		this.fechaNacimiento = fechaNacimiento;
 		this.saludo = saludo;
-		this.imagen = imagen;
-		this.isPremium = isPremium;
+		this.URLimagen = URLimagen;
+		this.premium = premium;
+		this.fechaRegistro = LocalDate.now();
 		
-		this.contactos = new LinkedList<Contacto>();
+	}
+	
+	//por defecto un usuario no es premium, sino que se activa después, ni tendrá contactos
+	public Usuario(String nombre, String apellidos, String email, String movil, String password,
+			Date fechaNacimiento, String URLimagen, String saludo) {
+		this(nombre, apellidos, email, movil, password, fechaNacimiento, URLimagen, saludo, false);
 	}
 
 	public int getId() {
@@ -71,10 +82,6 @@ public class Usuario {
 		return movil;
 	}
 
-	public LinkedList<Contacto> getContactos() {
-		return contactos;
-	}
-
 	public void setMovil(String movil) {
 		this.movil = movil;
 	}
@@ -88,22 +95,20 @@ public class Usuario {
 		this.password = password;
 	}
 
-	public String getFechaNacimiento() {
+	public Date getFechaNacimiento() {
 		return fechaNacimiento;
 	}
 
-	public void setFechaNacimiento(String fechaNacimiento) {
+	public void setFechaNacimiento(Date fechaNacimiento) {
 		this.fechaNacimiento = fechaNacimiento;
 	}
 
-	
-
-	public String getImagen() {
-		return imagen;
+	public String getURLImagen() {
+		return URLimagen;
 	}
 
-	public void setImagen(String imagen) {
-		this.imagen = imagen;
+	public void setURLImagen(String imagen) {
+		this.URLimagen = imagen;
 	}
 
 	public String getSaludo() {
@@ -114,19 +119,26 @@ public class Usuario {
 		this.saludo = saludo;
 	}
 
-	public String getIsPremium() {
-		return isPremium;
+	public boolean isPremium() {
+		return premium;
 	}
 
-	public void setIsPremium(String isPremium) {
-		this.isPremium = isPremium;
+	public void activarPremium() {
+		this.premium = true;
 	}
-
-	public void setContactos(LinkedList<Contacto> contactos) {
-		this.contactos = contactos;
+	
+	public void desactivarPremium() {
+		this.premium = false;
+	}
+	
+	public LocalDate getFechaRegistro() {
+		return fechaRegistro;
+	}
+	
+	public LinkedList<Contacto> getContactos() {
+		return new LinkedList<>(contactos);
 	}
 	
 	
-
 }
 
