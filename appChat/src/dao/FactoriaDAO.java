@@ -1,7 +1,7 @@
 package dao;
 
 /**
- * Factoria abstracta DAO.
+ * Factoria abstracta DAO- > crea factorías DAO concretas.
  */
 
 public abstract class FactoriaDAO {
@@ -18,7 +18,8 @@ public abstract class FactoriaDAO {
 		if (unicaInstancia == null)
 			try { 
 				System.out.println("Intentando cargar la factoría: " + tipo);
-				unicaInstancia=(FactoriaDAO) Class.forName(tipo).newInstance();
+				unicaInstancia = (FactoriaDAO) Class.forName(tipo).getDeclaredConstructor().newInstance();
+
 			} catch (Exception e) {	
 				throw new DAOException("Error al instanciar la factoría DAO: " + e.getMessage());
 		} 
@@ -34,5 +35,8 @@ public abstract class FactoriaDAO {
 	
 	// Metodos factoria para obtener adaptadores
 	
-	public abstract UsuarioDAO getUsuarioDAO();	
+	public abstract UsuarioDAO getUsuarioDAO();
+	public abstract GrupoDAO getGrupoDAO();
+	public abstract MensajeDAO getMensajeDAO();
+	public abstract ContactoIndividualDAO getContactoIndividualDAO();
 }
