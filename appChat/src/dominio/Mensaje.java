@@ -3,18 +3,19 @@ package dominio;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+
 public class Mensaje {
 
 	private int id;
 	private final String texto;
-	private final int emoticon;
+	private final int emoticono;
 	private final LocalDateTime fecha;
 	private final int tipo; // usaremos las constantes enteras de BubbleText SENT y RECEIVED
 
 	// para recuperarlo desde la BDD
 	public Mensaje(String texto, int emoticon, LocalDateTime fecha, int tipo) {
 		this.texto = texto;
-		this.emoticon = emoticon;
+		this.emoticono = emoticon;
 		this.fecha = fecha;
 		this.tipo = tipo;
 	}
@@ -24,7 +25,7 @@ public class Mensaje {
 	}
 
 	public Mensaje(int emoticon, int tipo) {
-		this(null, emoticon, LocalDateTime.now(), tipo);
+		this("", emoticon, LocalDateTime.now(), tipo);
 	}
 	
 	public void setId(int id) {
@@ -39,8 +40,8 @@ public class Mensaje {
 		return texto;
 	}
 
-	public int getEmoticon() {
-		return emoticon;
+	public int getEmoticono() {
+		return emoticono;
 	}
 
 	public LocalDateTime getFecha() {
@@ -54,5 +55,9 @@ public class Mensaje {
 	public String getHora() {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 		return fecha.format(formatter);
+	}
+	public String getContenido() {
+		if (texto=="") return String.valueOf(emoticono);
+		else return texto;
 	}
 }
