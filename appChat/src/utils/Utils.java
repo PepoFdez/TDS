@@ -3,9 +3,13 @@ package utils;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.format.DateTimeFormatter;
 
 public class Utils {
 
+	   public static final DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+	
 	public static String getRutaResourceFromFile(File archivoImagen) {
 		// Define la ruta base del proyecto que debe apuntar a "src/main/resources"
 		Path rutaBase = Paths.get("src/main/resources").toAbsolutePath();
