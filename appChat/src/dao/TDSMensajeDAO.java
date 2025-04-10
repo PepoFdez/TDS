@@ -71,17 +71,22 @@ public class TDSMensajeDAO implements MensajeDAO {
 		
 		if(PoolDAO.INSTANCE.contains(msj.getId())) PoolDAO.INSTANCE.removeObjet(msj.getId());
 	}
-
+/*
 	@Override
 	public void updateMensaje(Mensaje msj) {
-
+//cambiar update si realmente no se pueden cambiar las propiedades de los mensajes
 		Entidad eMensaje = servPersistencia.recuperarEntidad(msj.getId());
 		
 		for (Propiedad prop : eMensaje.getPropiedades()) {
-			if(prop.getNombre().equals(TEXTO)) prop.setValor(msj.getTexto());
-			else if(prop.getNombre().equals(EMOTICONO)) prop.setValor(String.valueOf(msj.getEmoticono()));
-			else if (prop.getNombre().equals(FECHA))prop.setValor(msj.getFecha().format(Utils.formatoFecha));
-			else if (prop.getNombre().equals(TIPO)) prop.setValor(String.valueOf(msj.getTipo()));
+			if(prop.getNombre().equals(TEXTO)) {
+				prop.setValor(msj.getTexto());
+			} else if(prop.getNombre().equals(EMOTICONO)) {
+				prop.setValor(String.valueOf(msj.getEmoticono()));
+			} else if (prop.getNombre().equals(FECHA)) {
+				prop.setValor(msj.getFecha().format(Utils.formatoFecha));
+			} else if (prop.getNombre().equals(TIPO)) {
+				prop.setValor(String.valueOf(msj.getTipo()));
+			}
 		}
 		
 		servPersistencia.modificarEntidad(eMensaje);
@@ -89,7 +94,7 @@ public class TDSMensajeDAO implements MensajeDAO {
 		//no 100%seguro de si hay que actualizar le pool pero diría que sí.
 		
 	}
-
+*/
 	@Override
 	public Mensaje getMensaje(int id) {
 		if (PoolDAO.INSTANCE.contains(id)) return (Mensaje) PoolDAO.INSTANCE.getObject(id);

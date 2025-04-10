@@ -7,7 +7,7 @@ public interface MensajeDAO {
 
 	void registrarMensaje(Mensaje msj);
 	void eliminarMensaje(Mensaje msj);
-	void updateMensaje(Mensaje msj);
+	//void updateMensaje(Mensaje msj);
 	Mensaje getMensaje(int id);
 	List<Mensaje> getAll();
 	
