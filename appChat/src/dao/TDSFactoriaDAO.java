@@ -10,8 +10,23 @@ public final class TDSFactoriaDAO extends FactoriaDAO {
 	public TDSFactoriaDAO() {	}
 	
 	@Override
-	public TDSUsuarioDAO getUsuarioDAO() {	
-		return new TDSUsuarioDAO(); 
+	public UsuarioDAO getUsuarioDAO() {	
+		return (UsuarioDAO) TDSUsuarioDAO.getInstance();
+	}
+	@Override
+	public GrupoDAO getGrupoDAO() {
+		
+		return (TDSGrupoDAO) TDSGrupoDAO.getInstance();
+	}
+	@Override
+	public MensajeDAO getMensajeDAO() {
+
+		return (MensajeDAO) TDSMensajeDAO.getInstance();
+	}
+	@Override
+	public ContactoIndividualDAO getContactoIndividualDAO() {
+		
+		return (TDSContactoIndividualDAO) TDSContactoIndividualDAO.getInstance();
 	}
 
 }
