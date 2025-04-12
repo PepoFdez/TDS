@@ -1,6 +1,5 @@
 package dominio;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -14,7 +13,7 @@ public class Usuario {
 	private String email; 
 	private String movil;
 	private String password;
-	private Date fechaNacimiento;
+	private LocalDate fechaNacimiento;
 	private String URLimagen; //falta comprobar este atributo
 	private String saludo;
 	private boolean premium;
@@ -25,7 +24,7 @@ public class Usuario {
 	
 	//completo para usarlo en la persistencia
 	public Usuario(String nombre, String apellidos, String email, String movil, String password,
-			Date fechaNacimiento, String URLimagen, String saludo, boolean premium) {
+			LocalDate fechaNacimiento, String URLimagen, String saludo, boolean premium, LocalDate fechaRegistro) {
 		
 		this.nombre = nombre;
 		this.apellidos = apellidos;
@@ -36,14 +35,14 @@ public class Usuario {
 		this.saludo = saludo;
 		this.URLimagen = URLimagen;
 		this.premium = premium;
-		this.fechaRegistro = LocalDate.now();
+		this.fechaRegistro = fechaRegistro;
 		
 	}
 	
 	//por defecto un usuario no es premium, sino que se activa después, ni tendrá contactos
 	public Usuario(String nombre, String apellidos, String email, String movil, String password,
-			Date fechaNacimiento, String URLimagen, String saludo) {
-		this(nombre, apellidos, email, movil, password, fechaNacimiento, URLimagen, saludo, false);
+			LocalDate fechaNacimiento, String URLimagen, String saludo) {
+		this(nombre, apellidos, email, movil, password, fechaNacimiento, URLimagen, saludo, false, LocalDate.now());
 	}
 
 	public int getId() {
@@ -95,11 +94,11 @@ public class Usuario {
 		this.password = password;
 	}
 
-	public Date getFechaNacimiento() {
+	public LocalDate getFechaNacimiento() {
 		return fechaNacimiento;
 	}
 
-	public void setFechaNacimiento(Date fechaNacimiento) {
+	public void setFechaNacimiento(LocalDate fechaNacimiento) {
 		this.fechaNacimiento = fechaNacimiento;
 	}
 
@@ -138,6 +137,16 @@ public class Usuario {
 	public LinkedList<Contacto> getContactos() {
 		return new LinkedList<>(contactos);
 	}
+
+	//ver si manejamos grupos y contactos en el mismo conjunto
+	public void addContacto(Contacto contacto) {
+		this.contactos.add(contacto);
+	}
+	
+	public void removeContacto(Contacto contacto) {
+		this.contactos.remove(contacto);
+	}
+	
 	
 	
 }

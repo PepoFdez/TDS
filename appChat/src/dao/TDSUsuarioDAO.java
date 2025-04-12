@@ -1,22 +1,23 @@
 package dao;
 
-
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
-
+import dominio.Contacto;
+import dominio.ContactoIndividual;
+import dominio.Grupo;
 //import tds.driver.ServicioPersistencia;
 import dominio.Usuario;
 import tds.driver.FactoriaServicioPersistencia;
 import tds.driver.ServicioPersistencia;
+import utils.Utils;
 import beans.Entidad;
 import beans.Propiedad;
-
-//import beans.Entidad;
-//import beans.Propiedad;
 
 /**
  * 
@@ -26,117 +27,213 @@ import beans.Propiedad;
 public final class TDSUsuarioDAO implements UsuarioDAO {
 
 	private static final String USUARIO = "Usuario";
-	/*Añadido por pepo*/
 	private static final String NOMBRE = "nombre";
 	private static final String APELLIDOS = "apellidos";
 	private static final String EMAIL = "email";
 	private static final String MOVIL = "movil";
 	private static final String PASSWORD = "password";
 	private static final String FECHA_NACIMIENTO = "fechaNacimiento";
-	private static final String IMAGEN = "url";
+	private static final String IMAGEN = "imagen";
 	private static final String SALUDO = "saludo";
-	private static final String PREMIUM = "isPremium";
+	private static final String PREMIUM = "premium";
+	private static final String CONTACTOS = "contactos";
+	private static final String GRUPOS = "grupos";
+	private static final String FECHA_REGISTRO = "fechaRegistro";
 
-	private ServicioPersistencia servPersistencia;
-	private SimpleDateFormat dateFormat;
-
-	public TDSUsuarioDAO() {
+	private ServicioPersistencia servPersistencia; 
+	private static TDSUsuarioDAO unicaInstancia = null;
+	
+	private TDSUsuarioDAO() {
 		servPersistencia = FactoriaServicioPersistencia.getInstance().getServicioPersistencia();
-		dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 	}
 
-	private Usuario entidadToUsuario(Entidad eUsuario) {
-/*public Usuario(String nombre, String apellidos, String email, String login, int movil, String saludo, String password,
-			String fechaNacimiento, String imagen) {*/
-		String nombre = servPersistencia.recuperarPropiedadEntidad(eUsuario, NOMBRE);
-		String apellidos = servPersistencia.recuperarPropiedadEntidad(eUsuario, APELLIDOS);
-		String email = servPersistencia.recuperarPropiedadEntidad(eUsuario, EMAIL);
-		String movil = servPersistencia.recuperarPropiedadEntidad(eUsuario, MOVIL);
-		String password = servPersistencia.recuperarPropiedadEntidad(eUsuario, PASSWORD);
-		String fechaNacimiento = servPersistencia.recuperarPropiedadEntidad(eUsuario, FECHA_NACIMIENTO);
-		//Añadido por pepo
-		String imagen = servPersistencia.recuperarPropiedadEntidad(eUsuario, IMAGEN);
-		String saludo = servPersistencia.recuperarPropiedadEntidad(eUsuario, SALUDO);
-		String isPremium = servPersistencia.recuperarPropiedadEntidad(eUsuario, PREMIUM);
+	public static TDSUsuarioDAO getInstance() {
+		if (unicaInstancia == null) {
+			unicaInstancia = new TDSUsuarioDAO();
+		}
+		return unicaInstancia;
+	}
+	
+	@Override
+	public void registrarUsuario(Usuario user) {
+		//comprobamos que el usuaio no esté registrado
+		Optional<Entidad> eUsuario = Optional.ofNullable(servPersistencia.recuperarEntidad(user.getId()));
+		if(eUsuario.isPresent()) return;
 		
-		Usuario usuario = new Usuario(nombre, apellidos, email, movil,
-				password, fechaNacimiento, imagen, saludo, isPremium);
-		usuario.setId(eUsuario.getId());
+		//REGISTRAMOS AGRAGADOS
 
-		return usuario;
+		List<Contacto> grupos = user.getContactos().stream()
+												   .filter(c -> c instanceof Grupo)
+												   .collect(Collectors.toList());
+		
+		List<Contacto> contactosInd = user.getContactos().stream()
+														 .filter(c -> c instanceof ContactoIndividual)
+														 .collect(Collectors.toList());
+		
+		grupos.stream().forEach(g -> TDSGrupoDAO.getInstance().registrarGrupo((Grupo)g));
+		contactosInd.forEach(c -> TDSContactoIndividualDAO.getInstance().registrarContactoIndividual((ContactoIndividual) c));
+		
+		
+		//creamos la entidad
+		Entidad eNuevoUsuario = new Entidad();
+		eNuevoUsuario.setNombre(USUARIO);
+		
+		eNuevoUsuario.setPropiedades(
+				new ArrayList<Propiedad>(Arrays.asList(
+						new Propiedad(NOMBRE, user.getNombre()),
+						new Propiedad(APELLIDOS, user.getApellidos()),
+						new Propiedad(EMAIL, user.getEmail()),
+						new Propiedad(MOVIL, user.getMovil()),
+						new Propiedad(PASSWORD, user.getPassword()),
+						new Propiedad(FECHA_NACIMIENTO, Utils.formatoFecha.format(user.getFechaNacimiento())),
+						new Propiedad(IMAGEN, user.getURLImagen()),
+						new Propiedad(SALUDO, user.getSaludo()),
+						new Propiedad(PREMIUM, String.valueOf(user.isPremium())),
+						new Propiedad(FECHA_REGISTRO, Utils.formatoFecha.format(user.getFechaRegistro())),
+						new Propiedad(CONTACTOS,  obtenerCodigosContactos(contactosInd)), 
+						new Propiedad(GRUPOS,  obtenerCodigosContactos(grupos)) 
+		)));
+		
+		eNuevoUsuario = servPersistencia.registrarEntidad(eNuevoUsuario);
+		user.setId(eNuevoUsuario.getId());
+		PoolDAO.INSTANCE.addObject(user.getId(), user);
 	}
-	//TODO: Añadir las transformaciones para movilm saludo e imagen.
-	private Entidad usuarioToEntidad(Usuario usuario) {
-		Entidad eUsuario = new Entidad();
-		eUsuario.setNombre(USUARIO);
 
-		eUsuario.setPropiedades(new ArrayList<Propiedad>(Arrays.asList(new Propiedad(NOMBRE, usuario.getNombre()),
-				new Propiedad(APELLIDOS, usuario.getApellidos()), new Propiedad(EMAIL, usuario.getEmail()),
-				new Propiedad(MOVIL, usuario.getMovil()), new Propiedad(PASSWORD, usuario.getPassword()),
-				new Propiedad(FECHA_NACIMIENTO, usuario.getFechaNacimiento()), new Propiedad(IMAGEN, usuario.getImagen()),
-				new Propiedad(SALUDO, usuario.getSaludo()), new Propiedad(PREMIUM, usuario.getIsPremium()))));
-		return eUsuario;
+	@Override
+	public void eliminarUsuario(Usuario user) {
+		Optional<Entidad> eUsuario = Optional.ofNullable(servPersistencia.recuperarEntidad(user.getId()));
+		if(!eUsuario.isPresent()) return;
+		
+		List<Contacto> grupos = user.getContactos().stream()
+				   					.filter(c -> c instanceof Grupo)
+				   					.collect(Collectors.toList());
+
+		List<Contacto> contactosInd = user.getContactos().stream()
+								 						 .filter(c -> c instanceof ContactoIndividual)
+								 						 .collect(Collectors.toList());
+		
+		grupos.stream()
+			  .forEach(g -> TDSGrupoDAO.getInstance().eliminarGrupo((Grupo)g));
+		contactosInd.stream()
+					.forEach(c -> TDSContactoIndividualDAO.getInstance().eliminarContactoIndividual((ContactoIndividual) c));
+		
+		servPersistencia.borrarEntidad(eUsuario.get());
+		if(PoolDAO.INSTANCE.contains(user.getId())) PoolDAO.INSTANCE.removeObjet(user.getId());
 	}
-
-	public void create(Usuario usuario) {
-		Entidad eUsuario = this.usuarioToEntidad(usuario);
-		eUsuario = servPersistencia.registrarEntidad(eUsuario);
-		usuario.setId(eUsuario.getId());
-	}
-
-	public boolean delete(Usuario usuario) {
-		Entidad eUsuario;
-		eUsuario = servPersistencia.recuperarEntidad(usuario.getId());
-
-		return servPersistencia.borrarEntidad(eUsuario);
-	}
-
+	
 	/**
 	 * Permite que un Usuario modifique su perfil: password y email
 	 */
-	public void update(Usuario usuario) {
-		Entidad eUsuario = servPersistencia.recuperarEntidad(usuario.getId());
+	
+	@Override
+	public void updateUsuario(Usuario user) {
+		Entidad eUsuario = servPersistencia.recuperarEntidad(user.getId());
+
+		//como tenemos esta parte repetida en varias funciones, creamos funciones a parte para no repetir código?
+		List<Contacto> grupos = user.getContactos().stream()
+					.filter(c -> c instanceof Grupo)
+					.collect(Collectors.toList());
+
+		List<Contacto> contactosInd = user.getContactos().stream()
+			 						 .filter(c -> c instanceof ContactoIndividual)
+			 						 .collect(Collectors.toList());
 
 		for (Propiedad prop : eUsuario.getPropiedades()) {
 			if (prop.getNombre().equals(PASSWORD)) {
-				prop.setValor(usuario.getPassword());
+				prop.setValor(user.getPassword());
 			} else if (prop.getNombre().equals(EMAIL)) {
-				prop.setValor(usuario.getEmail());
+				prop.setValor(user.getEmail());
 			} else if (prop.getNombre().equals(NOMBRE)) {
-				prop.setValor(usuario.getNombre());
+				prop.setValor(user.getNombre());
 			} else if (prop.getNombre().equals(APELLIDOS)) {
-				prop.setValor(usuario.getApellidos());
+				prop.setValor(user.getApellidos());
 			} else if (prop.getNombre().equals(MOVIL)) {
-				prop.setValor(usuario.getMovil());
+				prop.setValor(user.getMovil());
 			} else if (prop.getNombre().equals(FECHA_NACIMIENTO)) {
-				prop.setValor(dateFormat.format(usuario.getFechaNacimiento()));
+				prop.setValor(Utils.formatoFecha.format(user.getFechaNacimiento()));
 			} else if (prop.getNombre().equals(SALUDO)) {
-				prop.setValor(usuario.getSaludo());
+				prop.setValor(user.getSaludo());
 			} else if (prop.getNombre().equals(IMAGEN)) {
-				prop.setValor(usuario.getImagen());
+				prop.setValor(user.getURLImagen());
 			} else if (prop.getNombre().equals(PREMIUM)) {
-				prop.setValor(usuario.getIsPremium());
+				prop.setValor(String.valueOf(user.isPremium()));
+			} else if (prop.getNombre().equals(CONTACTOS)) {
+				prop.setValor(obtenerCodigosContactos(contactosInd));
+			} else if (prop.getNombre().equals(GRUPOS)) {
+				prop.setValor(obtenerCodigosContactos(grupos));
 			}
 			
 			servPersistencia.modificarPropiedad(prop);
 		}
 	}
-
-	public Usuario get(int id) {
+	
+	@Override
+	public Usuario getUsuario(int id) {
+		if(PoolDAO.INSTANCE.contains(id)) return (Usuario) PoolDAO.INSTANCE.getObject(id);
 		Entidad eUsuario = servPersistencia.recuperarEntidad(id);
-
-		return entidadToUsuario(eUsuario);
+		
+		String nombre = servPersistencia.recuperarPropiedadEntidad(eUsuario, NOMBRE);
+		String apellidos = servPersistencia.recuperarPropiedadEntidad(eUsuario, APELLIDOS);
+		String email = servPersistencia.recuperarPropiedadEntidad(eUsuario, EMAIL);
+		String movil = servPersistencia.recuperarPropiedadEntidad(eUsuario, MOVIL);
+		String password = servPersistencia.recuperarPropiedadEntidad(eUsuario, PASSWORD);
+		LocalDate fechaNacimiento = 
+				LocalDate.parse(servPersistencia.recuperarPropiedadEntidad(eUsuario, FECHA_NACIMIENTO), Utils.formatoFecha);
+		String URLImagen = servPersistencia.recuperarPropiedadEntidad(eUsuario, IMAGEN);
+		String saludo = servPersistencia.recuperarPropiedadEntidad(eUsuario, SALUDO);
+		boolean premium = Boolean.parseBoolean(servPersistencia.recuperarPropiedadEntidad(eUsuario, PREMIUM));
+		LocalDate fechaRegistro = LocalDate.parse(servPersistencia.recuperarPropiedadEntidad(eUsuario, FECHA_REGISTRO),
+				Utils.formatoFecha);
+		
+		//falta mirar bien para aplicar patrón builder o similar para agilizar creación de usuarios
+		Usuario user = new Usuario(nombre, apellidos, email, movil, password, fechaNacimiento, URLImagen, saludo, premium, fechaRegistro);
+		PoolDAO.INSTANCE.addObject(id, user);
+		
+		List<Contacto> contactosInd = obtenerContactosIndDeCodigos(
+				servPersistencia.recuperarPropiedadEntidad(eUsuario, CONTACTOS));
+		
+		List<Contacto> grupos = obtenerGruposDeCodigos(
+				servPersistencia.recuperarPropiedadEntidad(eUsuario, GRUPOS));
+		
+		contactosInd.stream().forEach(user::addContacto);
+		grupos.stream().forEach(user::addContacto);
+		
+		return user;
 	}
 
+	@Override
 	public List<Usuario> getAll() {
+		List<Usuario> usuarios = new LinkedList<Usuario>();
 		List<Entidad> entidades = servPersistencia.recuperarEntidades(USUARIO);
 
-		List<Usuario> usuarios = new LinkedList<Usuario>();
-		for (Entidad eUsuario : entidades) {
-			usuarios.add(get(eUsuario.getId()));
-		}
-
+		entidades.stream()
+				 .forEach(e -> usuarios.add(getUsuario(e.getId())));
+		
+	
 		return usuarios;
 	}
+
+	
+	private String obtenerCodigosContactos(List<Contacto> cont) {
+			
+			return cont.stream().map(c -> String.valueOf(c.getId())).reduce("", (i, c) -> i + c + " ").trim();
+	}
+	
+	private List<Contacto> obtenerContactosIndDeCodigos(String codigos) {
+	    return Arrays.stream(codigos.split(" "))
+	                 .filter(c -> !c.isEmpty()) 
+	                 .map(c -> TDSContactoIndividualDAO.getInstance().getContactoIndividual(Integer.parseInt(c)))
+	                 .collect(Collectors.toList()); 
+	}
+	
+	private List<Contacto> obtenerGruposDeCodigos(String codigos) {
+	    return Arrays.stream(codigos.split(" "))
+	                 .filter(c -> !c.isEmpty()) 
+	                 .map(c -> TDSContactoIndividualDAO.getInstance().getContactoIndividual(Integer.parseInt(c)))
+	                 .collect(Collectors.toList()); 
+	}
+	
+	
+
 
 }

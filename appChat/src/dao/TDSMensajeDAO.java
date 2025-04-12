@@ -50,7 +50,7 @@ public class TDSMensajeDAO implements MensajeDAO {
 				new ArrayList<Propiedad>(Arrays.asList(
 						new Propiedad(TEXTO, msj.getTexto()),
 						new Propiedad(EMOTICONO, String.valueOf(msj.getEmoticono())),
-						new Propiedad(FECHA, msj.getFecha().format(Utils.formatoFecha)),
+						new Propiedad(FECHA, msj.getFecha().format(Utils.formatoFechaHora)),
 						new Propiedad(TIPO, String.valueOf(msj.getTipo()))
 						)));
 		
@@ -102,7 +102,7 @@ public class TDSMensajeDAO implements MensajeDAO {
 		String texto = servPersistencia.recuperarPropiedadEntidad(eMensaje, TEXTO);
 		int emoticono = Integer.parseInt(servPersistencia.recuperarPropiedadEntidad(eMensaje, EMOTICONO));
 		String fecha = servPersistencia.recuperarPropiedadEntidad(eMensaje, FECHA);
-		LocalDateTime fechaMsj = LocalDateTime.parse(fecha, Utils.formatoFecha);
+		LocalDateTime fechaMsj = LocalDateTime.parse(fecha, Utils.formatoFechaHora);
 		int tipo = Integer.parseInt(servPersistencia.recuperarPropiedadEntidad(eMensaje, TIPO));
 		
 		Mensaje mensaje = new Mensaje(texto, emoticono, fechaMsj, tipo);

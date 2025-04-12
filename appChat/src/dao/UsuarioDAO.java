@@ -1,15 +1,14 @@
 package dao;
 
 import java.util.List;
-
 import dominio.Usuario;
 
 public interface UsuarioDAO {
 	
-	void create(Usuario usuario);
-	boolean delete(Usuario usuario);
-	void update(Usuario usuario);
-	Usuario get(int id);
+	void registrarUsuario(Usuario usuario);
+	void eliminarUsuario(Usuario usuario);
+	void updateUsuario(Usuario usuario);
+	Usuario getUsuario(int id);
 	List<Usuario> getAll();
 	
 }
