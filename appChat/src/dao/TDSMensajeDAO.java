@@ -87,11 +87,9 @@ public class TDSMensajeDAO implements MensajeDAO {
 			} else if (prop.getNombre().equals(TIPO)) {
 				prop.setValor(String.valueOf(msj.getTipo()));
 			}
+			servPersistencia.modificarPropiedad(prop);
 		}
 		
-		servPersistencia.modificarEntidad(eMensaje);
-		PoolDAO.INSTANCE.addObject(msj.getId(), msj);//addObject también sirve para actualizar el pool
-		//no 100%seguro de si hay que actualizar le pool pero diría que sí.
 		
 	}
 */
