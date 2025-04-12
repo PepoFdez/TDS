@@ -3,6 +3,7 @@ package dominio;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class Grupo extends Contacto {
@@ -15,17 +16,20 @@ public class Grupo extends Contacto {
 				.map(miembro -> (Contacto) miembro)
 				.collect(Collectors.toCollection(HashSet::new));
 	}
-	
 	//creamos un grupo con mensajes para la persistencia
 	//asumimos que no se han añadido contactos no agregables
-	public Grupo(String nombre, HashSet<Contacto> miembros, LinkedList<Mensaje> mensajes) {
+	public Grupo(String nombre, List<Mensaje> mensajes) {
 		super(nombre, mensajes);
-		this.miembros = miembros;
+		this.miembros = new HashSet<Contacto>();
 	}
 	
 	public Boolean addMiembro(AgregableGrupos miembro) {
 		return this.miembros.add((Contacto) miembro);
     }
+	
+	public List<Contacto> getMiembros() {
+		return new LinkedList<>(miembros);
+	}
 	
 
 	public boolean removeMiembro(Contacto miembro) {
