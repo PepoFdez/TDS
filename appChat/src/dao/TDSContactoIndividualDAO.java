@@ -76,8 +76,8 @@ public class TDSContactoIndividualDAO implements ContactoIndividualDAO {
 		contInd.getMensajesEnviados().stream()
 										.forEach(TDSMensajeDAO.getInstance()::eliminarMensaje);
 		servPersistencia.borrarEntidad(eContInd.get());
-		if (PoolDAO.INSTANCE.contains(eContInd.get().getId())) PoolDAO.INSTANCE.removeObjet(eContInd.get().getId());
-		
+		if (PoolDAO.INSTANCE.contains(contInd.getId())) PoolDAO.INSTANCE.removeObjet(eContInd.get().getId());
+		//supongo que mejor no usar la entidad que acabamos de borrar
 	}
 
 	//consideramos necesario comprobar que para modificar deba existir?
@@ -137,9 +137,9 @@ public class TDSContactoIndividualDAO implements ContactoIndividualDAO {
 	
 	private List<Mensaje> obtenerMensajesDeCodigos(String codigos) {
 	    return Arrays.stream(codigos.split(" "))
-	                 .filter(c -> !c.isEmpty()) // Filter out empty strings
-	                 .map(c -> TDSMensajeDAO.getInstance().getMensaje(Integer.parseInt(c))) // Convert to Mensaje
-	                 .collect(Collectors.toList()); // Collect into a List
+	                 .filter(c -> !c.isEmpty()) 
+	                 .map(c -> TDSMensajeDAO.getInstance().getMensaje(Integer.parseInt(c)))
+	                 .collect(Collectors.toList()); 
 	}
 
 	
