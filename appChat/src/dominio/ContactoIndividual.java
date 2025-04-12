@@ -17,7 +17,14 @@ public class ContactoIndividual extends Contacto implements AgregableGrupos {
 		super(nombre, mensajes);
 		this.usuario = usuario;
 	}
-	//sin get/set usuario. Tiene sentido cambiar el usuario¿?¿ cambiar el nombre más bien, no?
+	//para la persistencia
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
+	}
+	
+	public Usuario getUsuario() {
+		return usuario;
+	}
 	
 	public String getInfo() {
         return "Nombre: " + this.getNombre() + "\n" +
