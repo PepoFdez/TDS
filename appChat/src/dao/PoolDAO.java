@@ -25,4 +25,8 @@ public enum PoolDAO {
 		return pool.containsKey(id);
 	}
 	
+	public void removeObjet(int id) {
+		pool.remove(id);
+	}
+	
 }
