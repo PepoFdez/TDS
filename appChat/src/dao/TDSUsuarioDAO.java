@@ -229,7 +229,7 @@ public final class TDSUsuarioDAO implements UsuarioDAO {
 	private List<Contacto> obtenerGruposDeCodigos(String codigos) {
 	    return Arrays.stream(codigos.split(" "))
 	                 .filter(c -> !c.isEmpty()) 
-	                 .map(c -> TDSContactoIndividualDAO.getInstance().getContactoIndividual(Integer.parseInt(c)))
+	                 .map(c -> TDSGrupoDAO.getInstance().getGrupo(Integer.parseInt(c)))
 	                 .collect(Collectors.toList()); 
 	}
 	
