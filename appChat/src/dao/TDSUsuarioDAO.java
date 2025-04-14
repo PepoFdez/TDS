@@ -36,7 +36,7 @@ public final class TDSUsuarioDAO implements UsuarioDAO {
 	private static final String IMAGEN = "imagen";
 	private static final String SALUDO = "saludo";
 	private static final String PREMIUM = "premium";
-	private static final String CONTACTOS = "contactos";
+	private static final String CONTACTOS = "contactosIndiv";
 	private static final String GRUPOS = "grupos";
 	private static final String FECHA_REGISTRO = "fechaRegistro";
 
@@ -187,6 +187,7 @@ public final class TDSUsuarioDAO implements UsuarioDAO {
 		
 		//falta mirar bien para aplicar patrón builder o similar para agilizar creación de usuarios
 		Usuario user = new Usuario(nombre, apellidos, email, movil, password, fechaNacimiento, URLImagen, saludo, premium, fechaRegistro);
+		user.setId(id);
 		PoolDAO.INSTANCE.addObject(id, user);
 		
 		List<Contacto> contactosInd = obtenerContactosIndDeCodigos(

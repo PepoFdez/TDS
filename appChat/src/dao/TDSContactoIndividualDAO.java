@@ -81,6 +81,8 @@ public class TDSContactoIndividualDAO implements ContactoIndividualDAO {
 	}
 
 	//consideramos necesario comprobar que para modificar deba existir?
+	
+	//mantenemos actualizar el Usuario asociado al contacto?
 	@Override
 	public void updateContactoIndividual(ContactoIndividual contInd) {
 		Entidad eContInd = servPersistencia.recuperarEntidad(contInd.getId());
@@ -88,7 +90,11 @@ public class TDSContactoIndividualDAO implements ContactoIndividualDAO {
 		for(Propiedad prop : eContInd.getPropiedades()) {
 			if(prop.getNombre().equals(NOMBRE)) {
 				prop.setValor(contInd.getNombre());
-			} //según diseño actual, no se podrian modificar el Usuario ni los mensajes.
+			} else if (prop.getNombre().equals(USUARIO)) {
+				prop.setValor(String.valueOf(contInd.getUsuario().getId()));
+			} else if (prop.getNombre().equals(MENSAJES)) {
+				prop.setValor(obtenerCodigosMensajes(contInd.getMensajesEnviados()));
+			}
 			
 			servPersistencia.modificarPropiedad(prop);
 		}

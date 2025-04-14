@@ -18,7 +18,7 @@ public enum RepositorioUsuarios {
 	private RepositorioUsuarios (){
 		usuariosPorID = new HashMap<Integer, Usuario>();
 		usuariosPorMovil = new HashMap<String, Usuario>();
-		
+		//facil de aplicar aquí streams
 		try {
 			factoria = FactoriaDAO.getInstancia();
 			
