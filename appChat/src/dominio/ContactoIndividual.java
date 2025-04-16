@@ -6,10 +6,12 @@ import java.util.LinkedList;
 public class ContactoIndividual extends Contacto implements AgregableGrupos {
 
 	private Usuario usuario;
+	private String URLImagen;
 	
 	public ContactoIndividual(Usuario usuario, String nombre) {
 		super(nombre);
 		this.usuario = usuario;
+		this.URLImagen = usuario.getURLImagen();
 	}
 	
 	//constructor para cuando usemos la persistencia
@@ -25,11 +27,12 @@ public class ContactoIndividual extends Contacto implements AgregableGrupos {
 	public Usuario getUsuario() {
 		return usuario;
 	}
+
 	
-	public String getInfo() {
-        return "Nombre: " + this.getNombre() + "\n" +
-        		"Telefono: " + this.usuario.getMovil() + "\n" ;
-    }
+	@Override
+	public String getURLImagen() {
+		return URLImagen;
+	}
 	
 	
 

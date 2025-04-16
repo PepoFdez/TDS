@@ -14,7 +14,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -258,21 +261,15 @@ public class VentanaPrincipal {
         
         // Imagen del contacto
         JLabel imageLabel = new JLabel();
-        try {
-            ImageIcon icono;
-            if (contacto.getImagen() != null && !contacto.getImagen().isEmpty()) {
-                URL url = new URL(contacto.getImagen());
-                icono = new ImageIcon(url);
-            } else {
-                icono = new ImageIcon("phpphotos/pfp.jpg");
-            }
-            Image imgEscalada = icono.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
-            imageLabel.setIcon(new ImageIcon(imgEscalada));
-        } catch (Exception e) {
-            ImageIcon icono = new ImageIcon("phpphotos/pfp.jpg");
-            Image imgEscalada = icono.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+        
+        Image imgEscalada = getImagenContactoEscalada(contacto);
+        if(imgEscalada != null) imageLabel.setIcon(new ImageIcon(imgEscalada));
+        else {
+        	ImageIcon icono = new ImageIcon("phpphotos/pfp.jpg");
+            imgEscalada = icono.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
             imageLabel.setIcon(new ImageIcon(imgEscalada));
         }
+        
         
         // Nombre del contacto
         JLabel nameLabel = new JLabel(contacto.getNombre());
@@ -295,40 +292,55 @@ public class VentanaPrincipal {
         return panel;
     }
     
-    private void seleccionarContacto(Contacto contacto) {
+    private Image getImagenContactoEscalada(Contacto contacto) {
+    	ImageIcon icono;
+        String URLimagenContacto = Controlador.INSTANCE.getURLImagenContacto(contacto);
+        try {
+        	if (URLimagenContacto != null && !URLimagenContacto.isEmpty()) {
+                URL url = new URL(URLimagenContacto);
+                icono = new ImageIcon(url);
+            } else {
+                icono = new ImageIcon("phpphotos/pfp.jpg");
+            }
+            Image imgEscalada = icono.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+            
+    		return imgEscalada;
+		} catch (Exception e) {
+			System.err.println("Error al cargar la imagen del contacto: " + e.getMessage());
+			return  null;
+		}
+        
+	}
+
+	private void seleccionarContacto(Contacto contacto) {
         this.contactoSeleccionado = contacto;
         
         // Actualizar panel de información del contacto
         currentContactLabel.setText(contacto.getNombre());
         
-        try {
-            ImageIcon icono;
-            if (contacto.getImagen() != null && !contacto.getImagen().isEmpty()) {
-                URL url = new URL(contacto.getImagen());
-                icono = new ImageIcon(url);
-            } else {
-                icono = new ImageIcon("phpphotos/pfp.jpg");
-            }
-            Image imgEscalada = icono.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-            currentContactImage.setIcon(new ImageIcon(imgEscalada));
-        } catch (Exception e) {
-            ImageIcon icono = new ImageIcon("phpphotos/pfp.jpg");
-            Image imgEscalada = icono.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+        Image imgEscalada = getImagenContactoEscalada(contacto);
+        if (imgEscalada!= null) currentContactImage.setIcon(new ImageIcon(imgEscalada));
+        else {
+        	ImageIcon icono = new ImageIcon("phpphotos/pfp.jpg");
+            imgEscalada = icono.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
             currentContactImage.setIcon(new ImageIcon(imgEscalada));
         }
+        
         
         // Cargar mensajes del chat
         cargarMensajes(contacto);
     }
     
     private void cargarMensajes(Contacto contacto) {
-        //LinkedList<Mensaje> mensajes = Controlador.INSTANCE.getMensajesConContacto(contacto.getId());
+    	
+        List<Object> contenidoMensajes = Controlador.INSTANCE.getContenidoMensajes(contacto);
+        List<String> infoMensajes = Controlador.INSTANCE.getInfoMensajes(contacto);
         
+    	
         StringBuilder chatText = new StringBuilder();
         for (Mensaje mensaje : mensajes) {
             String formattedMessage = String.format("[%s] %s: %s\n", 
                     mensaje.getFechaHora(), 
-                    mensaje.getRemitente().equals(Controlador.INSTANCE.getNombreUsuario()) ? "Tú" : contacto.getNombre(),
                     mensaje.getContenido());
             chatText.append(formattedMessage);
         }

@@ -2,6 +2,7 @@ package dominio;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class Contacto {
 
@@ -43,7 +44,23 @@ public abstract class Contacto {
 		this.mensajes.add(mensaje);
 	}
 	
-	public abstract String getInfo();
+	public String getMensajesFormateados() {
+		
+		return null;
+	} 
+	
+	public abstract String getURLImagen();
+	
+	public  List<Object> getTextoMensajesEnviados(){
+		return mensajes.stream()
+			    .map(m -> m.getTexto().isEmpty() ? m.getEmoticono() : m.getTexto())
+			    .collect(Collectors.toList());
+	}
+	public List<String> getInfoMensajesEnviados() {
+		return mensajes.stream()
+				.map(m -> m.getInfoFormateada())
+				.collect(Collectors.toList());
+	};
 	
 	
 	

@@ -51,6 +51,13 @@ public enum Controlador {
 	public Usuario getUsuarioActual() {
 		return usuarioActual;
 	}
+	
+	public String getNombreUsuario() {
+		if (usuarioActual != null) {
+			return usuarioActual.getNombre();
+		}
+		return null;
+	}
 
 	public boolean esUsuarioRegistrado(String movil) {
 		return RepositorioUsuarios.INSTANCE.findUsuario(movil) != null;
@@ -102,5 +109,19 @@ public enum Controlador {
 	public LinkedList<Contacto> getContactosUsuario() {
 		this.usuarioActual.getContactos();
 		return new LinkedList<Contacto>();
+	}
+
+	public String getURLImagenContacto(Contacto contacto) {
+		
+		return contacto.getURLImagen();
+	}
+
+	public List<Object> getContenidoMensajes(Contacto contacto) {
+		return contacto.getTextoMensajesEnviados();
+		
+	}
+
+	public List<String> getInfoMensajes(Contacto contacto) {
+		return contacto.getInfoMensajesEnviados();
 	}
 }

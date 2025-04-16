@@ -3,9 +3,11 @@ package dominio;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import utils.Utils;
+
 
 public class Mensaje {
-
+	
 	private int id;
 	private final String texto;
 	private final int emoticono;
@@ -56,8 +58,8 @@ public class Mensaje {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 		return fecha.format(formatter);
 	}
-	public String getContenido() {
-		if (texto=="") return String.valueOf(emoticono);
-		else return texto;
+	
+	public String getInfoFormateada() {
+		return this.getHora() + Utils.SEPARATOR + String.valueOf(tipo);
 	}
 }

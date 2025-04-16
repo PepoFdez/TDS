@@ -9,12 +9,16 @@ import java.util.stream.Collectors;
 public class Grupo extends Contacto {
 
 	private HashSet<Contacto> miembros; //para asegurarnos desde la implementación que no hay repes
+	private String URLImagen;
 	
 	public Grupo(String nombre, AgregableGrupos...miembros) { //aseguramos que sólo se metan miembros que sean contactos individuales
 		super(nombre);//usamos este stream en lugar de un forEach.
 		this.miembros = Arrays.stream(miembros)
 				.map(miembro -> (Contacto) miembro)
 				.collect(Collectors.toCollection(HashSet::new));
+		this.URLImagen = ""; //por defecto no tiene imagen
+		
+		
 	}
 	//creamos un grupo con mensajes para la persistencia
 	//asumimos que no se han añadido contactos no agregables
@@ -50,17 +54,17 @@ public class Grupo extends Contacto {
 			miembro.addMensaje(mensaje);
 		}
 	}
-	
 
-	@Override
-	public String getInfo() {
-	    StringBuilder info = new StringBuilder("Grupo: \n");
-	    for (Contacto miembro : miembros) {
-	        info.append(miembro.getInfo()).append("\n");
-	    }
-	    return info.toString();
+	public void setURLImagen(String urlImagen) {
+		this.URLImagen = urlImagen;
 	}
-
+	
+	@Override
+	public String getURLImagen() {
+		return URLImagen;
+	}
+	
+	
 	
 	
 }
