@@ -217,6 +217,19 @@ public class Usuario {
             return new Usuario(this);
         }
     }
+    
+    //MIRAR ESTO
+	public boolean tieneContactoConMovil(String movil2) {
+		 for (Contacto contacto : contactos) {
+		        if (contacto instanceof ContactoIndividual) { //ESTO HABRÁ QUE VER SI HACE ASÍ O NO
+		            ContactoIndividual contactoIndividual = (ContactoIndividual) contacto;
+		            if (contactoIndividual.getUsuario().getMovil().equals(movil)) {
+		                return true;
+		            }
+		        }
+		    }
+		    return false;
+	}
 	
 }
 

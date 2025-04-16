@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.JTextField;
+
 import dao.ContactoIndividualDAO;
 import dao.DAOException;
 import dao.FactoriaDAO;
@@ -14,6 +16,8 @@ import dao.MensajeDAO;
 import dominio.Usuario;
 import utils.Utils;
 import dominio.Contacto;
+import dominio.ContactoIndividual;
+import dominio.Mensaje;
 import dominio.RepositorioUsuarios;
 
 public enum Controlador {
@@ -123,5 +127,36 @@ public enum Controlador {
 
 	public List<String> getInfoMensajes(Contacto contacto) {
 		return contacto.getInfoMensajesEnviados();
+	}
+
+	public void enviarMensaje(int id, String contenido) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void enviarEmoji(int id, int emojiId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public LinkedList<Contacto> buscarContactos(String textoBusqueda) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public LinkedList<Mensaje> buscarMensajes(String texto, String telefono, Integer contactoId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String crearContacto(String nombre, String movil) {		
+		//Comprobamos que no existe un contacto con el número 
+		if (this.usuarioActual.tieneContactoConMovil(movil)) {
+		    return "Ya existe un contacto con este número de móvil.";
+		} else {
+			Contacto contacto = new ContactoIndividual(RepositorioUsuarios.INSTANCE.findUsuario(movil), nombre);
+			this.usuarioActual.addContacto(contacto);
+			return "Contacto creado correctamente.";
+		}
 	}
 }

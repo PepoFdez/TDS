@@ -85,7 +85,6 @@ public class Buscador {
 
         cbContacto = new JComboBox<>();
         cbContacto.setFont(new Font("Arial", Font.PLAIN, 14));
-        cbContacto.addItem(new ContactoIndividual(new Usuario("Julio","Fern","asd","213","213",LocalDate.now(),"A","a",false,LocalDate.now()), "Prueba"));
         cargarContactos();
         gbc.gridx = 1; gbc.gridy = 2;
         gbc.weightx = 1.0;
@@ -164,7 +163,7 @@ public class Buscador {
                 String resultado = String.format("[%s] %s: %s", 
                     mensaje.getFecha(), 
                     remitente,
-                    mensaje.getContenido());
+                    mensaje.getTexto());
                 
                 modeloMensajes.addElement(resultado);
             }

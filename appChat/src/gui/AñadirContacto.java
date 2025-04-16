@@ -10,7 +10,12 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class AñadirContacto {
+public class AñadirContacto extends JDialog{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	private JFrame frame;
 	
@@ -36,6 +41,11 @@ public class AñadirContacto {
 	/**
 	 * Initialize the contents of the frame.
 	 */
+	
+	public void mostrarVentana( ) {
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
+	}
 	
 	private void crearPanelAnadirContacto() {
 		frame = new JFrame();
@@ -141,15 +151,18 @@ public class AñadirContacto {
 	                    boolean registrado = false;
 	                    registrado = Controlador.INSTANCE.esUsuarioRegistrado(txtUsuario.getText());
 	                    if (registrado) {
-	                        /*JOptionPane.showMessageDialog(AñadirContacto.this, "Contacto registrado correctamente.",
-	                                "Registro", JOptionPane.INFORMATION_MESSAGE);
-	                         */
+	                    	//Si ya existe un contacto con ese número se devuele una string que lo diga
+	                    	//Si no, se devuelve una string que diga que se ha generado correctamente.
+	                    	//Se puede registrar un contacto con el número del usuario actual
+	                    	String info = Controlador.INSTANCE.crearContacto(txtNombre.getText(), txtUsuario.getText());
+	                    	JOptionPane.showMessageDialog(AñadirContacto.this, info,
+		                              "Contacto", JOptionPane.ERROR_MESSAGE);
 	                        VentanaPrincipal mainW = new VentanaPrincipal();
 	                        mainW.mostrarVentana();
-	                        //Registro.this.dispose();
+	                        AñadirContacto.this.dispose();
 	                    } else {
-	                        /*JOptionPane.showMessageDialog(Registro.this, "No se ha podido llevar a cabo el registro.\n",
-	                              "Registro", JOptionPane.ERROR_MESSAGE);*/
+	                        JOptionPane.showMessageDialog(AñadirContacto.this, "El teléfono no se encuentre registrado.\n",
+	                              "Contacto", JOptionPane.ERROR_MESSAGE);
 	                        //Registro.this.setTitle("Login Gestor Eventos");
 	                    }
 	                }
@@ -162,7 +175,7 @@ public class AñadirContacto {
             public void actionPerformed(ActionEvent e) {
                 VentanaPrincipal mainW = new VentanaPrincipal();
                 mainW.mostrarVentana();
-                //AñadirContacto.this.dispose();
+                AñadirContacto.this.dispose();
             }
         });
     }

@@ -98,10 +98,8 @@ public class VentanaContactos {
     }
 
     private void añadirContacto() {
-        String nuevoContacto = JOptionPane.showInputDialog(frame, "Ingrese el nombre del contacto:", "Añadir Contacto", JOptionPane.PLAIN_MESSAGE);
-        if (nuevoContacto != null && !nuevoContacto.trim().isEmpty()) {
-            modeloContactos.addElement(nuevoContacto.trim());
-        }
+        AñadirContacto anadirContacto = new AñadirContacto();
+        anadirContacto.mostrarVentana();
     }
 
     private void añadirGrupo() {
