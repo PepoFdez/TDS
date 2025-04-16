@@ -22,6 +22,9 @@ public class Usuario {
 	private final Set<Contacto> contactos = new HashSet<Contacto>(); //necesario definir los .equals y hashCode, pero aseguramos no duplicidad
 	//podemos usar listas auxiliares para v.acceso
 	
+	/*
+	 * Comento los constructores para probar a aplicar el patrón builder, usuario tiene muchos parámetros.
+	 * 
 	//completo para usarlo en la persistencia
 	public Usuario(String nombre, String apellidos, String email, String movil, String password,
 			LocalDate fechaNacimiento, String URLimagen, String saludo, boolean premium, LocalDate fechaRegistro) {
@@ -39,12 +42,29 @@ public class Usuario {
 		
 	}
 	
+	
+	
 	//por defecto un usuario no es premium, sino que se activa después, ni tendrá contactos
 	public Usuario(String nombre, String apellidos, String email, String movil, String password,
 			LocalDate fechaNacimiento, String URLimagen, String saludo) {
 		this(nombre, apellidos, email, movil, password, fechaNacimiento, URLimagen, saludo, false, LocalDate.now());
 	}
+	
+	*/
 
+	private Usuario(Builder builder) {
+        this.nombre = builder.nombre;
+        this.apellidos = builder.apellidos;
+        this.email = builder.email;
+        this.movil = builder.movil;
+        this.password = builder.password;
+        this.fechaNacimiento = builder.fechaNacimiento;
+        this.URLimagen = builder.URLimagen;
+        this.saludo = builder.saludo;
+        this.premium = builder.premium;
+        this.fechaRegistro = builder.fechaRegistro;
+    }
+	
 	public int getId() {
 		return id;
 	}
@@ -147,7 +167,56 @@ public class Usuario {
 		this.contactos.remove(contacto);
 	}
 	
-	
+	 // Clase Builder interna
+    public static class Builder {
+        private String nombre;
+        private String apellidos;
+        private String email;
+        private String movil;
+        private String password;
+        private LocalDate fechaNacimiento;
+        private String URLimagen = "";
+        private String saludo = "";
+        private boolean premium = false;
+        private LocalDate fechaRegistro = LocalDate.now();
+
+        public Builder(String nombre, String apellidos, String email, String movil, String password, LocalDate fechaNacimiento) {
+            this.nombre = nombre;
+            this.apellidos = apellidos;
+            this.email = email;
+            this.movil = movil;
+            this.password = password;
+            this.fechaNacimiento = fechaNacimiento;
+        }
+
+        public Builder addURLimagen(String URLimagen) {
+            this.URLimagen = URLimagen;
+            return this;
+        }
+
+        public Builder addSaludo(String saludo) {
+            this.saludo = saludo;
+            return this;
+        }
+
+        public Builder addPremium(boolean premium) {
+            this.premium = premium;
+            return this;
+        }
+
+        public Builder addFechaRegistro(LocalDate fechaRegistro) {
+            this.fechaRegistro = fechaRegistro;
+            return this;
+        }
+
+        public Usuario build() {
+            // Validaciones de seguridad
+            if (nombre == null ||apellidos==null || email == null || movil == null || password == null || fechaNacimiento == null) {
+                throw new IllegalArgumentException("Faltan campos obligatorios");
+            }
+            return new Usuario(this);
+        }
+    }
 	
 }
 

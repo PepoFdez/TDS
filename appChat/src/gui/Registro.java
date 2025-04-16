@@ -347,7 +347,7 @@ public class Registro extends JDialog {
                     boolean registrado = false;
                     registrado = Controlador.INSTANCE.registrarUsuario(txtNombre.getText(), txtApellidos.getText(),
                             txtEmail.getText(), txtUsuario.getText(), new String(txtPassword.getPassword()),
-                            txtFechaNacimiento.getText(), txtSaludo.getText(), txtImagen.getText(), "N");
+                            txtFechaNacimiento.getText(), txtSaludo.getText(), txtImagen.getText());
                     if (registrado) {
                         JOptionPane.showMessageDialog(Registro.this, "Usuario registrado correctamente.",
                                 "Registro", JOptionPane.INFORMATION_MESSAGE);

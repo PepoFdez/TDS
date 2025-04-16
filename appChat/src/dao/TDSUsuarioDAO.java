@@ -186,7 +186,20 @@ public final class TDSUsuarioDAO implements UsuarioDAO {
 				Utils.formatoFecha);
 		
 		//falta mirar bien para aplicar patrón builder o similar para agilizar creación de usuarios
-		Usuario user = new Usuario(nombre, apellidos, email, movil, password, fechaNacimiento, URLImagen, saludo, premium, fechaRegistro);
+		//Usuario user = new Usuario(nombre, apellidos, email, movil, password, fechaNacimiento, URLImagen, saludo, premium, fechaRegistro);
+		Usuario.Builder builderUser = new Usuario.Builder(nombre, 
+													  apellidos,
+													  email,
+													  movil,
+													  password,
+													  fechaNacimiento);
+		builderUser.addURLimagen(URLImagen);
+		builderUser.addSaludo(saludo);
+		builderUser.addPremium(premium);
+		builderUser.addFechaRegistro(fechaRegistro);
+		
+		Usuario user = builderUser.build();
+				
 		user.setId(id);
 		PoolDAO.INSTANCE.addObject(id, user);
 		
