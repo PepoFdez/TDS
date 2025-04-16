@@ -1,120 +1,180 @@
 package gui;
 
+import controlador.Controlador;
+import dominio.Contacto;
+import dominio.ContactoIndividual;
+import dominio.Mensaje;
+import dominio.Usuario;
+
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.time.LocalDate;
+import java.util.LinkedList;
 
 public class Buscador {
 
-	private JFrame frame;
-	private JTextField txtTexto, txtTelefono, txtContacto;
+    private JFrame frame;
+    private JTextField txtTexto, txtTelefono;
+    private JComboBox<Contacto> cbContacto;
     private JButton btnBuscar;
     private DefaultListModel<String> modeloMensajes;
     private JList<String> listaMensajes;
 
-	/**
-	 * Launch the application.
-	 */
+    public Buscador() {
+        initialize();
+    }
 
-	/**
-	 * Create the application.
-	 */
-	public Buscador() {
-		initialize();
-	}
+    public void mostrarVentana() {
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
 
-	public void mostrarVentana() {
-		frame.setLocationRelativeTo(null);
-		frame.setVisible(true);
-	}
-	/**
-	 * Initialize the contents of the frame.
-	 */
-	private void initialize() {
-		frame = new JFrame("Buscador de Mensajes");
+    private void initialize() {
+        frame = new JFrame("Buscador de Mensajes");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setSize(700, 500);
-        frame.setLayout(new BorderLayout());
+        frame.setSize(800, 600);
+        frame.setMinimumSize(new Dimension(600, 400));
+        frame.setLayout(new BorderLayout(10, 10));
+        frame.getContentPane().setBackground(new Color(240, 240, 240));
 
-     // Panel superior: Búsqueda
+        // Panel superior: Búsqueda
         JPanel panelBusqueda = new JPanel(new GridBagLayout());
-        panelBusqueda.setBorder(new TitledBorder("Buscar"));
+        panelBusqueda.setBorder(BorderFactory.createCompoundBorder(
+            new TitledBorder("Criterios de Búsqueda"),
+            BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+        panelBusqueda.setBackground(Color.WHITE);
+        
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         // Campo de texto
-        JLabel lblTexto = new JLabel("Texto:");
-        gbc.gridx = 0; gbc.gridy = 0; // Position at column 0, row 0
+        JLabel lblTexto = new JLabel("Texto del mensaje:");
+        lblTexto.setFont(new Font("Arial", Font.PLAIN, 14));
+        gbc.gridx = 0; gbc.gridy = 0;
         panelBusqueda.add(lblTexto, gbc);
 
-        txtTexto = new JTextField(15);
-        gbc.gridx = 1; gbc.gridy = 0; // Position at column 1, row 0
+        txtTexto = new JTextField(20);
+        txtTexto.setFont(new Font("Arial", Font.PLAIN, 14));
+        gbc.gridx = 1; gbc.gridy = 0;
+        gbc.weightx = 1.0;
         panelBusqueda.add(txtTexto, gbc);
 
         // Campo de teléfono
-        JLabel lblTelefono = new JLabel("Teléfono:");
-        gbc.gridx = 0; gbc.gridy = 1; // Position at column 0, row 1
+        JLabel lblTelefono = new JLabel("Teléfono relacionado:");
+        lblTelefono.setFont(new Font("Arial", Font.PLAIN, 14));
+        gbc.gridx = 0; gbc.gridy = 1;
+        gbc.weightx = 0.0;
         panelBusqueda.add(lblTelefono, gbc);
 
-        txtTelefono = new JTextField(15);
-        gbc.gridx = 1; gbc.gridy = 1; // Position at column 1, row 1
+        txtTelefono = new JTextField(20);
+        txtTelefono.setFont(new Font("Arial", Font.PLAIN, 14));
+        gbc.gridx = 1; gbc.gridy = 1;
+        gbc.weightx = 1.0;
         panelBusqueda.add(txtTelefono, gbc);
 
-        // Campo de contacto
+        // ComboBox de contactos
         JLabel lblContacto = new JLabel("Contacto:");
-        gbc.gridx = 0; gbc.gridy = 2; // Position at column 0, row 2
+        lblContacto.setFont(new Font("Arial", Font.PLAIN, 14));
+        gbc.gridx = 0; gbc.gridy = 2;
+        gbc.weightx = 0.0;
         panelBusqueda.add(lblContacto, gbc);
 
-        txtContacto = new JTextField(15);
-        gbc.gridx = 1; gbc.gridy = 2; // Position at column 1, row 2
-        panelBusqueda.add(txtContacto, gbc);
+        cbContacto = new JComboBox<>();
+        cbContacto.setFont(new Font("Arial", Font.PLAIN, 14));
+        cbContacto.addItem(new ContactoIndividual(new Usuario("Julio","Fern","asd","213","213",LocalDate.now(),"A","a",false,LocalDate.now()), "Prueba"));
+        cargarContactos();
+        gbc.gridx = 1; gbc.gridy = 2;
+        gbc.weightx = 1.0;
+        panelBusqueda.add(cbContacto, gbc);
 
         // Botón Buscar
-        btnBuscar = new JButton("Buscar");
-        gbc.gridx = 1; gbc.gridy = 3; // Position at column 1, row 3
+        btnBuscar = new JButton("Buscar Mensajes");
+        btnBuscar.setFont(new Font("Arial", Font.BOLD, 14));
+        btnBuscar.setBackground(new Color(70, 130, 180));
+        btnBuscar.setForeground(Color.WHITE);
+        btnBuscar.setFocusPainted(false);
+        gbc.gridx = 1; gbc.gridy = 3;
+        gbc.anchor = GridBagConstraints.EAST;
         panelBusqueda.add(btnBuscar, gbc);
 
         frame.add(panelBusqueda, BorderLayout.NORTH);
 
         // Panel central: Resultados
         JPanel panelResultados = new JPanel(new BorderLayout());
-        panelResultados.setBorder(new TitledBorder("Resultados"));
+        panelResultados.setBorder(BorderFactory.createCompoundBorder(
+            new TitledBorder("Resultados de la Búsqueda"),
+            BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+        panelResultados.setBackground(Color.WHITE);
 
         modeloMensajes = new DefaultListModel<>();
         listaMensajes = new JList<>(modeloMensajes);
-        panelResultados.add(new JScrollPane(listaMensajes), BorderLayout.CENTER);
+        listaMensajes.setFont(new Font("Arial", Font.PLAIN, 14));
+        listaMensajes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        
+        JScrollPane scrollPane = new JScrollPane(listaMensajes);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        panelResultados.add(scrollPane, BorderLayout.CENTER);
 
         frame.add(panelResultados, BorderLayout.CENTER);
 
         // Acción del botón Buscar
-        btnBuscar.addActionListener(e -> realizarBusqueda());
-
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-	}
-	
-	private void realizarBusqueda() {
+        btnBuscar.addActionListener(this::realizarBusqueda);
+    }
+    
+    private void cargarContactos() {
+        LinkedList<Contacto> contactos = Controlador.INSTANCE.getContactosUsuario();
+        for (Contacto contacto : contactos) {
+            cbContacto.addItem(contacto);
+        }
+    }
+    
+    private void realizarBusqueda(ActionEvent e) {
         String texto = txtTexto.getText().trim();
         String telefono = txtTelefono.getText().trim();
-        String contacto = txtContacto.getText().trim();
+        Contacto contactoSeleccionado = (Contacto) cbContacto.getSelectedItem();
+        Integer contactoId = contactoSeleccionado != null && !contactoSeleccionado.getNombre().equals("Prueba") 
+                          ? contactoSeleccionado.getId() : null;
 
-        // Simulación de búsqueda (reemplazar con lógica real)
+        // Validación
+        if (texto.isEmpty() && telefono.isEmpty() && contactoId == null) {
+            JOptionPane.showMessageDialog(frame, 
+                "Por favor, ingrese al menos un criterio de búsqueda", 
+                "Búsqueda vacía", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Realizar búsqueda a través del controlador
+        LinkedList<Mensaje> resultados = Controlador.INSTANCE.buscarMensajes(
+            texto, telefono, contactoId);
+
+        // Mostrar resultados
         modeloMensajes.clear();
-        if (!texto.isEmpty()) {
-            modeloMensajes.addElement("Mensaje que contiene: '" + texto + "'");
-        }
-        if (!telefono.isEmpty()) {
-            modeloMensajes.addElement("Mensaje relacionado con teléfono: " + telefono);
-        }
-        if (!contacto.isEmpty()) {
-            modeloMensajes.addElement("Mensaje relacionado con contacto: " + contacto);
-        }
-        if (modeloMensajes.isEmpty()) {
-            modeloMensajes.addElement("No se encontraron mensajes.");
+        
+        if (resultados.isEmpty()) {
+            modeloMensajes.addElement("No se encontraron mensajes con los criterios especificados.");
+        } else {
+            for (Mensaje mensaje : resultados) {
+                String remitente = mensaje.getRemitente().equals(Controlador.INSTANCE.getNombreUsuario()) 
+                                ? "Tú" : mensaje.getRemitente();
+                
+                String resultado = String.format("[%s] %s: %s", 
+                    mensaje.getFecha(), 
+                    remitente,
+                    mensaje.getContenido());
+                
+                modeloMensajes.addElement(resultado);
+            }
         }
     }
 
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            Buscador b = new Buscador();
+            b.mostrarVentana();
+        });
+    }
 }
