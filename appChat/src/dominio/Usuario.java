@@ -3,6 +3,7 @@ package dominio;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 public class Usuario {
@@ -20,7 +21,7 @@ public class Usuario {
 	//private Descuento descuento;???
 	private final LocalDate fechaRegistro;
 	private final Set<Contacto> contactos = new HashSet<Contacto>(); //necesario definir los .equals y hashCode, pero aseguramos no duplicidad
-	//podemos usar listas auxiliares para v.acceso
+	private final List<ContactoIndividual> contactosIndividuales = new LinkedList<ContactoIndividual>();
 	
 	/*
 	 * Comento los constructores para probar a aplicar el patrón builder, usuario tiene muchos parámetros.
@@ -157,14 +158,24 @@ public class Usuario {
 	public LinkedList<Contacto> getContactos() {
 		return new LinkedList<>(contactos);
 	}
+	
+	public List<ContactoIndividual> getContactosIndividuales() {
+		return new LinkedList<>(contactosIndividuales);
+	}
 
 	//ver si manejamos grupos y contactos en el mismo conjunto
 	public void addContacto(Contacto contacto) {
 		this.contactos.add(contacto);
+		if (contacto instanceof ContactoIndividual) {
+			this.contactosIndividuales.add((ContactoIndividual) contacto);
+		}
 	}
 	
 	public void removeContacto(Contacto contacto) {
 		this.contactos.remove(contacto);
+		if (contacto instanceof ContactoIndividual) {
+			this.contactosIndividuales.remove(contacto);
+		}
 	}
 	
 	 // Clase Builder interna

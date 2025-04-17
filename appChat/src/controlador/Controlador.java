@@ -155,7 +155,9 @@ public enum Controlador {
 		    return "Ya existe un contacto con este número de móvil.";
 		} else {
 			Contacto contacto = new ContactoIndividual(RepositorioUsuarios.INSTANCE.findUsuario(movil), nombre);
+			contactoIndividualDAO.registrarContactoIndividual((ContactoIndividual)contacto);
 			this.usuarioActual.addContacto(contacto);
+			usuarioDAO.updateUsuario(usuarioActual);
 			return "Contacto creado correctamente.";
 		}
 	}
