@@ -112,7 +112,7 @@ public class TDSContactoIndividualDAO implements ContactoIndividualDAO {
 		//comprobar que si nuestro enfoque de mensajes está ok, podemos crear directamente el contacto individual con los mensajes
 		
 		//creamos con user null para evitar bulces
-		ContactoIndividual contInd = new ContactoIndividual(user, nombre);
+		ContactoIndividual contInd = new ContactoIndividual(nombre);
 		contInd.setId(id);
 		PoolDAO.INSTANCE.addObject(id, contInd);
 		

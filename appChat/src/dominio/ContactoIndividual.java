@@ -15,13 +15,13 @@ public class ContactoIndividual extends Contacto implements AgregableGrupos {
 	}
 	
 	//constructor para cuando usemos la persistencia
-	public ContactoIndividual(Usuario usuario, String nombre, LinkedList<Mensaje> mensajes) {
-		super(nombre, mensajes);
-		this.usuario = usuario;
+	public ContactoIndividual(String nombre) {
+		super(nombre);
 	}
 	//para la persistencia
 	public void setUsuario(Usuario usuario) {
 		this.usuario = usuario;
+		this.URLImagen = usuario.getURLImagen();
 	}
 	
 	public Usuario getUsuario() {
