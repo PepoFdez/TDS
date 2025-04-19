@@ -50,7 +50,7 @@ public class AñadirContacto extends JDialog{
 	private void crearPanelAnadirContacto() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 450, 300);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(new BorderLayout());
 
 	    JPanel datosPersonales = new JPanel();
@@ -156,12 +156,11 @@ public class AñadirContacto extends JDialog{
 	                    	//Se puede registrar un contacto con el número del usuario actual
 	                    	String info = Controlador.INSTANCE.crearContacto(txtNombre.getText(), txtUsuario.getText());
 	                    	JOptionPane.showMessageDialog(AñadirContacto.this, info,
-		                              "Contacto", JOptionPane.ERROR_MESSAGE);
-	                        VentanaPrincipal mainW = new VentanaPrincipal();
-	                        mainW.mostrarVentana();
-	                        AñadirContacto.this.dispose();
+		                              "Contacto", JOptionPane.INFORMATION_MESSAGE);
+	                    	//Se cierra la ventana
+	                        frame.dispose();
 	                    } else {
-	                        JOptionPane.showMessageDialog(AñadirContacto.this, "El teléfono no se encuentre registrado.\n",
+	                        JOptionPane.showMessageDialog(AñadirContacto.this, "El teléfono no se encuentra registrado.\n",
 	                              "Contacto", JOptionPane.ERROR_MESSAGE);
 	                        //Registro.this.setTitle("Login Gestor Eventos");
 	                    }
