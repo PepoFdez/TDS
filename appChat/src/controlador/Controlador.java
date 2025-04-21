@@ -3,6 +3,7 @@ import dao.UsuarioDAO;
 
 import java.nio.file.attribute.UserDefinedFileAttributeView;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,9 +15,11 @@ import dao.FactoriaDAO;
 import dao.GrupoDAO;
 import dao.MensajeDAO;
 import dominio.Usuario;
+import tds.BubbleText;
 import utils.Utils;
 import dominio.Contacto;
 import dominio.ContactoIndividual;
+import dominio.Grupo;
 import dominio.Mensaje;
 import dominio.RepositorioUsuarios;
 
@@ -100,7 +103,6 @@ public enum Controlador {
 /* se puede borrar cuenta de usuario???
  * 
 	public boolean borrarUsuario(Usuario usuario) {
-		if (!esUsuarioRegistrado(usuario.getMovil()))
 			return false;
 
 		UsuarioDAO usuarioDAO = factoria.getUsuarioDAO();  //Adaptador DAO para borrar el Usuario de la BD 
@@ -111,8 +113,11 @@ public enum Controlador {
 	}
 	*/
 	public LinkedList<Contacto> getContactosUsuario() {
-		this.usuarioActual.getContactos();
-		return new LinkedList<Contacto>();
+		return this.usuarioActual.getContactos();
+	}
+	
+	public LinkedList<ContactoIndividual> getContactosIndividualesUsuario() {
+		return (LinkedList<ContactoIndividual>) this.usuarioActual.getContactosIndividuales();
 	}
 
 	public String getURLImagenContacto(Contacto contacto) {
@@ -130,14 +135,79 @@ public enum Controlador {
 	}
 
 	public void enviarMensaje(int id, String contenido) {
-		// TODO Auto-generated method stub
+		Mensaje mensajeSent = new Mensaje(contenido, BubbleText.SENT);
+		mensajeDAO.registrarMensaje(mensajeSent);
+		usuarioDAO.updateUsuario(usuarioActual);
+		//Añadir el contacto al usuario actual como enviado, se recibe el contacto por su id
+		Contacto receptor = this.usuarioActual.enviarMensaje(mensajeSent, id);
+		//Añadir el mensaje al usuario asociado al contacto como recibido
+		//Si es un grupo, se añade a todos los miembros del grupo
+		//Si es un contacto individual, se añade al contacto, si existe.
+		//Si no existe, creamos el contacto con el número de teléfono del emisor como nombre
+		if (receptor instanceof ContactoIndividual contactoIndividual) {
+			recibirMensaje(contenido, -1, contactoIndividual);
+		} else if (receptor instanceof Grupo grupo) {
+			for (Contacto miembro : grupo.getMiembros()) {
+				if (miembro instanceof ContactoIndividual contactoIndividualMiembro) {
+					//Si el miembro es un contacto individual, se añade el mensaje al contacto como recibido
+					recibirMensaje(contenido, -1, contactoIndividualMiembro);
+				} 
+			}
+		}
 		
+	}
+	
+	public void enviarEmoji(int id, int emojiId) {
+		Mensaje mensajeSent = new Mensaje(emojiId, BubbleText.SENT);
+		mensajeDAO.registrarMensaje(mensajeSent);
+		//Añadir el contacto al usuario actual como enviado
+		Contacto receptor = this.usuarioActual.enviarMensaje(mensajeSent, id);
+		
+		if (receptor instanceof ContactoIndividual contactoIndividual) {
+			recibirMensaje("", emojiId, contactoIndividual);
+		} else if (receptor instanceof Grupo grupo) {
+			for (Contacto miembro : grupo.getMiembros()) {
+				if (miembro instanceof ContactoIndividual contactoIndividualMiembro) {
+					//Si el miembro es un contacto individual, se añade el mensaje al contacto como recibido
+					recibirMensaje("", emojiId, contactoIndividualMiembro);
+				} 
+			}
+		}
 	}
 
-	public void enviarEmoji(int id, int emojiId) {
-		// TODO Auto-generated method stub
+	//Recibe un mensaje enviado por el usuario actual y hace que aparezca en el usuario receptor
+	private void recibirMensaje (String contenido, int emoji, ContactoIndividual receptor) {
+		Mensaje mensajeRec = null;
+		if (emoji != -1) {
+			mensajeRec = new Mensaje(emoji, BubbleText.RECEIVED);
+		} else {
+			mensajeRec = new Mensaje(contenido, BubbleText.RECEIVED);
+		}
 		
+		//mensajeDAO.registrarMensaje(mensajeRec);
+		//Añadir el mensaje al usuario asociado al contacto como recibido
+		//Si es un grupo, se añade a todos los miembros del grupo
+		//Si es un contacto individual, se añade al contacto, si existe.
+		//Si no existe, creamos el contacto con el número de teléfono del emisor como nombre
+		boolean existe = receptor.getUsuario().tieneContactoConMovil(usuarioActual.getMovil());
+		//Si existe, se añade el mensaje al contacto como recibido
+		if (existe) {
+			receptor.getUsuario().getContactoConMovil(usuarioActual.getMovil()).addMensaje(mensajeRec);
+			mensajeDAO.registrarMensaje(mensajeRec);
+			usuarioDAO.updateUsuario(receptor.getUsuario());
+		} else {
+			//Si no existe, se crea el contacto con el número de teléfono del emisor como nombre
+			// y se añade el mensaje al contacto como recibido
+			//Contacto nuevoContacto = new ContactoIndividual(usuarioActual, this.usuarioActual.getNombre());
+			Contacto nuevoContacto = new ContactoIndividual(usuarioActual, this.usuarioActual.getMovil());
+			contactoIndividualDAO.registrarContactoIndividual((ContactoIndividual) nuevoContacto);
+			nuevoContacto.addMensaje(mensajeRec);
+			mensajeDAO.registrarMensaje(mensajeRec);
+			usuarioDAO.updateUsuario(receptor.getUsuario());
+			receptor.getUsuario().addContacto(nuevoContacto);
+		}
 	}
+		
 
 	public LinkedList<Contacto> buscarContactos(String textoBusqueda) {
 		// TODO Auto-generated method stub
@@ -161,4 +231,33 @@ public enum Controlador {
 			return "Contacto creado correctamente.";
 		}
 	}
+	
+	public boolean crearGrupo(String nombreGrupo, LinkedList<ContactoIndividual> miembros) {
+		//Comprobamos que no existe un grupo con el mismo nombre
+		Grupo grupo = new Grupo(nombreGrupo, miembros.toArray(new ContactoIndividual[0]));
+		grupoDAO.registrarGrupo(grupo);
+		this.usuarioActual.addContacto(grupo);
+		usuarioDAO.updateUsuario(usuarioActual);
+		return true;
+	}
+
+	public boolean isUsuarioPremium() {
+		return this.usuarioActual.isPremium();
+	}
+
+	public boolean convertirPremium() {
+		this.usuarioActual.setPremium(true);
+		return true;
+	}
+
+	public boolean exportarChatPDF(Contacto contactoSeleccionado) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean anularPremium() {
+		this.usuarioActual.setPremium(false);
+		return true;
+	}
+	
 }

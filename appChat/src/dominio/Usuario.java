@@ -142,6 +142,10 @@ public class Usuario {
 	public boolean isPremium() {
 		return premium;
 	}
+	
+	public void setPremium(boolean premium) {
+		this.premium = premium;
+	}
 
 	public void activarPremium() {
 		this.premium = true;
@@ -229,18 +233,45 @@ public class Usuario {
         }
     }
     
-    //MIRAR ESTO
 	public boolean tieneContactoConMovil(String movil2) {
-		 for (Contacto contacto : contactos) {
-		        if (contacto instanceof ContactoIndividual) { //ESTO HABRÁ QUE VER SI HACE ASÍ O NO
-		            ContactoIndividual contactoIndividual = (ContactoIndividual) contacto;
-		            if (contactoIndividual.getUsuario().getMovil().equals(movil)) {
-		                return true;
-		            }
-		        }
+		for (ContactoIndividual contacto : contactosIndividuales)  {  
+			if (contacto.getUsuario().getMovil().equals(movil)) {
+				return true;
 		    }
-		    return false;
+		}
+		return false;
 	}
+	
+	public ContactoIndividual getContactoConMovil(String movil2) {
+		for (ContactoIndividual contacto : contactosIndividuales)  {  
+			if (contacto.getUsuario().getMovil().equals(movil)) {
+				return contacto;
+		    }
+		}
+		return null;
+	}
+
+	public Contacto enviarMensaje(Mensaje mensaje, int idContacto) {
+		// TODO Auto-generated method stub
+		Contacto contacto = this.contactos.stream()
+				.filter(c -> c.getId() == idContacto)
+				.findFirst()
+				.orElse(null);
+		
+		if (contacto != null) {
+			System.out.println("Enviando mensaje a " + contacto.getNombre() + ": " + mensaje.getTexto());
+			contacto.addMensaje(mensaje);
+			/*for (Contacto c : this.contactos) {
+				for (Mensaje m : c.getMensajesEnviados()) {
+					System.out.println("Mensaje: " + m.getTexto());
+				}
+			}*/
+			// Aquí puedes agregar la lógica para enviar el mensaje al contact
+		}
+		return contacto;
+	}
+	
+	
 	
 }
 

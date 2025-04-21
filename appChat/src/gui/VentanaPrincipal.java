@@ -14,6 +14,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
 import javax.swing.BorderFactory;
@@ -28,6 +30,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.Timer;
+
 import controlador.Controlador;
 import dominio.Contacto;
 
@@ -45,15 +49,41 @@ public class VentanaPrincipal {
     private JTextField messageField;
     private Contacto contactoSeleccionado;
     private JButton emojiButton;
+    private JButton premiumButton;
 
     public VentanaPrincipal() {
         BubbleText.noZoom(); // Desactivar zoom automático para HiDPI
         initialize();
+        initialize();
+        loadContacts(); // Cargar contactos al iniciar
+        
+        // Iniciar timer para actualización periódica
+        iniciarTimerActualizacionContactos(5000); // 5000 ms = 5 segundos
     }
     
     public void mostrarVentana() {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+    }
+    
+    private void iniciarTimerActualizacionContactos(int delayMillis) {
+        Timer timer = new Timer(delayMillis, e -> {
+            // Esto se ejecutará periódicamente en el EDT
+            loadContacts();
+            if (Controlador.INSTANCE.isUsuarioPremium()) {
+    			premiumButton.setText("Premium Activo");
+    			premiumButton.setForeground(new Color(0, 102, 204));
+    		} else {
+    			premiumButton.setText("Activar Premium");
+    			premiumButton.setForeground(Color.RED);
+    		}
+            // Si hay un contacto seleccionado, actualizar también sus mensajes
+            if (contactoSeleccionado != null) {
+                //cargarMensajes(contactoSeleccionado);
+            }
+        });
+        timer.setRepeats(true); // Para que se repita indefinidamente
+        timer.start(); // Iniciar el timer
     }
     
     private void initialize() {
@@ -116,8 +146,25 @@ public class VentanaPrincipal {
         });
         
         // Botón premium
-        JButton premiumButton = new JButton("Premium");
-        premiumButton.setForeground(new Color(0, 102, 204));
+        premiumButton = new JButton("Premium");
+        if (Controlador.INSTANCE.isUsuarioPremium()) {
+			premiumButton.setText("Premium Activo");
+			premiumButton.setForeground(new Color(0, 102, 204));
+		} else {
+			premiumButton.setText("Activar Premium");
+			premiumButton.setForeground(Color.RED);
+		}
+        premiumButton.addActionListener(e -> {
+        	if (Controlador.INSTANCE.isUsuarioPremium()) {
+        		VentanaPremiumActivo ventanaPremium = new VentanaPremiumActivo();
+        		ventanaPremium.mostrarVentana();
+        	} else {
+        		VentanaPremium ventanaPremium = new VentanaPremium();
+				ventanaPremium.mostrarVentana();
+			}
+        	
+        });
+        
         
         // Panel de usuario actual
         JPanel userPanel = createUserPanel();
@@ -311,7 +358,7 @@ public class VentanaPrincipal {
         Controlador.INSTANCE.enviarMensaje(contactoSeleccionado.getId(), contenido);
         
         // Actualizar el chat
-        cargarMensajes(contactoSeleccionado);
+        //cargarMensajes(contactoSeleccionado);
         messageField.setText("");
     }
     
@@ -357,7 +404,7 @@ public class VentanaPrincipal {
             chatPanel, 
             emojiId, 
             color, 
-            "Tú", 
+            LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")), 
             BubbleText.SENT,
             24 // Tamaño del emoji
         );
