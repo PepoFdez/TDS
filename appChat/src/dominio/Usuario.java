@@ -112,10 +112,6 @@ public class Usuario {
 	public boolean isPremium() {
 		return premium;
 	}
-	/*
-	public void setPremium(boolean premium) {
-		this.premium = premium;
-	}*/
 
 	public void activarPremium() {
 		this.premium = true;
