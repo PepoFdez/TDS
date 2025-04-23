@@ -273,7 +273,7 @@ public enum Controlador {
 	}
 
 	public boolean convertirPremium() {
-		this.usuarioActual.setPremium(true);
+		this.usuarioActual.activarPremium();
 		usuarioDAO.updateUsuario(usuarioActual);
 		return true;
 	}
@@ -284,7 +284,7 @@ public enum Controlador {
 	}
 
 	public boolean anularPremium() {
-		this.usuarioActual.setPremium(false);
+		this.usuarioActual.desactivarPremium();
 		usuarioDAO.updateUsuario(usuarioActual);
 		return true;
 	}
