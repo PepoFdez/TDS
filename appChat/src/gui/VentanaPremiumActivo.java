@@ -10,7 +10,7 @@ import java.util.LinkedList;
 public class VentanaPremiumActivo {
 
     private JFrame frame;
-    private JComboBox<Contacto> contactosComboBox;
+    private JComboBox<String> contactosComboBox;
     private JButton exportarButton;
     private JButton cancelarSuscripcionButton;
 
@@ -104,10 +104,13 @@ public class VentanaPremiumActivo {
 
     private void cargarContactos() {
         LinkedList<Contacto> contactos = Controlador.INSTANCE.getContactosUsuario();
-        DefaultComboBoxModel<Contacto> model = new DefaultComboBoxModel<>();
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
         
         if (contactos != null && !contactos.isEmpty()) {
-            contactos.forEach(model::addElement);
+            //contactos.forEach(model::addElement);
+        	for (Contacto contacto : contactos) {
+				model.addElement(contacto.getNombre() + ":" + Controlador.INSTANCE.getTelefono(contacto));
+			}
         } else {
             JOptionPane.showMessageDialog(frame, 
                 "No tienes contactos disponibles", 

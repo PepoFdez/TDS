@@ -17,7 +17,7 @@ public class Buscador {
 
     private JFrame frame;
     private JTextField txtTexto, txtTelefono;
-    private JComboBox<Contacto> cbContacto;
+    private JComboBox<String> cbContacto;
     private JButton btnBuscar;
     private DefaultListModel<String> modeloMensajes;
     private JList<String> listaMensajes;
@@ -127,19 +127,17 @@ public class Buscador {
     private void cargarContactos() {
         LinkedList<Contacto> contactos = Controlador.INSTANCE.getContactosUsuario();
         for (Contacto contacto : contactos) {
-            cbContacto.addItem(contacto);
+            cbContacto.addItem(contacto.getNombre());
         }
     }
     
     private void realizarBusqueda(ActionEvent e) {
         String texto = txtTexto.getText().trim();
         String telefono = txtTelefono.getText().trim();
-        Contacto contactoSeleccionado = (Contacto) cbContacto.getSelectedItem();
-        Integer contactoId = contactoSeleccionado != null && !contactoSeleccionado.getNombre().equals("Prueba") 
-                          ? contactoSeleccionado.getId() : null;
-
+        String contactoSeleccionado = (String) cbContacto.getSelectedItem();
+        String contacto = contactoSeleccionado;
         // Validación
-        if (texto.isEmpty() && telefono.isEmpty() && contactoId == null) {
+        if (texto.isEmpty() && telefono.isEmpty() && contacto == null) {
             JOptionPane.showMessageDialog(frame, 
                 "Por favor, ingrese al menos un criterio de búsqueda", 
                 "Búsqueda vacía", JOptionPane.WARNING_MESSAGE);
@@ -147,8 +145,8 @@ public class Buscador {
         }
 
         // Realizar búsqueda a través del controlador
-        LinkedList<Mensaje> resultados = Controlador.INSTANCE.buscarMensajes(
-            texto, telefono, contactoId);
+        LinkedList<String> resultados = Controlador.INSTANCE.buscarMensajes(
+            texto, telefono, contacto);
 
         // Mostrar resultados
         modeloMensajes.clear();
@@ -156,16 +154,8 @@ public class Buscador {
         if (resultados.isEmpty()) {
             modeloMensajes.addElement("No se encontraron mensajes con los criterios especificados.");
         } else {
-            for (Mensaje mensaje : resultados) {
-                String remitente = mensaje.getRemitente().equals(Controlador.INSTANCE.getNombreUsuario()) 
-                                ? "Tú" : mensaje.getRemitente();
-                
-                String resultado = String.format("[%s] %s: %s", 
-                    mensaje.getFecha(), 
-                    remitente,
-                    mensaje.getTexto());
-                
-                modeloMensajes.addElement(resultado);
+            for (String mensaje : resultados) {
+                modeloMensajes.addElement(mensaje);
             }
         }
     }

@@ -18,7 +18,6 @@ public class AñadirContacto extends JDialog{
 	private static final long serialVersionUID = 1L;
 
 	private JFrame frame;
-	
 	private JLabel lblNombre;
 	private JTextField txtNombre;
 	private JPanel panelCampoNombre;

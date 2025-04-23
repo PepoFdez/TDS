@@ -270,6 +270,11 @@ public class Usuario {
 		}
 		return contacto;
 	}
+
+	public String getUltimoMensaje(Contacto contacto) {
+		// TODO Auto-generated method stub
+		return contacto.getUltimoMensaje();
+	}
 	
 	
 	

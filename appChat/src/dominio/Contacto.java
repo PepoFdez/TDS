@@ -60,6 +60,9 @@ public abstract class Contacto {
 		return mensajes.stream()
 				.map(m -> m.getInfoFormateada())
 				.collect(Collectors.toList());
+	}
+	public String getUltimoMensaje() {
+		return this.mensajes.get(this.mensajes.size()-1).getTexto();	
 	};
 	
 	

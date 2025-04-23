@@ -9,6 +9,8 @@ import java.util.List;
 
 import javax.swing.JTextField;
 
+import org.h2.result.UpdatableRow;
+
 import dao.ContactoIndividualDAO;
 import dao.DAOException;
 import dao.FactoriaDAO;
@@ -124,6 +126,10 @@ public enum Controlador {
 		
 		return contacto.getURLImagen();
 	}
+	
+	public String getURLImagenUsuario() {
+		return this.usuarioActual.getURLImagen();
+	}
 
 	public List<Object> getContenidoMensajes(Contacto contacto) {
 		return contacto.getTextoMensajesEnviados();
@@ -214,9 +220,30 @@ public enum Controlador {
 		return null;
 	}
 
-	public LinkedList<Mensaje> buscarMensajes(String texto, String telefono, Integer contactoId) {
-		// TODO Auto-generated method stub
-		return null;
+	public LinkedList<String> buscarMensajes(String texto, String telefono, String movil) {
+		LinkedList<String> mensajes = new LinkedList<>();
+		if (texto != null && !texto.isEmpty()) {
+			for (Contacto contacto : this.usuarioActual.getContactos()) {
+				for (Mensaje mensaje : contacto.getMensajesEnviados()) {
+					if (mensaje.getTexto().contains(texto)) {
+						mensajes.add(mensaje.getTexto());
+					}
+				}
+			}
+		} else if (telefono != null && !telefono.isEmpty()) {
+			for (Contacto contacto : this.usuarioActual.getContactos()) {
+				if (contacto.getNombre().contains(telefono)) {
+					mensajes.add(contacto.getNombre());
+				}
+			}
+		} else if (movil != null && !movil.isEmpty()) {
+			for (Contacto contacto : this.usuarioActual.getContactos()) {
+				if (contacto.getNombre().contains(movil)) {
+					mensajes.add(contacto.getNombre());
+				}
+			}
+		}
+		return mensajes;
 	}
 
 	public String crearContacto(String nombre, String movil) {		
@@ -247,6 +274,7 @@ public enum Controlador {
 
 	public boolean convertirPremium() {
 		this.usuarioActual.setPremium(true);
+		usuarioDAO.updateUsuario(usuarioActual);
 		return true;
 	}
 
@@ -257,7 +285,34 @@ public enum Controlador {
 
 	public boolean anularPremium() {
 		this.usuarioActual.setPremium(false);
+		usuarioDAO.updateUsuario(usuarioActual);
 		return true;
+	}
+
+	public String getUltimoMensaje(Contacto contacto) {
+		return this.usuarioActual.getUltimoMensaje(contacto);
+	}
+
+	public String getTelefono(Contacto contacto) {
+		if (contacto instanceof ContactoIndividual) {
+			return ((ContactoIndividual) contacto).getUsuario().getMovil();
+		} else if (contacto instanceof Grupo) {
+			return ("Grupo: " + ((Grupo) contacto).getNombre());
+		}
+		return null;
+	}
+
+	public void modificarNombreContacto(Contacto contacto, String nuevoNombre) {
+		// TODO Auto-generated method stub
+		if (contacto instanceof ContactoIndividual) {
+			((ContactoIndividual) contacto).setNombre(nuevoNombre);
+			contactoIndividualDAO.updateContactoIndividual((ContactoIndividual) contacto);
+		} else if (contacto instanceof Grupo) {
+			((Grupo) contacto).setNombre(nuevoNombre);
+			grupoDAO.updateGrupo((Grupo) contacto);
+		};
+		usuarioDAO.updateUsuario(usuarioActual);
+		
 	}
 	
 }

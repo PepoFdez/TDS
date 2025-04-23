@@ -79,19 +79,19 @@ public class Login {
 	    panel_Norte.setLayout(new BoxLayout(panel_Norte, BoxLayout.Y_AXIS));
 
 	    // Rótulo de "AppChat"
-	    JLabel lblTitulo = new JLabel("AppChat");
+	    /*JLabel lblTitulo = new JLabel("AppChat");
 	    lblTitulo.setFont(new Font("Tahoma", Font.PLAIN, 20));
 	    lblTitulo.setForeground(Color.DARK_GRAY);
 	    lblTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
-	    panel_Norte.add(lblTitulo);
+	    panel_Norte.add(lblTitulo);*/
 
 	    // Espaciado entre el título y el logo
 	    panel_Norte.add(Box.createRigidArea(new Dimension(0, 10)));
 
 	    // Logo de "AppChat"
 	    JLabel lblLogo = new JLabel();
-	    ImageIcon icono = new ImageIcon("resources/logo_tr.png");
-	    Image imgEscalada = icono.getImage().getScaledInstance(75, 50, Image.SCALE_SMOOTH);
+	    ImageIcon icono = new ImageIcon("resources/logo3.png");
+	    Image imgEscalada = icono.getImage().getScaledInstance(125, 125, Image.SCALE_SMOOTH);
 	    lblLogo.setIcon(new ImageIcon(imgEscalada));
 	    lblLogo.setAlignmentX(Component.CENTER_ALIGNMENT);
 	    panel_Norte.add(lblLogo);
@@ -192,21 +192,44 @@ public class Login {
 	}
 
 	private void addManejadorBotonLogin(JButton btnLogin) {
-		btnLogin.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				boolean login = Controlador.INSTANCE.loginUsuario(
-						textUsuario.getText(),
-						new String(textPassword.getPassword()));
+	    // Acción al hacer clic
+	    btnLogin.addActionListener(new ActionListener() {
+	        public void actionPerformed(ActionEvent e) {
+	            realizarLogin();
+	        }
+	    });
+	    
+	    // Configurar Enter para activar el botón Login
+	    InputMap inputMap = btnLogin.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+	    ActionMap actionMap = btnLogin.getActionMap();
+	    
+	    inputMap.put(KeyStroke.getKeyStroke("ENTER"), "enterAction");
+	    actionMap.put("enterAction", new AbstractAction() {
+	        /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 
-				if (login) {
-					VentanaPrincipal principal = new VentanaPrincipal();
-					principal.mostrarVentana();
-					frame.dispose();
-				} else
-					JOptionPane.showMessageDialog(frame, "Teléfono o contraseña no valido",
-							"Error", JOptionPane.ERROR_MESSAGE);
-			}
-		});
+			@Override
+	        public void actionPerformed(ActionEvent e) {
+	            realizarLogin();
+	        }
+	    });
+	}
+	
+	private void realizarLogin() {
+	    boolean login = Controlador.INSTANCE.loginUsuario(
+	            textUsuario.getText(),
+	            new String(textPassword.getPassword()));
+
+	    if (login) {
+	        VentanaPrincipal principal = new VentanaPrincipal();
+	        principal.mostrarVentana();
+	        frame.dispose();
+	    } else {
+	        JOptionPane.showMessageDialog(frame, "Teléfono o contraseña no válido",
+	                "Error", JOptionPane.ERROR_MESSAGE);
+	    }
 	}
 	
 	

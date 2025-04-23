@@ -6,6 +6,8 @@ import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.LinkedList;
 
 public class VentanaContactos {
@@ -121,9 +123,6 @@ public class VentanaContactos {
         modeloContactos.clear();
         
         if (contactos == null || contactos.isEmpty()) {
-            JOptionPane.showMessageDialog(frame, 
-                "No tienes contactos disponibles", 
-                "Información", JOptionPane.INFORMATION_MESSAGE);
         } else {
             contactos.forEach(modeloContactos::addElement);
         }
@@ -156,8 +155,6 @@ public class VentanaContactos {
     private void añadirContacto(ActionEvent e) {
         AñadirContacto anadirContacto = new AñadirContacto();
         anadirContacto.mostrarVentana();
-        // Actualizar lista después de añadir
-        cargarContactos();
     }
 
     private void añadirGrupo(ActionEvent e) {

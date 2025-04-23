@@ -28,6 +28,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
@@ -57,7 +58,7 @@ public class VentanaPrincipal {
         loadContacts(); // Cargar contactos al iniciar
         
         // Iniciar timer para actualización periódica
-        iniciarTimerActualizacionContactos(5000); // 5000 ms = 5 segundos
+        iniciarTimerActualizacionContactos(2000); // 2000 ms = 2 segundos
     }
     
     public void mostrarVentana() {
@@ -94,7 +95,15 @@ public class VentanaPrincipal {
         frame.getContentPane().setLayout(new BorderLayout());
 
         // Panel superior con barra de herramientas
-        JPanel topPanel = createTopPanel();
+        JPanel topPanel = createTopPanel();// Crear línea separadora
+        JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
+        separator.setForeground(new Color(180, 180, 180));
+        
+        JPanel northPanel = new JPanel(new BorderLayout());
+        northPanel.add(topPanel, BorderLayout.CENTER);
+        northPanel.add(separator, BorderLayout.SOUTH);
+        
+        frame.getContentPane().add(northPanel, BorderLayout.NORTH);
         frame.getContentPane().add(topPanel, BorderLayout.NORTH);
 
         // Panel principal (izquierda + derecha)
@@ -121,17 +130,30 @@ public class VentanaPrincipal {
     }
     
     private JPanel createTopPanel() {
-        JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
-        // Campo de búsqueda
-        JTextField searchField = new JTextField(20);
-        searchField.setToolTipText("Buscar contactos");
+        // Panel izquierdo con logo y título
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         
-        // Botón de búsqueda (con icono)
-        JButton searchContactButton = new JButton("🔍");
-        searchContactButton.setToolTipText("Buscar contactos");
-        searchContactButton.addActionListener(e -> buscarContactos(searchField.getText()));
+        // Cargar logo
+        try {
+            ImageIcon logoIcon = new ImageIcon("resources/logo3.png");
+            Image logoImage = logoIcon.getImage().getScaledInstance(55, 55, Image.SCALE_SMOOTH);
+            JLabel logoLabel = new JLabel(new ImageIcon(logoImage));
+            leftPanel.add(logoLabel);
+        } catch (Exception e) {
+            System.err.println("Error al cargar el logo: " + e.getMessage());
+        }
+        
+        // Añadir título "CHATS"
+        JLabel chatsLabel = new JLabel("CHATS");
+        chatsLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        chatsLabel.setForeground(new Color(0, 102, 204)); // Color azul
+        leftPanel.add(chatsLabel);
+        
+        // Panel central con botones
+        JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
         
         // Botón de buscar mensajes
         JButton searchMessagesButton = new JButton("Buscar mensajes");
@@ -139,6 +161,7 @@ public class VentanaPrincipal {
             Buscador buscador = new Buscador();
             buscador.mostrarVentana();
         });
+        centerPanel.add(searchMessagesButton);
         
         // Botón de contactos
         JButton contactsButton = new JButton("Contactos");
@@ -146,54 +169,70 @@ public class VentanaPrincipal {
             VentanaContactos ventanaContactos = new VentanaContactos();
             ventanaContactos.mostrarVentana();
         });
+        centerPanel.add(contactsButton);
         
         // Botón premium
         premiumButton = new JButton("Premium");
         if (Controlador.INSTANCE.isUsuarioPremium()) {
-			premiumButton.setText("Premium Activo");
-			premiumButton.setForeground(new Color(0, 102, 204));
-		} else {
-			premiumButton.setText("Activar Premium");
-			premiumButton.setForeground(Color.RED);
-		}
+            premiumButton.setText("Premium Activo");
+            premiumButton.setForeground(new Color(0, 102, 204));
+        } else {
+            premiumButton.setText("Activar Premium");
+            premiumButton.setForeground(Color.RED);
+        }
         premiumButton.addActionListener(e -> {
-        	if (Controlador.INSTANCE.isUsuarioPremium()) {
-        		VentanaPremiumActivo ventanaPremium = new VentanaPremiumActivo();
-        		ventanaPremium.mostrarVentana();
-        	} else {
-        		VentanaPremium ventanaPremium = new VentanaPremium();
-				ventanaPremium.mostrarVentana();
-			}
-        	
+            if (Controlador.INSTANCE.isUsuarioPremium()) {
+                VentanaPremiumActivo ventanaPremium = new VentanaPremiumActivo();
+                ventanaPremium.mostrarVentana();
+            } else {
+                VentanaPremium ventanaPremium = new VentanaPremium();
+                ventanaPremium.mostrarVentana();
+            }
         });
+        centerPanel.add(premiumButton);
         
-        
-        // Panel de usuario actual
+        // Panel de usuario actual (con borde)
         JPanel userPanel = createUserPanel();
+        userPanel.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(200, 200, 200)),
+                BorderFactory.createEmptyBorder(5, 10, 5, 10)));
         
         // Añadir componentes al panel superior
-        topPanel.add(searchField);
-        topPanel.add(searchContactButton);
-        topPanel.add(Box.createHorizontalStrut(20));
-        topPanel.add(searchMessagesButton);
-        topPanel.add(contactsButton);
-        topPanel.add(premiumButton);
-        topPanel.add(Box.createHorizontalGlue());
-        topPanel.add(userPanel);
+        topPanel.add(leftPanel, BorderLayout.WEST);
+        topPanel.add(centerPanel, BorderLayout.CENTER);
+        topPanel.add(userPanel, BorderLayout.EAST);
         
         return topPanel;
     }
-    
+
     private JPanel createUserPanel() {
-        JPanel userPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
+        JPanel userPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        
+        // Botón de cerrar sesión
+        JButton logoutButton = new JButton("Cerrar sesión");
+        logoutButton.setFont(new Font("Arial", Font.PLAIN, 12));
+        logoutButton.addActionListener(e -> {
+            int confirm = JOptionPane.showConfirmDialog(frame, 
+                "¿Estás seguro de que quieres cerrar sesión?", 
+                "Confirmar cierre de sesión", 
+                JOptionPane.YES_NO_OPTION);
+            
+            if (confirm == JOptionPane.YES_OPTION) {
+                frame.dispose();
+                new Login().mostrarVentana();
+            }
+        });
+        userPanel.add(logoutButton);
         
         String nombreUsuario = Controlador.INSTANCE.getNombreUsuario();
+        
         JLabel userNameLabel = new JLabel(nombreUsuario);
         userNameLabel.setFont(new Font("Arial", Font.BOLD, 12));
         
         // Cargar imagen de perfil
-        ImageIcon icono = new ImageIcon("phpphotos/pfp.jpg");
-        Image imgEscalada = icono.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
+        ImageIcon icono = null;
+        String URLimagenContacto = Controlador.INSTANCE.getURLImagenUsuario();
+        Image imgEscalada = getImagenContactoEscalada(URLimagenContacto, icono);
         JLabel userImage = new JLabel(new ImageIcon(imgEscalada));
         
         userPanel.add(userNameLabel);
@@ -291,15 +330,10 @@ public class VentanaPrincipal {
         
         // Actualizar panel de información del contacto
         currentContactLabel.setText(contacto.getNombre());
-        
-        Image imgEscalada = getImagenContactoEscalada(contacto);
-        if (imgEscalada != null) {
-            currentContactImage.setIcon(new ImageIcon(imgEscalada));
-        } else {
-            ImageIcon icono = new ImageIcon("phpphotos/pfp.jpg");
-            imgEscalada = icono.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-            currentContactImage.setIcon(new ImageIcon(imgEscalada));
-        }
+        ImageIcon icono = null;
+        String URLimagenContacto = Controlador.INSTANCE.getURLImagenContacto(contacto);
+        Image imgEscalada = getImagenContactoEscalada(URLimagenContacto, icono);
+        currentContactImage.setIcon(new ImageIcon(imgEscalada));
         
         // Cargar mensajes del chat
         cargarMensajes(contacto);
@@ -321,9 +355,9 @@ public class VentanaPrincipal {
                 Object texto = textoMensajes.get(i);
                 String[] info = infoMensajes.get(i).split("\\|");
                 String fechaHora = info[0];
-                String tipo = info[1];
+                Integer tipo = 0;
                 
-                Color color = tipo.equals("SENT") ? new Color(220, 248, 198) : Color.WHITE;
+                Color color = tipo.equals(BubbleText.SENT) ? new Color(220, 248, 198) : Color.WHITE;
                 String nombre = tipo.equals("SENT") ? "Tú" : contacto.getNombre();
                 int tipoBurbuja = tipo.equals("SENT") ? BubbleText.SENT : BubbleText.RECEIVED;
                 
@@ -473,14 +507,11 @@ public class VentanaPrincipal {
         
         // Imagen del contacto
         JLabel imageLabel = new JLabel();
-        
-        Image imgEscalada = getImagenContactoEscalada(contacto);
-        if(imgEscalada != null) imageLabel.setIcon(new ImageIcon(imgEscalada));
-        else {
-        	ImageIcon icono = new ImageIcon("phpphotos/pfp.jpg");
-            imgEscalada = icono.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
-            imageLabel.setIcon(new ImageIcon(imgEscalada));
-        }
+        ImageIcon icono = null;
+        String URLimagenContacto = Controlador.INSTANCE.getURLImagenContacto(contacto);
+        Image imgEscalada = getImagenContactoEscalada(URLimagenContacto, icono);
+		 //ImageIcon icono = new ImageIcon("phphotos/pfp.jpg");
+        imageLabel.setIcon(new ImageIcon(imgEscalada));
         
         
         // Nombre del contacto
@@ -488,6 +519,7 @@ public class VentanaPrincipal {
         nameLabel.setFont(new Font("Arial", Font.PLAIN, 14));
         
         // Último mensaje (podrías obtenerlo del controlador)
+        //String ultMsg = Controlador.INSTANCE.getUltimoMensaje(contacto);
         JLabel lastMsgLabel = new JLabel("Último mensaje...");
         lastMsgLabel.setFont(new Font("Arial", Font.PLAIN, 11));
         lastMsgLabel.setForeground(Color.GRAY);
@@ -498,21 +530,39 @@ public class VentanaPrincipal {
         textPanel.add(nameLabel);
         textPanel.add(lastMsgLabel);
         
+     // Botón de edición (tres puntos verticales)
+        JButton editButton = new JButton("Editar");
+        editButton.setFont(new Font("Arial", Font.PLAIN, 14));
+        editButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        editButton.setContentAreaFilled(false);
+        editButton.setFocusPainted(false);
+        editButton.setOpaque(false);
+        editButton.addActionListener(e -> {
+            // Evitar que el evento se propague al panel del contacto
+            //e.stopPropagation();
+            // Aquí abriremos la ventana ModificarContacto en el futuro
+            new ModificarContacto(contacto).mostrarVentana();
+        });
+        
+        // Panel para el botón de edición
+        JPanel buttonPanel = new JPanel(new BorderLayout());
+        buttonPanel.setOpaque(false);
+        buttonPanel.add(editButton, BorderLayout.CENTER);
+        
         panel.add(imageLabel, BorderLayout.WEST);
         panel.add(textPanel, BorderLayout.CENTER);
+        panel.add(buttonPanel, BorderLayout.EAST);
         
         return panel;
     }
     
-    private Image getImagenContactoEscalada(Contacto contacto) {
-    	ImageIcon icono;
-        String URLimagenContacto = Controlador.INSTANCE.getURLImagenContacto(contacto);
+    private Image getImagenContactoEscalada(String URLimagenContacto, ImageIcon icono) {
         try {
         	if (URLimagenContacto != null && !URLimagenContacto.isEmpty()) {
                 URL url = new URL(URLimagenContacto);
                 icono = new ImageIcon(url);
             } else {
-                icono = new ImageIcon("phpphotos/pfp.jpg");
+                icono = new ImageIcon("phphotos/pfp.jpg");
             }
             Image imgEscalada = icono.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
             
@@ -523,6 +573,8 @@ public class VentanaPrincipal {
 		}
         
 	}
+    
+
     
     /*private void enviarMensaje() {
         if (contactoSeleccionado == null || messageField.getText().trim().isEmpty()) {
@@ -537,27 +589,4 @@ public class VentanaPrincipal {
         messageField.setText("");
     }*/
     
-    private void buscarContactos(String textoBusqueda) {
-        if (textoBusqueda.trim().isEmpty()) {
-            loadContacts();
-            return;
-        }
-        
-        LinkedList<Contacto> resultados = Controlador.INSTANCE.buscarContactos(textoBusqueda);
-        leftPanel.removeAll();
-        
-        if (resultados.isEmpty()) {
-            JLabel emptyLabel = new JLabel("No se encontraron contactos");
-            emptyLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            leftPanel.add(emptyLabel);
-        } else {
-            for (Contacto contacto : resultados) {
-                JPanel contactPanel = createContactPanel(contacto);
-                leftPanel.add(contactPanel);
-            }
-        }
-        
-        leftPanel.revalidate();
-        leftPanel.repaint();
-    }
 }
