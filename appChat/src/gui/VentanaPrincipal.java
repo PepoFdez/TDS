@@ -54,7 +54,6 @@ public class VentanaPrincipal {
     public VentanaPrincipal() {
         BubbleText.noZoom(); // Desactivar zoom automático para HiDPI
         initialize();
-        initialize();
         loadContacts(); // Cargar contactos al iniciar
         
         // Iniciar timer para actualización periódica
@@ -104,6 +103,9 @@ public class VentanaPrincipal {
         // Panel izquierdo (lista de contactos)
         leftPanel = createContactsPanel();
         JScrollPane leftScrollPane = new JScrollPane(leftPanel);
+        leftScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        //ajustar el tamaño de los contactos, para que no aparezca el scroll horizontal, mientras, lo desactivo
+        leftScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         leftScrollPane.setPreferredSize(new Dimension(250, 0));
         
         // Panel derecho (chat)
@@ -204,6 +206,9 @@ public class VentanaPrincipal {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        
+     // Añadir un "pegamento" para evitar que los contactos se expandan
+        panel.add(Box.createVerticalGlue());
         return panel;
     }
     
@@ -443,6 +448,10 @@ public class VentanaPrincipal {
                 BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(240, 240, 240)),
                 BorderFactory.createEmptyBorder(10, 10, 10, 10)));
         panel.setBackground(Color.WHITE);
+        
+        // Establecer tamaño fijo
+        panel.setPreferredSize(new Dimension(250, 60)); // Ancho 250px, Alto 60px
+        panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60)); // Altura fija, ancho flexible
         
         // Configurar el hover effect
         panel.addMouseListener(new MouseAdapter() {
