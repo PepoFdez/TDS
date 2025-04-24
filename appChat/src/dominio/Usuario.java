@@ -133,7 +133,6 @@ public class Usuario {
 		return new LinkedList<>(contactosIndividuales);
 	}
 
-	//ver si manejamos grupos y contactos en el mismo conjunto
 	public void addContacto(Contacto contacto) {
 		this.contactos.add(contacto);
 		if (contacto instanceof ContactoIndividual) {
@@ -200,22 +199,20 @@ public class Usuario {
     }
     
 	public boolean tieneContactoConMovil(String movil2) {
-		for (ContactoIndividual contacto : contactosIndividuales)  {  
-			if (contacto.getUsuario().getMovil().equals(movil)) {
-				return true;
-		    }
-		}
-		return false;
+		
+		return contactosIndividuales.stream()
+									.map(c -> c.getUsuario().getMovil())
+									.allMatch(m -> m.equals(movil2));
 	}
 	
+
 	public ContactoIndividual getContactoConMovil(String movil2) {
-		for (ContactoIndividual contacto : contactosIndividuales)  {  
-			if (contacto.getUsuario().getMovil().equals(movil)) {
-				return contacto;
-		    }
-		}
-		return null;
+	    return contactosIndividuales.stream()
+	        .filter(contacto -> contacto.getUsuario().getMovil().equals(movil2))
+	        .findFirst()
+	        .orElse(null);
 	}
+
 
 	public Contacto enviarMensaje(Mensaje mensaje, int idContacto) {
 		// TODO Auto-generated method stub

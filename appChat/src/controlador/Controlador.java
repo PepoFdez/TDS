@@ -95,7 +95,6 @@ public enum Controlador {
 		if (saludo != null) userBuilder.addSaludo(saludo);
 		
 		Usuario usuario = userBuilder.build();
-		//Usuario usuario = new Usuario(nombre, apellidos, email, movil, password, fechaNacimiento, saludo, imagen, isPremium);
 		
 		usuarioDAO.registrarUsuario(usuario);
 		repositorioUsuarios.addUsuario(usuario);
@@ -133,7 +132,6 @@ public enum Controlador {
 
 	public List<Object> getContenidoMensajes(Contacto contacto) {
 		return contacto.getTextoMensajesEnviados();
-		
 	}
 
 	public List<String> getInfoMensajes(Contacto contacto) {
@@ -303,16 +301,15 @@ public enum Controlador {
 	}
 
 	public void modificarNombreContacto(Contacto contacto, String nuevoNombre) {
-		// TODO Auto-generated method stub
+		contacto.setNombre(nuevoNombre);
+		
 		if (contacto instanceof ContactoIndividual) {
-			((ContactoIndividual) contacto).setNombre(nuevoNombre);
 			contactoIndividualDAO.updateContactoIndividual((ContactoIndividual) contacto);
 		} else if (contacto instanceof Grupo) {
-			((Grupo) contacto).setNombre(nuevoNombre);
 			grupoDAO.updateGrupo((Grupo) contacto);
 		};
-		usuarioDAO.updateUsuario(usuarioActual);
 		
+		usuarioDAO.updateUsuario(usuarioActual);
 	}
 	
 }

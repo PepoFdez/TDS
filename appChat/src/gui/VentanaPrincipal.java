@@ -79,7 +79,7 @@ public class VentanaPrincipal {
     		}
             // Si hay un contacto seleccionado, actualizar también sus mensajes
             if (contactoSeleccionado != null) {
-                //cargarMensajes(contactoSeleccionado);
+                cargarMensajes(contactoSeleccionado);
             }
         });
         timer.setRepeats(true); // Para que se repita indefinidamente
@@ -281,6 +281,7 @@ public class VentanaPrincipal {
         
         chatScrollPane = new JScrollPane(chatPanel);
         chatScrollPane.setBorder(null);
+        chatScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         panel.add(chatScrollPane, BorderLayout.CENTER);
         
         // Panel de envío de mensajes
@@ -345,6 +346,11 @@ public class VentanaPrincipal {
         List<Object> textoMensajes = Controlador.INSTANCE.getContenidoMensajes(contacto);
         List<String> infoMensajes = Controlador.INSTANCE.getInfoMensajes(contacto);
         
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 0, 5, 0); // 5px de separación vertical
+        
         if (textoMensajes.isEmpty()) {
             JLabel emptyLabel = new JLabel("No hay mensajes con este contacto");
             emptyLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -370,7 +376,7 @@ public class VentanaPrincipal {
                     tipoBurbuja,
                     14 // Tamaño de fuente
                 );
-                chatPanel.add(burbuja);
+                chatPanel.add(burbuja, gbc);
             }
         }
         
@@ -397,7 +403,7 @@ public class VentanaPrincipal {
         Controlador.INSTANCE.enviarMensaje(contactoSeleccionado.getId(), contenido);
         
         // Actualizar el chat
-        //cargarMensajes(contactoSeleccionado);
+        cargarMensajes(contactoSeleccionado);
         messageField.setText("");
     }
     
