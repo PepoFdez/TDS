@@ -79,15 +79,18 @@ public class ChatPanel extends JPanel implements Scrollable {
         List<String> infoMensajes = Controlador.INSTANCE.getInfoMensajes(contacto);
         List<BubbleText> burbujas = textoMensajes.stream()
 			.map(texto -> {
-				String[] info = infoMensajes.get(textoMensajes.indexOf(texto)).split("\\|");
+				String[] info = infoMensajes.get(textoMensajes.indexOf(texto)).split(utils.Utils.SEPARATOR);
 				String fechaHora = info[0];
 				Integer tipo = Integer.parseInt(info[1]);
 				
-				Color color = tipo.equals(BubbleText.SENT) ? new Color(220, 248, 198) : Color.WHITE;
+				Color color = tipo.equals(BubbleText.SENT) ? new Color(220, 248, 198) : Color.LIGHT_GRAY;
 				String nombre = tipo.equals(BubbleText.SENT) ? "Tú" : contacto.getNombre();
 				int tipoBurbuja = tipo.equals(BubbleText.SENT) ? BubbleText.SENT : BubbleText.RECEIVED;
-				
-				return new BubbleText(this, texto.toString(), color, nombre + " - " + fechaHora, tipoBurbuja, 14);
+				if (texto instanceof Integer) {
+					return new BubbleText(this, (Integer) texto, color, nombre + " - " + fechaHora, tipoBurbuja, 24);
+				} else { 
+					return new BubbleText(this, (String) texto, color, nombre + " - " + fechaHora, tipoBurbuja, 14);
+				}
 			})
 			.collect(Collectors.toList());
         return burbujas;

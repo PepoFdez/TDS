@@ -141,9 +141,11 @@ public enum Controlador {
 	public void enviarMensaje(int id, String contenido) {
 		Mensaje mensajeSent = new Mensaje(contenido, BubbleText.SENT);
 		mensajeDAO.registrarMensaje(mensajeSent);
+
 		usuarioDAO.updateUsuario(usuarioActual);
 		//Añadir el contacto al usuario actual como enviado, se recibe el contacto por su id
 		Contacto receptor = this.usuarioActual.enviarMensaje(mensajeSent, id);
+		contactoIndividualDAO.updateContactoIndividual((ContactoIndividual) receptor);
 		//Añadir el mensaje al usuario asociado al contacto como recibido
 		//Si es un grupo, se añade a todos los miembros del grupo
 		//Si es un contacto individual, se añade al contacto, si existe.
@@ -166,7 +168,7 @@ public enum Controlador {
 		mensajeDAO.registrarMensaje(mensajeSent);
 		//Añadir el contacto al usuario actual como enviado
 		Contacto receptor = this.usuarioActual.enviarMensaje(mensajeSent, id);
-		
+		contactoIndividualDAO.updateContactoIndividual((ContactoIndividual) receptor);
 		if (receptor instanceof ContactoIndividual contactoIndividual) {
 			recibirMensaje("", emojiId, contactoIndividual);
 		} else if (receptor instanceof Grupo grupo) {
@@ -196,9 +198,11 @@ public enum Controlador {
 		boolean existe = receptor.getUsuario().tieneContactoConMovil(usuarioActual.getMovil());
 		//Si existe, se añade el mensaje al contacto como recibido
 		if (existe) {
-			receptor.getUsuario().getContactoConMovil(usuarioActual.getMovil()).addMensaje(mensajeRec);
+			Contacto opuestoContacto = receptor.getUsuario().getContactoConMovil(usuarioActual.getMovil());
+			opuestoContacto.addMensaje(mensajeRec);
 			mensajeDAO.registrarMensaje(mensajeRec);
-			usuarioDAO.updateUsuario(receptor.getUsuario());
+			contactoIndividualDAO.updateContactoIndividual((ContactoIndividual) opuestoContacto);
+			//usuarioDAO.updateUsuario(receptor.getUsuario());
 		} else {
 			//Si no existe, se crea el contacto con el número de teléfono del emisor como nombre
 			// y se añade el mensaje al contacto como recibido
@@ -207,8 +211,9 @@ public enum Controlador {
 			contactoIndividualDAO.registrarContactoIndividual((ContactoIndividual) nuevoContacto);
 			nuevoContacto.addMensaje(mensajeRec);
 			mensajeDAO.registrarMensaje(mensajeRec);
-			usuarioDAO.updateUsuario(receptor.getUsuario());
 			receptor.getUsuario().addContacto(nuevoContacto);
+			contactoIndividualDAO.updateContactoIndividual((ContactoIndividual) nuevoContacto);
+			usuarioDAO.updateUsuario(receptor.getUsuario());
 		}
 	}
 		

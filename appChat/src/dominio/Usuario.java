@@ -202,7 +202,7 @@ public class Usuario {
 		
 		return contactosIndividuales.stream()
 									.map(c -> c.getUsuario().getMovil())
-									.allMatch(m -> m.equals(movil2));
+									.anyMatch(m -> m.equals(movil2));
 	}
 	
 
