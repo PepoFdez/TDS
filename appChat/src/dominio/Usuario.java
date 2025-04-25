@@ -15,7 +15,7 @@ public class Usuario {
 	private String movil;
 	private String password;
 	private LocalDate fechaNacimiento;
-	private String URLimagen; //falta comprobar este atributo
+	private String URLimagen; 
 	private String saludo;
 	private boolean premium;
 	//private Descuento descuento;???
@@ -23,36 +23,6 @@ public class Usuario {
 	private final Set<Contacto> contactos = new HashSet<Contacto>(); //necesario definir los .equals y hashCode, pero aseguramos no duplicidad
 	private final List<ContactoIndividual> contactosIndividuales = new LinkedList<ContactoIndividual>();
 	
-	/*
-	 * Comento los constructores para probar a aplicar el patrón builder, usuario tiene muchos parámetros.
-	 * 
-	//completo para usarlo en la persistencia
-	public Usuario(String nombre, String apellidos, String email, String movil, String password,
-			LocalDate fechaNacimiento, String URLimagen, String saludo, boolean premium, LocalDate fechaRegistro) {
-		
-		this.nombre = nombre;
-		this.apellidos = apellidos;
-		this.email = email;
-		this.movil = movil;
-		this.password = password;
-		this.fechaNacimiento = fechaNacimiento;
-		this.saludo = saludo;
-		this.URLimagen = URLimagen;
-		this.premium = premium;
-		this.fechaRegistro = fechaRegistro;
-		
-	}
-	
-	
-	
-	//por defecto un usuario no es premium, sino que se activa después, ni tendrá contactos
-	public Usuario(String nombre, String apellidos, String email, String movil, String password,
-			LocalDate fechaNacimiento, String URLimagen, String saludo) {
-		this(nombre, apellidos, email, movil, password, fechaNacimiento, URLimagen, saludo, false, LocalDate.now());
-	}
-	
-	*/
-
 	private Usuario(Builder builder) {
         this.nombre = builder.nombre;
         this.apellidos = builder.apellidos;
@@ -142,10 +112,6 @@ public class Usuario {
 	public boolean isPremium() {
 		return premium;
 	}
-	
-	public void setPremium(boolean premium) {
-		this.premium = premium;
-	}
 
 	public void activarPremium() {
 		this.premium = true;
@@ -167,7 +133,6 @@ public class Usuario {
 		return new LinkedList<>(contactosIndividuales);
 	}
 
-	//ver si manejamos grupos y contactos en el mismo conjunto
 	public void addContacto(Contacto contacto) {
 		this.contactos.add(contacto);
 		if (contacto instanceof ContactoIndividual) {
@@ -234,22 +199,20 @@ public class Usuario {
     }
     
 	public boolean tieneContactoConMovil(String movil2) {
-		for (ContactoIndividual contacto : contactosIndividuales)  {  
-			if (contacto.getUsuario().getMovil().equals(movil)) {
-				return true;
-		    }
-		}
-		return false;
+		
+		return contactosIndividuales.stream()
+									.map(c -> c.getUsuario().getMovil())
+									.allMatch(m -> m.equals(movil2));
 	}
 	
+
 	public ContactoIndividual getContactoConMovil(String movil2) {
-		for (ContactoIndividual contacto : contactosIndividuales)  {  
-			if (contacto.getUsuario().getMovil().equals(movil)) {
-				return contacto;
-		    }
-		}
-		return null;
+	    return contactosIndividuales.stream()
+	        .filter(contacto -> contacto.getUsuario().getMovil().equals(movil2))
+	        .findFirst()
+	        .orElse(null);
 	}
+
 
 	public Contacto enviarMensaje(Mensaje mensaje, int idContacto) {
 		// TODO Auto-generated method stub
