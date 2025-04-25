@@ -314,5 +314,23 @@ public enum Controlador {
 		usuarioDAO.updateUsuario(usuarioActual);
 		
 	}
+
+	public boolean actualizarUsuario(String text, String text2, String text3, String nuevoPassword, String fechaNacimiento,
+			String text4, String text5) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public List<String> getDatosUsuario() {
+		List<String> datos = new LinkedList<>();
+		datos.add(usuarioActual.getNombre());
+		datos.add(usuarioActual.getApellidos());
+		datos.add(usuarioActual.getEmail());
+		datos.add(usuarioActual.getMovil());
+		datos.add(usuarioActual.getPassword());
+		datos.add(usuarioActual.getFechaNacimiento().format(Utils.formatoFecha));
+		datos.add(usuarioActual.getSaludo());
+		return datos;
+	}
 	
 }

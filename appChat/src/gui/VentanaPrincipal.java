@@ -14,10 +14,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
-import java.util.List;
+
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -37,556 +35,500 @@ import controlador.Controlador;
 import dominio.Contacto;
 
 public class VentanaPrincipal {
-    
-    private JFrame frame;
-    private LinkedList<Contacto> contactos;
-    private JPanel leftPanel;
-    private JPanel chatPanel; // Cambiado de JTextArea a JPanel
-    private JScrollPane chatScrollPane;
-    private JPanel rightPanel;
-    private JPanel contactInfoPanel;
-    private JLabel currentContactLabel;
-    private JLabel currentContactImage;
-    private JTextField messageField;
-    private Contacto contactoSeleccionado;
-    private JButton emojiButton;
-    private JButton premiumButton;
 
-    public VentanaPrincipal() {
-        BubbleText.noZoom(); // Desactivar zoom automático para HiDPI
-        initialize();
-        loadContacts(); // Cargar contactos al iniciar
-        
-        // Iniciar timer para actualización periódica
-        iniciarTimerActualizacionContactos(2000); // 2000 ms = 2 segundos
-    }
-    
-    public void mostrarVentana() {
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-    }
-    
-    private void iniciarTimerActualizacionContactos(int delayMillis) {
-        Timer timer = new Timer(delayMillis, e -> {
-            // Esto se ejecutará periódicamente en el EDT
-            loadContacts();
-            if (Controlador.INSTANCE.isUsuarioPremium()) {
-    			premiumButton.setText("Premium Activo");
-    			premiumButton.setForeground(new Color(0, 102, 204));
-    		} else {
-    			premiumButton.setText("Activar Premium");
-    			premiumButton.setForeground(Color.RED);
-    		}
-            // Si hay un contacto seleccionado, actualizar también sus mensajes
-            if (contactoSeleccionado != null) {
-                //cargarMensajes(contactoSeleccionado);
-            }
-        });
-        timer.setRepeats(true); // Para que se repita indefinidamente
-        timer.start(); // Iniciar el timer
-    }
-    
-    private void initialize() {
-        // Crear el marco principal
-        frame = new JFrame("AppChat");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(1000, 700);
-        frame.setMinimumSize(new Dimension(800, 600));
-        frame.getContentPane().setLayout(new BorderLayout());
+	private JFrame frame;
+	private LinkedList<Contacto> contactos;
+	private JPanel leftPanel;
+	private ChatPanel chatPanel; // Cambiado de JTextArea a JPanel
+	private JScrollPane chatScrollPane;
+	private JPanel rightPanel;
+	private JPanel contactInfoPanel;
+	private JLabel currentContactLabel;
+	private JLabel currentContactImage;
+	private JTextField messageField;
+	private Contacto contactoSeleccionado;
+	private JButton emojiButton;
+	private JButton premiumButton;
 
-        // Panel superior con barra de herramientas
-        JPanel topPanel = createTopPanel();// Crear línea separadora
-        JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
-        separator.setForeground(new Color(180, 180, 180));
-        
-        JPanel northPanel = new JPanel(new BorderLayout());
-        northPanel.add(topPanel, BorderLayout.CENTER);
-        northPanel.add(separator, BorderLayout.SOUTH);
-        
-        frame.getContentPane().add(northPanel, BorderLayout.NORTH);
-        frame.getContentPane().add(topPanel, BorderLayout.NORTH);
+	public VentanaPrincipal() {
+		BubbleText.noZoom(); // Desactivar zoom automático para HiDPI
+		initialize();
+		loadContacts(); // Cargar contactos al iniciar
 
-        // Panel principal (izquierda + derecha)
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        
-        // Panel izquierdo (lista de contactos)
-        leftPanel = createContactsPanel();
-        JScrollPane leftScrollPane = new JScrollPane(leftPanel);
-        leftScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        //ajustar el tamaño de los contactos, para que no aparezca el scroll horizontal, mientras, lo desactivo
-        leftScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        leftScrollPane.setPreferredSize(new Dimension(250, 0));
-        
-        // Panel derecho (chat)
-        rightPanel = createChatPanel();
-        
-        mainPanel.add(leftScrollPane, BorderLayout.WEST);
-        mainPanel.add(rightPanel, BorderLayout.CENTER);
-        
-        frame.getContentPane().add(mainPanel, BorderLayout.CENTER);
-        
-        // Cargar datos iniciales
-        loadContacts();
-    }
-    
-    private JPanel createTopPanel() {
-        JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        
-        // Panel izquierdo con logo y título
-        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
-        
-        // Cargar logo
-        try {
-            ImageIcon logoIcon = new ImageIcon("resources/logo3.png");
-            Image logoImage = logoIcon.getImage().getScaledInstance(55, 55, Image.SCALE_SMOOTH);
-            JLabel logoLabel = new JLabel(new ImageIcon(logoImage));
-            leftPanel.add(logoLabel);
-        } catch (Exception e) {
-            System.err.println("Error al cargar el logo: " + e.getMessage());
-        }
-        
-        // Añadir título "CHATS"
-        JLabel chatsLabel = new JLabel("CHATS");
-        chatsLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        chatsLabel.setForeground(new Color(0, 102, 204)); // Color azul
-        leftPanel.add(chatsLabel);
-        
-        // Panel central con botones
-        JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
-        
-        // Botón de buscar mensajes
-        JButton searchMessagesButton = new JButton("Buscar mensajes");
-        searchMessagesButton.addActionListener(e -> {
-            Buscador buscador = new Buscador();
-            buscador.mostrarVentana();
-        });
-        centerPanel.add(searchMessagesButton);
-        
-        // Botón de contactos
-        JButton contactsButton = new JButton("Contactos");
-        contactsButton.addActionListener(e -> {
-            VentanaContactos ventanaContactos = new VentanaContactos();
-            ventanaContactos.mostrarVentana();
-        });
-        centerPanel.add(contactsButton);
-        
-        // Botón premium
-        premiumButton = new JButton("Premium");
-        if (Controlador.INSTANCE.isUsuarioPremium()) {
-            premiumButton.setText("Premium Activo");
-            premiumButton.setForeground(new Color(0, 102, 204));
-        } else {
-            premiumButton.setText("Activar Premium");
-            premiumButton.setForeground(Color.RED);
-        }
-        premiumButton.addActionListener(e -> {
-            if (Controlador.INSTANCE.isUsuarioPremium()) {
-                VentanaPremiumActivo ventanaPremium = new VentanaPremiumActivo();
-                ventanaPremium.mostrarVentana();
-            } else {
-                VentanaPremium ventanaPremium = new VentanaPremium();
-                ventanaPremium.mostrarVentana();
-            }
-        });
-        centerPanel.add(premiumButton);
-        
-        // Panel de usuario actual (con borde)
-        JPanel userPanel = createUserPanel();
-        userPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200, 200, 200)),
-                BorderFactory.createEmptyBorder(5, 10, 5, 10)));
-        
-        // Añadir componentes al panel superior
-        topPanel.add(leftPanel, BorderLayout.WEST);
-        topPanel.add(centerPanel, BorderLayout.CENTER);
-        topPanel.add(userPanel, BorderLayout.EAST);
-        
-        return topPanel;
-    }
+		// Iniciar timer para actualización periódica
+		iniciarTimerActualizacionContactos(2000); // 2000 ms = 2 segundos
+	}
 
-    private JPanel createUserPanel() {
-        JPanel userPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-        
-        // Botón de cerrar sesión
-        JButton logoutButton = new JButton("Cerrar sesión");
-        logoutButton.setFont(new Font("Arial", Font.PLAIN, 12));
-        logoutButton.addActionListener(e -> {
-            int confirm = JOptionPane.showConfirmDialog(frame, 
-                "¿Estás seguro de que quieres cerrar sesión?", 
-                "Confirmar cierre de sesión", 
-                JOptionPane.YES_NO_OPTION);
-            
-            if (confirm == JOptionPane.YES_OPTION) {
-                frame.dispose();
-                new Login().mostrarVentana();
-            }
-        });
-        userPanel.add(logoutButton);
-        
-        String nombreUsuario = Controlador.INSTANCE.getNombreUsuario();
-        
-        JLabel userNameLabel = new JLabel(nombreUsuario);
-        userNameLabel.setFont(new Font("Arial", Font.BOLD, 12));
-        
-        // Cargar imagen de perfil
-        ImageIcon icono = null;
-        String URLimagenContacto = Controlador.INSTANCE.getURLImagenUsuario();
-        Image imgEscalada = getImagenContactoEscalada(URLimagenContacto, icono);
-        JLabel userImage = new JLabel(new ImageIcon(imgEscalada));
-        
-        userPanel.add(userNameLabel);
-        userPanel.add(userImage);
-        
-        return userPanel;
-    }
-    
-    private JPanel createContactsPanel() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        
-     // Añadir un "pegamento" para evitar que los contactos se expandan
-        panel.add(Box.createVerticalGlue());
-        return panel;
-    }
-    
-    private JPanel createChatPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
-        
-        // Panel superior con información del contacto
-        contactInfoPanel = new JPanel(new BorderLayout());
-        contactInfoPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY),
-                BorderFactory.createEmptyBorder(10, 15, 10, 15)));
-        
-        currentContactLabel = new JLabel("Selecciona un contacto");
-        currentContactLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        
-        currentContactImage = new JLabel();
-        currentContactImage.setPreferredSize(new Dimension(40, 40));
-        
-        JPanel contactPanel = new JPanel(new BorderLayout(10, 0));
-        contactPanel.add(currentContactLabel, BorderLayout.CENTER);
-        contactPanel.add(currentContactImage, BorderLayout.EAST);
-        
-        contactInfoPanel.add(contactPanel, BorderLayout.NORTH);
-        panel.add(contactInfoPanel, BorderLayout.NORTH);
-        
-        // Área de chat con BubbleText
-        chatPanel = new JPanel();
-        chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
-        chatPanel.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
-        chatPanel.setBackground(Color.WHITE);
-        
-        chatScrollPane = new JScrollPane(chatPanel);
-        chatScrollPane.setBorder(null);
-        panel.add(chatScrollPane, BorderLayout.CENTER);
-        
-        // Panel de envío de mensajes
-        JPanel messagePanel = new JPanel(new BorderLayout(5, 5));
-        messagePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        
-        // Panel para botón de emoticonos y campo de texto
-        JPanel inputPanel = new JPanel(new BorderLayout(5, 0));
-        
-        emojiButton = new JButton("😊");
-        emojiButton.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 16));
-        emojiButton.setPreferredSize(new Dimension(40, 30));
-        emojiButton.addActionListener(this::mostrarSelectorEmojis);
-        
-        inputPanel.add(emojiButton, BorderLayout.WEST);
-        
-        messageField = new JTextField();
-        messageField.setToolTipText("Escribe tu mensaje aquí");
-        inputPanel.add(messageField, BorderLayout.CENTER);
-        
-        JButton sendButton = new JButton("Enviar");
-        sendButton.setPreferredSize(new Dimension(80, 0));
-        sendButton.addActionListener(this::enviarMensaje);
-        
-        messagePanel.add(inputPanel, BorderLayout.CENTER);
-        messagePanel.add(sendButton, BorderLayout.EAST);
-        panel.add(messagePanel, BorderLayout.SOUTH);
-        
-        // Mensaje inicial
-        mostrarMensajeInicial();
-        
-        return panel;
-    }
+	public void mostrarVentana() {
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
+	}
 
-    private void mostrarMensajeInicial() {
-        chatPanel.removeAll();
-        JLabel initLabel = new JLabel("Selecciona un contacto para comenzar a chatear");
-        initLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        initLabel.setForeground(Color.GRAY);
-        chatPanel.add(initLabel);
-        chatPanel.revalidate();
-        chatPanel.repaint();
-    }
+	private void iniciarTimerActualizacionContactos(int delayMillis) {
+		Timer timer = new Timer(delayMillis, e -> {
+			// Esto se ejecutará periódicamente en el EDT
+			loadContacts();
+			if (Controlador.INSTANCE.isUsuarioPremium()) {
+				premiumButton.setText("Premium Activo");
+				premiumButton.setForeground(new Color(0, 102, 204));
+			} else {
+				premiumButton.setText("Activar Premium");
+				premiumButton.setForeground(Color.RED);
+			}
+			// Si hay un contacto seleccionado, actualizar también sus mensajes
+			if (contactoSeleccionado != null) {
+				// cargarMensajes(contactoSeleccionado);
+			}
+		});
+		timer.setRepeats(true); // Para que se repita indefinidamente
+		timer.start(); // Iniciar el timer
+	}
 
-    private void seleccionarContacto(Contacto contacto) {
-        this.contactoSeleccionado = contacto;
-        
-        // Actualizar panel de información del contacto
-        currentContactLabel.setText(contacto.getNombre());
-        ImageIcon icono = null;
-        String URLimagenContacto = Controlador.INSTANCE.getURLImagenContacto(contacto);
-        Image imgEscalada = getImagenContactoEscalada(URLimagenContacto, icono);
-        currentContactImage.setIcon(new ImageIcon(imgEscalada));
-        
-        // Cargar mensajes del chat
-        cargarMensajes(contacto);
-    }
-    
-    private void cargarMensajes(Contacto contacto) {
-        chatPanel.removeAll();
-        
-        List<Object> textoMensajes = Controlador.INSTANCE.getContenidoMensajes(contacto);
-        List<String> infoMensajes = Controlador.INSTANCE.getInfoMensajes(contacto);
-        
-        if (textoMensajes.isEmpty()) {
-            JLabel emptyLabel = new JLabel("No hay mensajes con este contacto");
-            emptyLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            emptyLabel.setForeground(Color.GRAY);
-            chatPanel.add(emptyLabel);
-        } else {
-            for (int i = 0; i < textoMensajes.size(); i++) {
-                Object texto = textoMensajes.get(i);
-                String[] info = infoMensajes.get(i).split("\\|");
-                String fechaHora = info[0];
-                Integer tipo = 0;
-                
-                Color color = tipo.equals(BubbleText.SENT) ? new Color(220, 248, 198) : Color.WHITE;
-                String nombre = tipo.equals("SENT") ? "Tú" : contacto.getNombre();
-                int tipoBurbuja = tipo.equals("SENT") ? BubbleText.SENT : BubbleText.RECEIVED;
-                
-                // Crear burbuja de chat
-                BubbleText burbuja = new BubbleText(
-                    chatPanel, 
-                    texto.toString(), //MIRA ESTO QUE LO HE PUESTO PARA QUE NO DE ERROR
-                    color, 
-                    nombre + " - " + fechaHora, 
-                    tipoBurbuja,
-                    14 // Tamaño de fuente
-                );
-                chatPanel.add(burbuja);
-            }
-        }
-        
-        chatPanel.revalidate();
-        chatPanel.repaint();
-        
-        // Mover el scroll al final
-        chatScrollPane.getVerticalScrollBar().setValue(chatScrollPane.getVerticalScrollBar().getMaximum());
-    }
-    
-    private void enviarMensaje(ActionEvent e) {
-        if (contactoSeleccionado == null) {
-            JOptionPane.showMessageDialog(frame, 
-                "Selecciona un contacto primero", 
-                "Error", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        
-        String contenido = messageField.getText().trim();
-        if (contenido.isEmpty()) {
-            return;
-        }
-        
-        Controlador.INSTANCE.enviarMensaje(contactoSeleccionado.getId(), contenido);
-        
-        // Actualizar el chat
-        //cargarMensajes(contactoSeleccionado);
-        messageField.setText("");
-    }
-    
-    private void mostrarSelectorEmojis(ActionEvent e) {
-        if (contactoSeleccionado == null) {
-            JOptionPane.showMessageDialog(frame, 
-                "Selecciona un contacto primero", 
-                "Error", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        
-        JFrame emojiFrame = new JFrame("Seleccionar Emoji");
-        emojiFrame.setSize(400, 300);
-        emojiFrame.setLayout(new BorderLayout());
-        
-        JPanel emojiPanel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        
-        // Mostrar los primeros 12 emojis como ejemplo
-        for (int i = 0; i < 12; i++) {
-            final int emojiId = i; // Crear una variable final para usar en el lambda
-            JButton emojiBtn = new JButton();
-            emojiBtn.setIcon(BubbleText.getEmoji(emojiId));
-            emojiBtn.addActionListener(ev -> {
-                enviarEmoji(emojiId);
-                emojiFrame.dispose();
-            });
-            
-            gbc.gridx = emojiId % 4;
-            gbc.gridy = emojiId / 4;
-            emojiPanel.add(emojiBtn, gbc);
-        }
-        
-        emojiFrame.add(new JScrollPane(emojiPanel), BorderLayout.CENTER);
-        emojiFrame.setLocationRelativeTo(frame);
-        emojiFrame.setVisible(true);
-    }
-    
-    private void enviarEmoji(int emojiId) {
-        Color color = new Color(220, 248, 198); // Color para mensajes enviados
-        BubbleText burbuja = new BubbleText(
-            chatPanel, 
-            emojiId, 
-            color, 
-            LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")), 
-            BubbleText.SENT,
-            24 // Tamaño del emoji
-        );
-        chatPanel.add(burbuja);
-        
-        // Enviar el emoji al controlador
-        Controlador.INSTANCE.enviarEmoji(contactoSeleccionado.getId(), emojiId);
-        
-        chatPanel.revalidate();
-        chatPanel.repaint();
-        chatScrollPane.getVerticalScrollBar().setValue(chatScrollPane.getVerticalScrollBar().getMaximum());
-    }
-    
-    private void loadContacts() {
-        contactos = Controlador.INSTANCE.getContactosUsuario();
-        leftPanel.removeAll();
-        
-        if (contactos.isEmpty()) {
-            JLabel emptyLabel = new JLabel("No tienes contactos");
-            emptyLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            leftPanel.add(emptyLabel);
-        } else {
-            for (Contacto contacto : contactos) {
-                JPanel contactPanel = createContactPanel(contacto);
-                leftPanel.add(contactPanel);
-            }
-        }
-        
-        leftPanel.revalidate();
-        leftPanel.repaint();
-    }
-    
-    private JPanel createContactPanel(Contacto contacto) {
-        JPanel panel = new JPanel(new BorderLayout(10, 0));
-        panel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(240, 240, 240)),
-                BorderFactory.createEmptyBorder(10, 10, 10, 10)));
-        panel.setBackground(Color.WHITE);
-        
-        // Establecer tamaño fijo
-        panel.setPreferredSize(new Dimension(250, 60)); // Ancho 250px, Alto 60px
-        panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60)); // Altura fija, ancho flexible
-        
-        // Configurar el hover effect
-        panel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                panel.setBackground(new Color(245, 245, 245));
-            }
-            
-            @Override
-            public void mouseExited(MouseEvent e) {
-                panel.setBackground(Color.WHITE);
-            }
-            
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                seleccionarContacto(contacto);
-            }
-        });
-        
-        // Imagen del contacto
-        JLabel imageLabel = new JLabel();
-        ImageIcon icono = null;
-        String URLimagenContacto = Controlador.INSTANCE.getURLImagenContacto(contacto);
-        Image imgEscalada = getImagenContactoEscalada(URLimagenContacto, icono);
-		 //ImageIcon icono = new ImageIcon("phphotos/pfp.jpg");
-        imageLabel.setIcon(new ImageIcon(imgEscalada));
-        
-        
-        // Nombre del contacto
-        JLabel nameLabel = new JLabel(contacto.getNombre());
-        nameLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        
-        // Último mensaje (podrías obtenerlo del controlador)
-        //String ultMsg = Controlador.INSTANCE.getUltimoMensaje(contacto);
-        JLabel lastMsgLabel = new JLabel("Último mensaje...");
-        lastMsgLabel.setFont(new Font("Arial", Font.PLAIN, 11));
-        lastMsgLabel.setForeground(Color.GRAY);
-        
-        JPanel textPanel = new JPanel();
-        textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
-        textPanel.setOpaque(false);
-        textPanel.add(nameLabel);
-        textPanel.add(lastMsgLabel);
-        
-     // Botón de edición (tres puntos verticales)
-        JButton editButton = new JButton("Editar");
-        editButton.setFont(new Font("Arial", Font.PLAIN, 14));
-        editButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-        editButton.setContentAreaFilled(false);
-        editButton.setFocusPainted(false);
-        editButton.setOpaque(false);
-        editButton.addActionListener(e -> {
-            // Evitar que el evento se propague al panel del contacto
-            //e.stopPropagation();
-            // Aquí abriremos la ventana ModificarContacto en el futuro
-            new ModificarContacto(contacto).mostrarVentana();
-        });
-        
-        // Panel para el botón de edición
-        JPanel buttonPanel = new JPanel(new BorderLayout());
-        buttonPanel.setOpaque(false);
-        buttonPanel.add(editButton, BorderLayout.CENTER);
-        
-        panel.add(imageLabel, BorderLayout.WEST);
-        panel.add(textPanel, BorderLayout.CENTER);
-        panel.add(buttonPanel, BorderLayout.EAST);
-        
-        return panel;
-    }
-    
-    private Image getImagenContactoEscalada(String URLimagenContacto, ImageIcon icono) {
-        try {
-        	if (URLimagenContacto != null && !URLimagenContacto.isEmpty()) {
-                URL url = new URL(URLimagenContacto);
-                icono = new ImageIcon(url);
-            } else {
-                icono = new ImageIcon("phphotos/pfp.jpg");
-            }
-            Image imgEscalada = icono.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
-            
-    		return imgEscalada;
+	private void initialize() {
+		// Crear el marco principal
+		frame = new JFrame("AppChat");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(1000, 700);
+		frame.setMinimumSize(new Dimension(800, 600));
+		frame.getContentPane().setLayout(new BorderLayout());
+
+		// Panel superior con barra de herramientas
+		JPanel topPanel = createTopPanel();// Crear línea separadora
+		JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
+		separator.setForeground(new Color(180, 180, 180));
+
+		JPanel northPanel = new JPanel(new BorderLayout());
+		northPanel.add(topPanel, BorderLayout.CENTER);
+		northPanel.add(separator, BorderLayout.SOUTH);
+
+		frame.getContentPane().add(northPanel, BorderLayout.NORTH);
+		frame.getContentPane().add(topPanel, BorderLayout.NORTH);
+
+		// Panel principal (izquierda + derecha)
+		JPanel mainPanel = new JPanel(new BorderLayout());
+
+		// Panel izquierdo (lista de contactos)
+		leftPanel = createContactsPanel();
+		JScrollPane leftScrollPane = new JScrollPane(leftPanel);
+		leftScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		// ajustar el tamaño de los contactos, para que no aparezca el scroll
+		// horizontal, mientras, lo desactivo
+		leftScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		leftScrollPane.setPreferredSize(new Dimension(250, 0));
+
+		// Panel derecho (chat)
+		rightPanel = createChatPanel();
+
+		mainPanel.add(leftScrollPane, BorderLayout.WEST);
+		mainPanel.add(rightPanel, BorderLayout.CENTER);
+
+		frame.getContentPane().add(mainPanel, BorderLayout.CENTER);
+
+		// Cargar datos iniciales
+		loadContacts();
+	}
+
+	private JPanel createTopPanel() {
+		JPanel topPanel = new JPanel(new BorderLayout());
+		topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+		// Panel izquierdo con logo y título
+		JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+
+		// Cargar logo
+		try {
+			ImageIcon logoIcon = new ImageIcon("resources/logo3.png");
+			Image logoImage = logoIcon.getImage().getScaledInstance(55, 55, Image.SCALE_SMOOTH);
+			JLabel logoLabel = new JLabel(new ImageIcon(logoImage));
+			leftPanel.add(logoLabel);
+		} catch (Exception e) {
+			System.err.println("Error al cargar el logo: " + e.getMessage());
+		}
+
+		// Añadir título "CHATS"
+		JLabel chatsLabel = new JLabel("CHATS");
+		chatsLabel.setFont(new Font("Arial", Font.BOLD, 18));
+		chatsLabel.setForeground(new Color(0, 102, 204)); // Color azul
+		leftPanel.add(chatsLabel);
+
+		// Panel central con botones
+		JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
+
+		// Botón de buscar mensajes
+		JButton searchMessagesButton = new JButton("Buscar mensajes");
+		searchMessagesButton.addActionListener(e -> {
+			Buscador buscador = new Buscador();
+			buscador.mostrarVentana();
+		});
+		centerPanel.add(searchMessagesButton);
+
+		// Botón de contactos
+		JButton contactsButton = new JButton("Contactos");
+		contactsButton.addActionListener(e -> {
+			VentanaContactos ventanaContactos = new VentanaContactos();
+			ventanaContactos.mostrarVentana();
+		});
+		centerPanel.add(contactsButton);
+
+		// Botón premium
+		premiumButton = new JButton("Premium");
+		if (Controlador.INSTANCE.isUsuarioPremium()) {
+			premiumButton.setText("Premium Activo");
+			premiumButton.setForeground(new Color(0, 102, 204));
+		} else {
+			premiumButton.setText("Activar Premium");
+			premiumButton.setForeground(Color.RED);
+		}
+		premiumButton.addActionListener(e -> {
+			if (Controlador.INSTANCE.isUsuarioPremium()) {
+				VentanaPremiumActivo ventanaPremium = new VentanaPremiumActivo();
+				ventanaPremium.mostrarVentana();
+			} else {
+				VentanaPremium ventanaPremium = new VentanaPremium();
+				ventanaPremium.mostrarVentana();
+			}
+		});
+		centerPanel.add(premiumButton);
+
+		// Panel de usuario actual (con borde)
+		JPanel userPanel = createUserPanel();
+		userPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)),
+				BorderFactory.createEmptyBorder(5, 10, 5, 10)));
+
+		// Añadir componentes al panel superior
+		topPanel.add(leftPanel, BorderLayout.WEST);
+		topPanel.add(centerPanel, BorderLayout.CENTER);
+		topPanel.add(userPanel, BorderLayout.EAST);
+
+		return topPanel;
+	}
+
+	private JPanel createUserPanel() {
+	    JPanel userPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+
+	    // Botón de cerrar sesión
+	    JButton logoutButton = new JButton("Cerrar sesión");
+	    logoutButton.setFont(new Font("Arial", Font.PLAIN, 12));
+	    logoutButton.addActionListener(e -> {
+	        int confirm = JOptionPane.showConfirmDialog(frame, "¿Estás seguro de que quieres cerrar sesión?",
+	                "Confirmar cierre de sesión", JOptionPane.YES_NO_OPTION);
+
+	        if (confirm == JOptionPane.YES_OPTION) {
+	            frame.dispose();
+	            new Login().mostrarVentana();
+	        }
+	    });
+	    userPanel.add(logoutButton);
+
+	    // Botón de configuración (engranaje)
+	    JButton settingsButton = new JButton("⚙"); // Símbolo de engranaje
+	    settingsButton.setFont(new Font("Arial", Font.PLAIN, 14));
+	    settingsButton.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+	    settingsButton.setContentAreaFilled(false);
+	    settingsButton.addActionListener(e -> {
+	        // Abrir ventana ModificarUsuario (a implementar más tarde)
+	        new ModificarUsuario(frame).mostrarVentana();
+	    });
+	    userPanel.add(settingsButton);
+
+	    String nombreUsuario = Controlador.INSTANCE.getNombreUsuario();
+
+	    JLabel userNameLabel = new JLabel(nombreUsuario);
+	    userNameLabel.setFont(new Font("Arial", Font.BOLD, 12));
+
+	    // Cargar imagen de perfil
+	    ImageIcon icono = null;
+	    String URLimagenContacto = Controlador.INSTANCE.getURLImagenUsuario();
+	    Image imgEscalada = getImagenContactoEscalada(URLimagenContacto, icono);
+	    JLabel userImage = new JLabel(new ImageIcon(imgEscalada));
+
+	    userPanel.add(userNameLabel);
+	    userPanel.add(userImage);
+
+	    return userPanel;
+	}
+
+	private JPanel createContactsPanel() {
+		JPanel panel = new JPanel();
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+		// Añadir un "pegamento" para evitar que los contactos se expandan
+		panel.add(Box.createVerticalGlue());
+		return panel;
+	}
+
+	private JPanel createChatPanel() {
+		JPanel panel = new JPanel(new BorderLayout());
+
+		// Panel superior con información del contacto
+		contactInfoPanel = new JPanel(new BorderLayout());
+		contactInfoPanel.setBorder(
+				BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY),
+						BorderFactory.createEmptyBorder(10, 15, 10, 15)));
+
+		currentContactLabel = new JLabel("Selecciona un contacto");
+		currentContactLabel.setFont(new Font("Arial", Font.BOLD, 16));
+
+		currentContactImage = new JLabel();
+		currentContactImage.setPreferredSize(new Dimension(40, 40));
+
+		JPanel contactPanel = new JPanel(new BorderLayout(10, 0));
+		contactPanel.add(currentContactLabel, BorderLayout.CENTER);
+		contactPanel.add(currentContactImage, BorderLayout.EAST);
+
+		contactInfoPanel.add(contactPanel, BorderLayout.NORTH);
+		panel.add(contactInfoPanel, BorderLayout.NORTH);
+
+		// Área de chat con nuestro nuevo ChatPanel
+		chatPanel = new ChatPanel();
+		chatScrollPane = new JScrollPane(chatPanel);
+		chatScrollPane.setBorder(null);
+		panel.add(chatScrollPane, BorderLayout.CENTER);
+
+		JPanel messagePanel = new JPanel(new BorderLayout(5, 5));
+		messagePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		
+
+		// Panel para botón de emoticonos y campo de texto
+		JPanel inputPanel = new JPanel(new BorderLayout(5, 0));
+
+		emojiButton = new JButton("😊");
+		emojiButton.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 16));
+		emojiButton.setPreferredSize(new Dimension(40, 30));
+		emojiButton.addActionListener(this::mostrarSelectorEmojis);
+
+		inputPanel.add(emojiButton, BorderLayout.WEST);
+
+		messageField = new JTextField();
+		messageField.setToolTipText("Escribe tu mensaje aquí");
+		inputPanel.add(messageField, BorderLayout.CENTER);
+
+		JButton sendButton = new JButton("Enviar");
+		sendButton.setPreferredSize(new Dimension(80, 0));
+		sendButton.addActionListener(this::enviarMensaje);
+
+		messagePanel.add(inputPanel, BorderLayout.CENTER);
+		messagePanel.add(sendButton, BorderLayout.EAST);
+		panel.add(messagePanel, BorderLayout.SOUTH);
+
+		// Mensaje inicial
+		mostrarMensajeInicial();
+
+		return panel;
+	}
+
+	private void mostrarMensajeInicial() {
+		chatPanel.removeAll();
+		JLabel initLabel = new JLabel("Selecciona un contacto para comenzar a chatear");
+		initLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		initLabel.setForeground(Color.GRAY);
+		chatPanel.add(initLabel);
+		chatPanel.revalidate();
+		chatPanel.repaint();
+	}
+
+	private void seleccionarContacto(Contacto contacto) {
+		this.contactoSeleccionado = contacto;
+
+		// Actualizar panel de información del contacto
+		currentContactLabel.setText(contacto.getNombre());
+		ImageIcon icono = null;
+		String URLimagenContacto = Controlador.INSTANCE.getURLImagenContacto(contacto);
+		Image imgEscalada = getImagenContactoEscalada(URLimagenContacto, icono);
+		currentContactImage.setIcon(new ImageIcon(imgEscalada));
+
+		// Cargar mensajes del chat
+		cargarMensajes(contacto);
+	}
+
+	private void cargarMensajes(Contacto contacto) {
+		chatPanel.mostrarChat(contacto);
+	}
+
+	private void enviarMensaje(ActionEvent e) {
+		if (contactoSeleccionado == null) {
+	        JOptionPane.showMessageDialog(frame, 
+	            "Selecciona un contacto primero", 
+	            "Error", JOptionPane.WARNING_MESSAGE);
+	        return;
+	    }
+	    
+	    String contenido = messageField.getText().trim();
+	    if (contenido.isEmpty()) {
+	        return;
+	    }
+	    
+	    Controlador.INSTANCE.enviarMensaje(contactoSeleccionado.getId(), contenido);
+	    chatPanel.enviarMensaje(contenido);
+	    messageField.setText("");
+	}
+
+	private void mostrarSelectorEmojis(ActionEvent e) {
+		if (contactoSeleccionado == null) {
+			JOptionPane.showMessageDialog(frame, "Selecciona un contacto primero", "Error",
+					JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+
+		JFrame emojiFrame = new JFrame("Seleccionar Emoji");
+		emojiFrame.setSize(400, 300);
+		emojiFrame.setLayout(new BorderLayout());
+
+		JPanel emojiPanel = new JPanel(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.insets = new Insets(5, 5, 5, 5);
+
+		// Mostrar los primeros 12 emojis como ejemplo
+		for (int i = 0; i < 12; i++) {
+			final int emojiId = i; // Crear una variable final para usar en el lambda
+			JButton emojiBtn = new JButton();
+			emojiBtn.setIcon(BubbleText.getEmoji(emojiId));
+			emojiBtn.addActionListener(ev -> {
+				enviarEmoji(emojiId);
+				emojiFrame.dispose();
+			});
+
+			gbc.gridx = emojiId % 4;
+			gbc.gridy = emojiId / 4;
+			emojiPanel.add(emojiBtn, gbc);
+		}
+
+		emojiFrame.add(new JScrollPane(emojiPanel), BorderLayout.CENTER);
+		emojiFrame.setLocationRelativeTo(frame);
+		emojiFrame.setVisible(true);
+	}
+
+	private void enviarEmoji(int emojiId) {
+		chatPanel.enviarEmoji(emojiId);
+	    Controlador.INSTANCE.enviarEmoji(contactoSeleccionado.getId(), emojiId);
+	}
+
+	private void loadContacts() {
+		contactos = Controlador.INSTANCE.getContactosUsuario();
+		leftPanel.removeAll();
+
+		if (contactos.isEmpty()) {
+			JLabel emptyLabel = new JLabel("No tienes contactos");
+			emptyLabel.setHorizontalAlignment(SwingConstants.CENTER);
+			leftPanel.add(emptyLabel);
+		} else {
+			for (Contacto contacto : contactos) {
+				JPanel contactPanel = createContactPanel(contacto);
+				leftPanel.add(contactPanel);
+			}
+		}
+
+		leftPanel.revalidate();
+		leftPanel.repaint();
+	}
+
+	private JPanel createContactPanel(Contacto contacto) {
+		JPanel panel = new JPanel(new BorderLayout(10, 0));
+		panel.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(240, 240, 240)),
+				BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+		panel.setBackground(Color.WHITE);
+
+		// Establecer tamaño fijo
+		panel.setPreferredSize(new Dimension(250, 60)); // Ancho 250px, Alto 60px
+		panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60)); // Altura fija, ancho flexible
+
+		// Configurar el hover effect
+		panel.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				panel.setBackground(new Color(245, 245, 245));
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				panel.setBackground(Color.WHITE);
+			}
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				seleccionarContacto(contacto);
+			}
+		});
+
+		// Imagen del contacto
+		JLabel imageLabel = new JLabel();
+		ImageIcon icono = null;
+		String URLimagenContacto = Controlador.INSTANCE.getURLImagenContacto(contacto);
+		Image imgEscalada = getImagenContactoEscalada(URLimagenContacto, icono);
+		// ImageIcon icono = new ImageIcon("phphotos/pfp.jpg");
+		imageLabel.setIcon(new ImageIcon(imgEscalada));
+
+		// Nombre del contacto
+		JLabel nameLabel = new JLabel(contacto.getNombre());
+		nameLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+
+		// Último mensaje (podrías obtenerlo del controlador)
+		// String ultMsg = Controlador.INSTANCE.getUltimoMensaje(contacto);
+		JLabel lastMsgLabel = new JLabel("Último mensaje...");
+		lastMsgLabel.setFont(new Font("Arial", Font.PLAIN, 11));
+		lastMsgLabel.setForeground(Color.GRAY);
+
+		JPanel textPanel = new JPanel();
+		textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
+		textPanel.setOpaque(false);
+		textPanel.add(nameLabel);
+		textPanel.add(lastMsgLabel);
+
+		// Botón de edición (tres puntos verticales)
+		JButton editButton = new JButton("Editar");
+		editButton.setFont(new Font("Arial", Font.PLAIN, 14));
+		editButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+		editButton.setContentAreaFilled(false);
+		editButton.setFocusPainted(false);
+		editButton.setOpaque(false);
+		editButton.addActionListener(e -> {
+			// Evitar que el evento se propague al panel del contacto
+			// e.stopPropagation();
+			// Aquí abriremos la ventana ModificarContacto en el futuro
+			new ModificarContacto(contacto).mostrarVentana();
+		});
+
+		// Panel para el botón de edición
+		JPanel buttonPanel = new JPanel(new BorderLayout());
+		buttonPanel.setOpaque(false);
+		buttonPanel.add(editButton, BorderLayout.CENTER);
+
+		panel.add(imageLabel, BorderLayout.WEST);
+		panel.add(textPanel, BorderLayout.CENTER);
+		panel.add(buttonPanel, BorderLayout.EAST);
+
+		return panel;
+	}
+
+	private Image getImagenContactoEscalada(String URLimagenContacto, ImageIcon icono) {
+		try {
+			if (URLimagenContacto != null && !URLimagenContacto.isEmpty()) {
+				URL url = new URL(URLimagenContacto);
+				icono = new ImageIcon(url);
+			} else {
+				icono = new ImageIcon("phphotos/pfp.jpg");
+			}
+			Image imgEscalada = icono.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+
+			return imgEscalada;
 		} catch (Exception e) {
 			System.err.println("Error al cargar la imagen del contacto: " + e.getMessage());
-			return  null;
+			return null;
 		}
-        
-	}
-    
 
-    
-    /*private void enviarMensaje() {
-        if (contactoSeleccionado == null || messageField.getText().trim().isEmpty()) {
-            return;
-        }
-        
-        String contenido = messageField.getText().trim();
-        Controlador.INSTANCE.enviarMensaje(contactoSeleccionado.getId(), contenido);
-        
-        // Actualizar el chat
-        cargarMensajes(contactoSeleccionado);
-        messageField.setText("");
-    }*/
-    
+	}
+
+	/*
+	 * private void enviarMensaje() { if (contactoSeleccionado == null ||
+	 * messageField.getText().trim().isEmpty()) { return; }
+	 * 
+	 * String contenido = messageField.getText().trim();
+	 * Controlador.INSTANCE.enviarMensaje(contactoSeleccionado.getId(), contenido);
+	 * 
+	 * // Actualizar el chat cargarMensajes(contactoSeleccionado);
+	 * messageField.setText(""); }
+	 */
+
 }

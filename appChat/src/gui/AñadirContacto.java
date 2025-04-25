@@ -171,9 +171,7 @@ public class AñadirContacto extends JDialog{
 	private void crearManejadorBotonCancelar() {
         btnCancelar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                VentanaPrincipal mainW = new VentanaPrincipal();
-                mainW.mostrarVentana();
-                AñadirContacto.this.dispose();
+                frame.dispose();
             }
         });
     }
