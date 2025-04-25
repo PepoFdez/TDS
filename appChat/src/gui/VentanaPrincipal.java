@@ -88,8 +88,8 @@ public class VentanaPrincipal {
 		// Crear el marco principal
 		frame = new JFrame("AppChat");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(1000, 700);
-		frame.setMinimumSize(new Dimension(800, 600));
+		frame.setSize(1300, 700);
+		frame.setMinimumSize(new Dimension(1300, 700));
 		frame.getContentPane().setLayout(new BorderLayout());
 
 		// Panel superior con barra de herramientas
@@ -220,16 +220,29 @@ public class VentanaPrincipal {
 	    });
 	    userPanel.add(logoutButton);
 
-	    // Botón de configuración (engranaje)
-	    JButton settingsButton = new JButton("⚙"); // Símbolo de engranaje
-	    settingsButton.setFont(new Font("Arial", Font.PLAIN, 14));
-	    settingsButton.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-	    settingsButton.setContentAreaFilled(false);
-	    settingsButton.addActionListener(e -> {
-	        // Abrir ventana ModificarUsuario (a implementar más tarde)
-	        new ModificarUsuario(frame).mostrarVentana();
-	    });
-	    userPanel.add(settingsButton);
+	    try {
+	    	ImageIcon settingIcon = new ImageIcon("resources/settings.png");
+			Image settingImage = settingIcon.getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH);
+			JLabel settingLabel = new JLabel(new ImageIcon(settingImage));
+	        JButton settingsButton = new JButton(settingLabel.getIcon());
+	        
+	        settingsButton.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+	        settingsButton.setContentAreaFilled(false);
+	        settingsButton.addActionListener(e -> {
+	            new ModificarUsuario(frame).mostrarVentana();
+	        });
+	        userPanel.add(settingsButton);
+	    } catch (Exception e) {
+	        // Si falla la carga de la imagen, usar el texto como fallback
+	        JButton settingsButton = new JButton("⚙");
+	        settingsButton.setFont(new Font("Arial", Font.PLAIN, 14));
+	        settingsButton.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+	        settingsButton.setContentAreaFilled(false);
+	        settingsButton.addActionListener(pe -> {
+	            new ModificarUsuario(frame).mostrarVentana();
+	        });
+	        userPanel.add(settingsButton);
+	    }
 
 	    String nombreUsuario = Controlador.INSTANCE.getNombreUsuario();
 

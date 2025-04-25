@@ -48,7 +48,7 @@ public class Registro extends JDialog {
     private JPasswordField txtPasswordChk;
     private JButton btnRegistrar;
     private JButton btnCancelar;
-    private JButton btnImagenPerfil;
+
 
     private JLabel lblNombreError;
     private JLabel lblApellidosError;
@@ -327,15 +327,11 @@ public class Registro extends JDialog {
         btnRegistrar = new JButton("Registrar");
         lineaBotones.add(btnRegistrar);
 
-        btnImagenPerfil = new JButton("Añadir Imagen de Perfil");
-        lineaBotones.add(btnImagenPerfil);
-
         btnCancelar = new JButton("Cancelar");
         lineaBotones.add(btnCancelar);
 
         this.crearManejadorBotonRegistrar();
         this.crearManejadorBotonCancelar();
-        this.crearManejadroBotonAnadirImagen();
     }
 
     private void crearManejadorBotonRegistrar() {
@@ -374,16 +370,8 @@ public class Registro extends JDialog {
             }
         });
     }
-
-    private void crearManejadroBotonAnadirImagen() {
-    	btnImagenPerfil.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                PanelArrastraImagen panelImagen = new PanelArrastraImagen(owner);
-                panelImagen.setVisible(true);
-            }
-        });
-    }
+    
+    
     private boolean checkFields() {
         boolean salida = true;
         ocultarErrores();

@@ -40,7 +40,6 @@ public class ModificarUsuario extends JDialog {
     private JLabel lblImagen;
     private JTextField txtNombre;
     private JTextField txtApellidos;
-    private JTextField txtFechaNacimiento;
     private JTextField txtEmail;
     private JTextField txtUsuario; // Teléfono (no editable)
     private JTextField txtSaludo;
@@ -49,7 +48,6 @@ public class ModificarUsuario extends JDialog {
     private JPasswordField txtPasswordChk;
     private JButton btnGuardar;
     private JButton btnCancelar;
-    private JButton btnImagenPerfil;
 
     private JLabel lblNombreError;
     private JLabel lblApellidosError;
@@ -74,40 +72,34 @@ public class ModificarUsuario extends JDialog {
         this.setResizable(false);
         this.owner = owner;
         
-        cargarDatosUsuario();
+        // Primero crear todos los componentes
         crearPanelModificacion();
+        
+        // Luego cargar los datos
+        cargarDatosUsuario();
     }
 
     private void cargarDatosUsuario() {
         // Obtener datos actuales del usuario desde el controlador
-    	List<String> datosUsuario = Controlador.INSTANCE.getDatosUsuario();
-        String nombre = datosUsuario.get(0);
-        String apellidos = datosUsuario.get(1);
-        String email = datosUsuario.get(2);
-        String telefono = datosUsuario.get(3);
-        String fechaNacimiento = datosUsuario.get(4);
-        String saludo = datosUsuario.get(5);
-       	String imagen = datosUsuario.get(6);
-
-        // Asignar valores a los campos (se hará después de crearlos)
-        if (txtNombre != null) txtNombre.setText(nombre);
-        if (txtApellidos != null) txtApellidos.setText(apellidos);
-        if (txtEmail != null) txtEmail.setText(email);
-        if (txtUsuario != null) {
-            txtUsuario.setText(telefono);
-            txtUsuario.setEditable(false); // Teléfono no editable
+        List<String> datosUsuario = Controlador.INSTANCE.getDatosUsuario();
+        
+        // Asignar valores a los campos
+        txtNombre.setText(datosUsuario.get(0));
+        txtApellidos.setText(datosUsuario.get(1));
+        txtEmail.setText(datosUsuario.get(2));
+        txtUsuario.setText(datosUsuario.get(3));
+        txtUsuario.setEditable(false); // Teléfono no editable
+        
+        // Asignar fecha al dateChooser
+        try {
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
+            dateChooser.setDate(sdf.parse(datosUsuario.get(5)));
+        } catch (Exception e) {
+            System.err.println("Error al parsear fecha de nacimiento: " + e.getMessage());
         }
-        if (dateChooser != null && fechaNacimiento != null && !fechaNacimiento.isEmpty()) {
-            // Parsear fecha y asignar al dateChooser
-            try {
-                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
-                dateChooser.setDate(sdf.parse(fechaNacimiento));
-            } catch (Exception e) {
-                System.err.println("Error al parsear fecha de nacimiento: " + e.getMessage());
-            }
-        }
-        if (txtSaludo != null) txtSaludo.setText(saludo);
-        if (txtImagen != null) txtImagen.setText(imagen);
+        
+        txtSaludo.setText(datosUsuario.get(6));
+        txtImagen.setText(datosUsuario.size() > 7 ? datosUsuario.get(7) : ""); // Imagen es opcional
     }
 
     private void crearPanelModificacion() {
@@ -119,6 +111,7 @@ public class ModificarUsuario extends JDialog {
                 new TitledBorder(null, "Modificar Perfil", TitledBorder.LEADING, TitledBorder.TOP, null, null));
         datosPersonales.setLayout(new BoxLayout(datosPersonales, BoxLayout.Y_AXIS));
 
+        // Crear todos los componentes primero
         datosPersonales.add(creaLineaNombre());
         datosPersonales.add(crearLineaApellidos());
         datosPersonales.add(crearLineaEmail());
@@ -129,11 +122,7 @@ public class ModificarUsuario extends JDialog {
         datosPersonales.add(crearLineaImagen());
 
         this.crearPanelBotones();
-
         this.ocultarErrores();
-
-        // Cargar datos después de crear los componentes
-        cargarDatosUsuario();
 
         this.revalidate();
         this.pack();
@@ -271,9 +260,6 @@ public class ModificarUsuario extends JDialog {
         panelCamposFechaNacimiento.add(dateChooser);
         fixedSize(dateChooser, 215, 20);
 
-        txtFechaNacimiento = new JTextField();
-        txtFechaNacimiento.setVisible(false);
-
         lblFechaNacimientoError = new JLabel("Introduce la fecha de nacimiento", SwingConstants.CENTER);
         fixedSize(lblFechaNacimientoError, 150, 15);
         lblFechaNacimientoError.setForeground(Color.RED);
@@ -281,7 +267,7 @@ public class ModificarUsuario extends JDialog {
 
         return lineaFechaNacimiento;
     }
-
+    
     private JPanel crearLineaSaludo() {
         JPanel lineaSaludo = new JPanel();
         lineaSaludo.setAlignmentX(JLabel.LEFT_ALIGNMENT);
@@ -327,15 +313,12 @@ public class ModificarUsuario extends JDialog {
         btnGuardar = new JButton("Guardar Cambios");
         lineaBotones.add(btnGuardar);
 
-        btnImagenPerfil = new JButton("Cambiar Imagen");
-        lineaBotones.add(btnImagenPerfil);
-
         btnCancelar = new JButton("Cancelar");
         lineaBotones.add(btnCancelar);
 
         this.crearManejadorBotonGuardar();
         this.crearManejadorBotonCancelar();
-        this.crearManejadorBotonImagen();
+    
     }
 
     private void crearManejadorBotonGuardar() {
@@ -349,10 +332,11 @@ public class ModificarUsuario extends JDialog {
                         nuevoPassword = new String(txtPassword.getPassword());
                     }
 
-                    // Obtener fecha del dateChooser
+                    // Obtener fecha del dateChooser en formato dd/MM/yyyy
                     String fechaNacimiento = "";
                     if (dateChooser.getDate() != null) {
-                        fechaNacimiento = ((JTextField) dateChooser.getDateEditor().getUiComponent()).getText();
+                        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
+                        fechaNacimiento = sdf.format(dateChooser.getDate());
                     }
 
                     boolean actualizado = Controlador.INSTANCE.actualizarUsuario(
@@ -388,16 +372,6 @@ public class ModificarUsuario extends JDialog {
         });
     }
 
-    private void crearManejadorBotonImagen() {
-        btnImagenPerfil.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                PanelArrastraImagen panelImagen = new PanelArrastraImagen(owner);
-                panelImagen.setVisible(true);
-                // Aquí podrías actualizar txtImagen con la nueva URL si PanelArrastraImagen lo permite
-            }
-        });
-    }
 
     private boolean checkFields() {
         boolean salida = true;

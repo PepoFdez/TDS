@@ -223,26 +223,30 @@ public enum Controlador {
 		return null;
 	}
 
-	public LinkedList<String> buscarMensajes(String texto, String telefono, String movil) {
+	public LinkedList<String> buscarMensajes(String texto, String telefono, String nContacto) {
 		LinkedList<String> mensajes = new LinkedList<>();
 		if (texto != null && !texto.isEmpty()) {
 			for (Contacto contacto : this.usuarioActual.getContactos()) {
 				for (Mensaje mensaje : contacto.getMensajesEnviados()) {
 					if (mensaje.getTexto().contains(texto)) {
-						mensajes.add(mensaje.getTexto());
+						mensajes.add(contacto.getNombre() + " " + mensaje.getFecha() + ": " +  mensaje.getTexto());
 					}
 				}
 			}
 		} else if (telefono != null && !telefono.isEmpty()) {
 			for (Contacto contacto : this.usuarioActual.getContactos()) {
-				if (contacto.getNombre().contains(telefono)) {
-					mensajes.add(contacto.getNombre());
+				if (((ContactoIndividual) contacto).getUsuario().getMovil().equals(telefono)) {
+					for (Mensaje mensaje : contacto.getMensajesEnviados()) {
+						mensajes.add(contacto.getNombre() + " " + mensaje.getFecha() + ": " +  mensaje.getTexto());
+					}
 				}
 			}
-		} else if (movil != null && !movil.isEmpty()) {
+		} else if (nContacto != null && !nContacto.isEmpty()) {
 			for (Contacto contacto : this.usuarioActual.getContactos()) {
-				if (contacto.getNombre().contains(movil)) {
-					mensajes.add(contacto.getNombre());
+				if (contacto.getNombre().contains(nContacto)) {
+					for (Mensaje mensaje : contacto.getMensajesEnviados()) {
+						mensajes.add(contacto.getNombre() + " " + mensaje.getFecha() + ": " +  mensaje.getTexto());
+					}
 				}
 			}
 		}
@@ -317,10 +321,31 @@ public enum Controlador {
 		usuarioDAO.updateUsuario(usuarioActual);
 	}
 
-	public boolean actualizarUsuario(String text, String text2, String text3, String nuevoPassword, String fechaNacimiento,
-			String text4, String text5) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean actualizarUsuario(String nombre, String apellidos, String email, String nuevoPassword, String fechaNacimiento,
+			String saludo, String imagen) {
+		if (nombre != null && !nombre.isEmpty()) {
+			usuarioActual.setNombre(nombre);
+		}
+		if (apellidos != null && !apellidos.isEmpty()) {
+			usuarioActual.setApellidos(apellidos);
+		}
+		if (email != null && !email.isEmpty()) {
+			usuarioActual.setEmail(email);
+		}
+		if (nuevoPassword != null && !nuevoPassword.isEmpty()) {
+			usuarioActual.setPassword(nuevoPassword);
+		}
+		if (fechaNacimiento != null && !fechaNacimiento.isEmpty()) {
+			usuarioActual.setFechaNacimiento(LocalDate.parse(fechaNacimiento, Utils.formatoFecha));
+		}
+		if (saludo != null && !saludo.isEmpty()) {
+			usuarioActual.setSaludo(saludo);
+		}
+		if (imagen != null && !imagen.isEmpty()) {
+			usuarioActual.setURLImagen(imagen);
+		}
+		usuarioDAO.updateUsuario(usuarioActual);
+		return true;
 	}
 
 	public List<String> getDatosUsuario() {
@@ -332,6 +357,7 @@ public enum Controlador {
 		datos.add(usuarioActual.getPassword());
 		datos.add(usuarioActual.getFechaNacimiento().format(Utils.formatoFecha));
 		datos.add(usuarioActual.getSaludo());
+		datos.add(usuarioActual.getURLImagen());
 		return datos;
 	}
 	
