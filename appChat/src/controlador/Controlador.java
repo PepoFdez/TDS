@@ -88,9 +88,14 @@ public enum Controlador {
 			System.err.println("Numero de teléfono ya está registrado");
 			return false;
 		}
-			
+		LocalDate fecha = null;
+		if (!fechaNacimiento.equals("")) {
+			fecha = LocalDate.parse(fechaNacimiento, Utils.formatoFecha);	
+		} else {
+			fecha = LocalDate.parse("01/01/1970", Utils.formatoFecha);
+		}	
 		Usuario.Builder userBuilder = new Usuario.Builder(nombre, apellidos, email, movil, password, 
-				LocalDate.parse(fechaNacimiento, Utils.formatoFecha));
+				fecha);
 		if (imagen != null) userBuilder.addURLimagen(imagen);
 		if (saludo != null) userBuilder.addSaludo(saludo);
 		
