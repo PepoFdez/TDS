@@ -145,14 +145,16 @@ public enum Controlador {
 		usuarioDAO.updateUsuario(usuarioActual);
 		//Añadir el contacto al usuario actual como enviado, se recibe el contacto por su id
 		Contacto receptor = this.usuarioActual.enviarMensaje(mensajeSent, id);
-		contactoIndividualDAO.updateContactoIndividual((ContactoIndividual) receptor);
+
 		//Añadir el mensaje al usuario asociado al contacto como recibido
 		//Si es un grupo, se añade a todos los miembros del grupo
 		//Si es un contacto individual, se añade al contacto, si existe.
 		//Si no existe, creamos el contacto con el número de teléfono del emisor como nombre
 		if (receptor instanceof ContactoIndividual contactoIndividual) {
+			contactoIndividualDAO.updateContactoIndividual((ContactoIndividual) receptor);
 			recibirMensaje(contenido, -1, contactoIndividual);
 		} else if (receptor instanceof Grupo grupo) {
+			grupoDAO.updateGrupo((Grupo) receptor);
 			for (Contacto miembro : grupo.getMiembros()) {
 				if (miembro instanceof ContactoIndividual contactoIndividualMiembro) {
 					//Si el miembro es un contacto individual, se añade el mensaje al contacto como recibido
@@ -168,10 +170,11 @@ public enum Controlador {
 		mensajeDAO.registrarMensaje(mensajeSent);
 		//Añadir el contacto al usuario actual como enviado
 		Contacto receptor = this.usuarioActual.enviarMensaje(mensajeSent, id);
-		contactoIndividualDAO.updateContactoIndividual((ContactoIndividual) receptor);
 		if (receptor instanceof ContactoIndividual contactoIndividual) {
+			contactoIndividualDAO.updateContactoIndividual((ContactoIndividual) receptor);
 			recibirMensaje("", emojiId, contactoIndividual);
 		} else if (receptor instanceof Grupo grupo) {
+			grupoDAO.updateGrupo((Grupo) receptor);
 			for (Contacto miembro : grupo.getMiembros()) {
 				if (miembro instanceof ContactoIndividual contactoIndividualMiembro) {
 					//Si el miembro es un contacto individual, se añade el mensaje al contacto como recibido
