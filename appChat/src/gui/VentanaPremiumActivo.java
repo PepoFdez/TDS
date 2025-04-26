@@ -121,8 +121,18 @@ public class VentanaPremiumActivo {
     }
 
     private void exportarPDF(ActionEvent e) {
-        Contacto contactoSeleccionado = (Contacto) contactosComboBox.getSelectedItem();
+    	String telefono = contactosComboBox.getSelectedItem().toString().split(":")[1];
+    	String nombre = contactosComboBox.getSelectedItem().toString().split(":")[0];
+    	Contacto contactoSeleccionado = null;
+    	System.out.println("Telefono: " + telefono);
+    	if (!telefono.equals("Grupo")) {
+    		contactoSeleccionado = Controlador.INSTANCE.getContactoConMovil(telefono);
+    	} else {
+    		System.out.println("Grupo seleccionado: " + nombre);
+    		contactoSeleccionado = Controlador.INSTANCE.getGrupoConNombre(nombre);
+    	}
         
+        System.out.println("Exportando chat de " + contactoSeleccionado.getNombre() + "...");
         if (contactoSeleccionado != null) {
             boolean exito = Controlador.INSTANCE.exportarChatPDF(contactoSeleccionado);
             

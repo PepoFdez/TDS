@@ -218,11 +218,6 @@ public enum Controlador {
 	}
 		
 
-	public LinkedList<Contacto> buscarContactos(String textoBusqueda) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public LinkedList<String> buscarMensajes(String texto, String telefono, String nContacto) {
 		LinkedList<String> mensajes = new LinkedList<>();
 		if (texto != null && !texto.isEmpty()) {
@@ -286,8 +281,9 @@ public enum Controlador {
 	}
 
 	public boolean exportarChatPDF(Contacto contactoSeleccionado) {
-		// TODO Auto-generated method stub
-		return false;
+		utils.ExportPDF.exportChatToPDF(contactoSeleccionado.getMensajesEnviados(), 
+				"resources/" + contactoSeleccionado.getNombre() + ".pdf", contactoSeleccionado.getNombre());
+		return true;
 	}
 
 	public boolean anularPremium() {
@@ -361,4 +357,11 @@ public enum Controlador {
 		return datos;
 	}
 	
+	public Contacto getContactoConMovil(String movil) {
+		return this.usuarioActual.getContactoConMovil(movil);
+	}
+
+	public Contacto getGrupoConNombre(String string) {
+	 	return this.usuarioActual.getGrupoConNombre(string);
+	}
 }

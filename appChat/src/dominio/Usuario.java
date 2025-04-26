@@ -238,8 +238,12 @@ public class Usuario {
 		// TODO Auto-generated method stub
 		return contacto.getUltimoMensaje();
 	}
-	
-	
-	
+
+	public Contacto getGrupoConNombre(String nombre) {
+	    return this.contactos.stream()
+	            .filter(c -> c instanceof Grupo && c.getNombre().equals(nombre))
+	            .findFirst()
+	            .orElse(null);
+	}
 }
 
