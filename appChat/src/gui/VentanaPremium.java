@@ -45,14 +45,17 @@ public class VentanaPremium {
         titleLabel.setForeground(new Color(0, 102, 204));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
-
+        
+        double precioBase = Controlador.INSTANCE.getPrecioBase();
+        double precioDescuento = Controlador.INSTANCE.getPrecioDescuento();
         // Texto descriptivo
-        JTextArea descriptionText = new JTextArea(
-            "Si te conviertes en usuario premium podrás optar a algunos descuentos en el futuro " +
-            "junto con la capacidad de exportar cualquier chat en formato PDF.\n\n" +
+        String textoDescriptivo = String.format(
+            "Si te conviertes en usuario premium podrás exportar cualquier chat en formato PDF por solo %.2f€ (precio base sin aplicar descuentos)\n\n" +
             "¿A qué esperas para empezar esta nueva experiencia?\n\n" +
-            "Puedes hacerlo posible abonando la cantidad anual de 74.99€."
+            "El precio final (aplicando el mejor descuento) es de %.2f€.", precioBase ,precioDescuento
         );
+        
+        JTextArea descriptionText = new JTextArea(textoDescriptivo);
         descriptionText.setFont(new Font("Arial", Font.PLAIN, 14));
         descriptionText.setForeground(new Color(70, 70, 70));
         descriptionText.setWrapStyleWord(true);
@@ -73,13 +76,15 @@ public class VentanaPremium {
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 
         // Botón de pagar
-        JButton payButton = new JButton("¡Quiero ser Premium!");
+        JButton payButton = new JButton("¡Hazme Premium!");
         payButton.setFont(new Font("Arial", Font.BOLD, 14));
         payButton.setForeground(Color.WHITE);
         payButton.setBackground(new Color(0, 153, 51));
         payButton.setFocusPainted(false);
         payButton.setPreferredSize(new Dimension(180, 40));
         payButton.addActionListener(this::convertirPremium);
+        payButton.setOpaque(true);
+        payButton.setBorderPainted(false);
 
         // Botón de cancelar
         JButton cancelButton = new JButton("Cancelar");

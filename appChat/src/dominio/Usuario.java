@@ -1,6 +1,7 @@
 package dominio;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -244,6 +245,13 @@ public class Usuario {
 	            .filter(c -> c instanceof Grupo && c.getNombre().equals(nombre))
 	            .findFirst()
 	            .orElse(null);
+	}
+
+	public int getNumeroMensajesEnviadosMesPasado() {
+		return (int) contactos.stream()
+				.flatMap(c -> c.getTodosLosMensajesEnviados().stream())
+				.filter(m-> m.getFecha().isEqual(LocalDateTime.now().minusMonths(1)))
+				.count();
 	}
 }
 

@@ -19,6 +19,8 @@ import tds.BubbleText;
 import utils.Utils;
 import dominio.Contacto;
 import dominio.ContactoIndividual;
+import dominio.Descuento;
+import dominio.FactoriaDescuentos;
 import dominio.Grupo;
 import dominio.Mensaje;
 import dominio.RepositorioUsuarios;
@@ -37,6 +39,7 @@ public enum Controlador {
 	//repo
 	private RepositorioUsuarios repositorioUsuarios;
 
+	private static final double PRECIO_APLICACION = 100;
 	private Controlador() {
 		usuarioActual = null;
 		try {
@@ -412,5 +415,14 @@ public enum Controlador {
 			return java.sql.Date.valueOf(usuarioActual.getFechaRegistro());
 		}
 		return null;
+	}
+
+	public double getPrecioBase() {
+		return PRECIO_APLICACION;
+	}
+	
+	public double getPrecioDescuento() {
+		Descuento mejorDescuento = FactoriaDescuentos.INSTANCE.getMejorDescuento(usuarioActual, PRECIO_APLICACION);
+		return mejorDescuento.getPrecio(PRECIO_APLICACION);
 	}
 }

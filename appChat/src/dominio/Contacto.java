@@ -4,6 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import tds.BubbleText;
+
 public abstract class Contacto {
 
 	private int id;
@@ -66,6 +68,12 @@ public abstract class Contacto {
 			return "Haz click para enviar un mensaje";
 		}
 		return this.mensajes.get(this.mensajes.size()-1).getTexto();	
+	}
+	public List<Mensaje> getTodosLosMensajesEnviados() {
+		
+		return mensajes.stream()
+					.filter(m -> m.getTipo() == BubbleText.SENT)
+					.collect(Collectors.toList());
 	};
 	
 	
