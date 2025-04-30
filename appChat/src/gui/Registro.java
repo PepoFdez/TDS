@@ -65,8 +65,6 @@ public class Registro extends JDialog {
     private JPanel panelCamposSaludo;
     private JPanel panelCamposImagen;
 
-    //Añadido por Pepo
-    private JFrame owner;
     private JDateChooser dateChooser; // Campo para la selección de la fecha
     
     public Registro(JFrame owner) {
@@ -74,9 +72,7 @@ public class Registro extends JDialog {
         this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         this.setResizable(false);
         this.crearPanelRegistro();
-        
-        //Añadido por Pepo
-        this.owner = owner;
+
     }
 
     private void crearPanelRegistro() {

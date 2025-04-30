@@ -2,15 +2,11 @@ package gui;
 
 import controlador.Controlador;
 import dominio.Contacto;
-import dominio.ContactoIndividual;
-import dominio.Mensaje;
-import dominio.Usuario;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.time.LocalDate;
 import java.util.LinkedList;
 
 public class Buscador {
