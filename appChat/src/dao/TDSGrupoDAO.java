@@ -92,6 +92,8 @@ public class TDSGrupoDAO implements GrupoDAO {
 				prop.setValor(grupo.getNombre());
 			} else if (prop.getNombre().equals(MIEMBROS)) {
 				prop.setValor(obtenerCodigosMiembros(grupo.getMiembros()));
+			} else if (prop.getNombre().equals(MENSAJES)) {
+				prop.setValor(obtenerCodigosMensajes(grupo.getMensajesEnviados()));
 			}
 			
 			servPersistencia.modificarPropiedad(prop);

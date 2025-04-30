@@ -62,6 +62,9 @@ public abstract class Contacto {
 				.collect(Collectors.toList());
 	}
 	public String getUltimoMensaje() {
+		if (this.mensajes.isEmpty()) {
+			return "Haz click para enviar un mensaje";
+		}
 		return this.mensajes.get(this.mensajes.size()-1).getTexto();	
 	};
 	

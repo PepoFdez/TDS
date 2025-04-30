@@ -221,9 +221,9 @@ public class VentanaPrincipal {
 	    userPanel.add(logoutButton);
 
 	    try {
-	    	ImageIcon settingIcon = new ImageIcon("resources/settings.png");
-			Image settingImage = settingIcon.getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH);
-			JLabel settingLabel = new JLabel(new ImageIcon(settingImage));
+	        ImageIcon settingIcon = new ImageIcon("resources/settings.png");
+	        Image settingImage = settingIcon.getImage().getScaledInstance(25, 25, Image.SCALE_SMOOTH);
+	        JLabel settingLabel = new JLabel(new ImageIcon(settingImage));
 	        JButton settingsButton = new JButton(settingLabel.getIcon());
 	        
 	        settingsButton.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -249,18 +249,25 @@ public class VentanaPrincipal {
 	    JLabel userNameLabel = new JLabel(nombreUsuario);
 	    userNameLabel.setFont(new Font("Arial", Font.BOLD, 12));
 
-	    // Cargar imagen de perfil
+	    // Cargar imagen de perfil y convertirla en botón
 	    ImageIcon icono = null;
 	    String URLimagenContacto = Controlador.INSTANCE.getURLImagenUsuario();
 	    Image imgEscalada = getImagenContactoEscalada(URLimagenContacto, icono);
-	    JLabel userImage = new JLabel(new ImageIcon(imgEscalada));
+	    
+	    // Crear botón con la imagen de perfil
+	    JButton profileButton = new JButton(new ImageIcon(imgEscalada));
+	    profileButton.setBorder(BorderFactory.createEmptyBorder());
+	    profileButton.setContentAreaFilled(false);
+	    profileButton.addActionListener(e -> {
+	        // Aquí abrimos la nueva pantalla InfoUsuario
+	        new InfoUsuario().mostrarVentana();
+	    });
 
 	    userPanel.add(userNameLabel);
-	    userPanel.add(userImage);
+	    userPanel.add(profileButton);  // Añadimos el botón en lugar del JLabel
 
 	    return userPanel;
 	}
-
 	private JPanel createContactsPanel() {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -478,8 +485,8 @@ public class VentanaPrincipal {
 		nameLabel.setFont(new Font("Arial", Font.PLAIN, 14));
 
 		// Último mensaje (podrías obtenerlo del controlador)
-		// String ultMsg = Controlador.INSTANCE.getUltimoMensaje(contacto);
-		JLabel lastMsgLabel = new JLabel("Último mensaje...");
+		//JLabel lastMsgLabel = new JLabel("Último mensaje...");
+		JLabel lastMsgLabel = new JLabel(Controlador.INSTANCE.getUltimoMensaje(contacto));
 		lastMsgLabel.setFont(new Font("Arial", Font.PLAIN, 11));
 		lastMsgLabel.setForeground(Color.GRAY);
 

@@ -1,15 +1,13 @@
 package controlador;
 import dao.UsuarioDAO;
 
-import java.nio.file.attribute.UserDefinedFileAttributeView;
+
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.JTextField;
-
-import org.h2.result.UpdatableRow;
 
 import dao.ContactoIndividualDAO;
 import dao.DAOException;
@@ -161,6 +159,7 @@ public enum Controlador {
 		} else if (receptor instanceof Grupo grupo) {
 			grupoDAO.updateGrupo((Grupo) receptor);
 			for (Contacto miembro : grupo.getMiembros()) {
+				contactoIndividualDAO.updateContactoIndividual((ContactoIndividual) miembro);
 				if (miembro instanceof ContactoIndividual contactoIndividualMiembro) {
 					//Si el miembro es un contacto individual, se añade el mensaje al contacto como recibido
 					recibirMensaje(contenido, -1, contactoIndividualMiembro);
@@ -371,5 +370,47 @@ public enum Controlador {
 
 	public Contacto getGrupoConNombre(String string) {
 	 	return this.usuarioActual.getGrupoConNombre(string);
+	}
+
+	public String getApellidosUsuario() {
+		if (usuarioActual != null) {
+			return usuarioActual.getApellidos();
+		}
+		return null;
+	}
+
+	public String getSaludoUsuario() {
+		if (usuarioActual != null) {
+			return usuarioActual.getSaludo();
+		}
+		return null;
+	}
+
+	public String getTelefonoUsuario() {
+		if (usuarioActual != null) {
+			return usuarioActual.getMovil();
+		}
+		return null;
+	}
+
+	public String getEmailUsuario() {
+		if (usuarioActual != null) {
+			return usuarioActual.getEmail();
+		}
+		return null;
+	}
+
+	public Date getFechaNacimientoUsuario() {
+		if (usuarioActual != null) {
+			return java.sql.Date.valueOf(usuarioActual.getFechaNacimiento());
+		}
+		return null;
+	}
+
+	public Date getFechaCreacionCuentaUsuario() {
+		if (usuarioActual != null) {
+			return java.sql.Date.valueOf(usuarioActual.getFechaRegistro());
+		}
+		return null;
 	}
 }
