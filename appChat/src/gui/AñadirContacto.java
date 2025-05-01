@@ -16,7 +16,8 @@ public class AñadirContacto extends JDialog{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
+	
+	private static AñadirContacto instance;
 	private JFrame frame;
 	private JLabel lblNombre;
 	private JTextField txtNombre;
@@ -41,10 +42,35 @@ public class AñadirContacto extends JDialog{
 	 * Initialize the contents of the frame.
 	 */
 	
-	public void mostrarVentana( ) {
-		frame.setLocationRelativeTo(null);
-		frame.setVisible(true);
+	public static AñadirContacto getInstance() {
+		if (instance == null) {
+			instance = new AñadirContacto();
+		}
+		return instance;
 	}
+    
+    public void mostrarVentana() {
+        if (frame != null && frame.isVisible()) {
+            frame.toFront(); // Traer al frente si ya está abierta
+            return;
+        }
+        frame.setLocationRelativeTo(null);
+     // Añadir listener para recargar contactos al cerrarse
+        frame.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                VentanaContactos.getInstance().cargarContactosExternamente();
+            }
+
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                // Asegura que windowClosed se dispare
+                frame.dispose();
+            }
+        });
+        
+        frame.setVisible(true);
+    }
 	
 	private void crearPanelAnadirContacto() {
 		frame = new JFrame();

@@ -8,7 +8,8 @@ import java.awt.event.ActionEvent;
 import java.util.LinkedList;
 
 public class VentanaPremiumActivo {
-
+	
+	private static VentanaPremiumActivo instance;
     private JFrame frame;
     private JComboBox<String> contactosComboBox;
     private JButton exportarButton;
@@ -18,8 +19,19 @@ public class VentanaPremiumActivo {
         initialize();
         cargarContactos();
     }
-
+    
+    public static VentanaPremiumActivo getInstance() {
+        if (instance == null) {
+            instance = new VentanaPremiumActivo();
+        }
+        return instance;
+    }
+    
     public void mostrarVentana() {
+        if (frame != null && frame.isVisible()) {
+            frame.toFront(); // Traer al frente si ya está abierta
+            return;
+        }
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }

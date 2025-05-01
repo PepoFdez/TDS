@@ -157,16 +157,14 @@ public class VentanaPrincipal {
 		// Botón de buscar mensajes
 		JButton searchMessagesButton = new JButton("Buscar mensajes");
 		searchMessagesButton.addActionListener(e -> {
-			Buscador buscador = new Buscador();
-			buscador.mostrarVentana();
+			Buscador.getInstance().mostrarVentana();
 		});
 		centerPanel.add(searchMessagesButton);
 
 		// Botón de contactos
 		JButton contactsButton = new JButton("Contactos");
 		contactsButton.addActionListener(e -> {
-			VentanaContactos ventanaContactos = new VentanaContactos();
-			ventanaContactos.mostrarVentana();
+			VentanaContactos.getInstance().mostrarVentana();
 		});
 		centerPanel.add(contactsButton);
 
@@ -181,11 +179,9 @@ public class VentanaPrincipal {
 		}
 		premiumButton.addActionListener(e -> {
 			if (Controlador.INSTANCE.isUsuarioPremium()) {
-				VentanaPremiumActivo ventanaPremium = new VentanaPremiumActivo();
-				ventanaPremium.mostrarVentana();
+				VentanaPremiumActivo.getInstance().mostrarVentana();
 			} else {
-				VentanaPremium ventanaPremium = new VentanaPremium();
-				ventanaPremium.mostrarVentana();
+				VentanaPremium.getInstance().mostrarVentana();
 			}
 		});
 		centerPanel.add(premiumButton);
@@ -260,7 +256,7 @@ public class VentanaPrincipal {
 	    profileButton.setContentAreaFilled(false);
 	    profileButton.addActionListener(e -> {
 	        // Aquí abrimos la nueva pantalla InfoUsuario
-	        new InfoUsuario().mostrarVentana();
+	        InfoUsuario.getInstance().mostrarVentana();
 	    });
 
 	    userPanel.add(userNameLabel);

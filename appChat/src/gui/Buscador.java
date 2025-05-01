@@ -10,7 +10,7 @@ import java.awt.event.ActionEvent;
 import java.util.LinkedList;
 
 public class Buscador {
-
+	private static Buscador instance;
     private JFrame frame;
     private JTextField txtTexto, txtTelefono;
     private JComboBox<String> cbContacto;
@@ -22,7 +22,18 @@ public class Buscador {
         initialize();
     }
 
+    public static Buscador getInstance() {
+		if (instance == null) {
+			instance = new Buscador();
+		}
+		return instance;
+	}
+    
     public void mostrarVentana() {
+        if (frame != null && frame.isVisible()) {
+            frame.toFront(); // Traer al frente si ya está abierta
+            return;
+        }
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }

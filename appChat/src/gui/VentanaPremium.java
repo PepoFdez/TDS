@@ -8,14 +8,25 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 
 public class VentanaPremium {
-
+	private static VentanaPremium instance;
     private JFrame frame;
 
     public VentanaPremium() {
         initialize();
     }
 
+    public static VentanaPremium getInstance() {
+        if (instance == null) {
+            instance = new VentanaPremium();
+        }
+        return instance;
+    }
+    
     public void mostrarVentana() {
+        if (frame != null && frame.isVisible()) {
+            frame.toFront(); // Traer al frente si ya está abierta
+            return;
+        }
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }

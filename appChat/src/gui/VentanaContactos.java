@@ -9,7 +9,8 @@ import java.awt.event.ActionEvent;
 import java.util.LinkedList;
 
 public class VentanaContactos {
-
+	
+	private static VentanaContactos instance;
     private JFrame frame;
     private JList<ContactoIndividual> listaContactos;
     private JList<ContactoIndividual> listaGrupo;
@@ -22,11 +23,22 @@ public class VentanaContactos {
         cargarContactos();
     }
 
+    public static VentanaContactos getInstance() {
+        if (instance == null) {
+            instance = new VentanaContactos();
+        }
+        return instance;
+    }
+    
     public void mostrarVentana() {
+        if (frame != null && frame.isVisible()) {
+            frame.toFront(); // Traer al frente si ya está abierta
+            return;
+        }
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
-
+    
     private void initialize() {
         frame = new JFrame("Gestión de Contactos y Grupos");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -116,6 +128,10 @@ public class VentanaContactos {
         return panel;
     }
     
+    public void cargarContactosExternamente() {
+        cargarContactos();
+    }
+
     private void cargarContactos() {
         LinkedList<ContactoIndividual> contactos = Controlador.INSTANCE.getContactosIndividualesUsuario();
         modeloContactos.clear();
@@ -151,8 +167,7 @@ public class VentanaContactos {
     }
 
     private void añadirContacto(ActionEvent e) {
-        AñadirContacto anadirContacto = new AñadirContacto();
-        anadirContacto.mostrarVentana();
+        AñadirContacto.getInstance().mostrarVentana();
     }
 
     private void añadirGrupo(ActionEvent e) {

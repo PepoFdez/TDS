@@ -9,10 +9,22 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 
 public class InfoUsuario {
+	private static InfoUsuario instance;
     private JFrame frame;
 
-    public void mostrarVentana() {
-        frame = new JFrame("Información de Usuario");
+    public InfoUsuario() {
+		initialize();
+	}
+    
+    public static InfoUsuario getInstance() {
+		if (instance == null) {
+			instance = new InfoUsuario();
+		}
+		return instance;
+	}
+    
+    private void initialize() {
+    	frame = new JFrame("Información de Usuario");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(500, 350);
         frame.setLocationRelativeTo(null);
@@ -84,6 +96,16 @@ public class InfoUsuario {
         mainPanel.add(closeButton);
 
         frame.add(mainPanel);
+        frame.setVisible(true);
+    }
+    
+    
+    public void mostrarVentana() {
+        if (frame != null && frame.isVisible()) {
+            frame.toFront(); // Traer al frente si ya está abierta
+            return;
+        }
+        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
     
