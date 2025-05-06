@@ -46,11 +46,6 @@ public abstract class Contacto {
 		this.mensajes.add(mensaje);
 	}
 	
-	public String getMensajesFormateados() {
-		
-		return null;
-	} 
-	
 	public abstract String getURLImagen();
 	
 	public  List<Object> getTextoMensajesEnviados(){

@@ -166,11 +166,4 @@ public class Buscador {
             }
         }
     }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            Buscador b = new Buscador();
-            b.mostrarVentana();
-        });
-    }
 }

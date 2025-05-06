@@ -107,18 +107,7 @@ public enum Controlador {
 
 		return true;
 	}
-/* se puede borrar cuenta de usuario???
- * 
-	public boolean borrarUsuario(Usuario usuario) {
-			return false;
 
-		UsuarioDAO usuarioDAO = factoria.getUsuarioDAO();  //Adaptador DAO para borrar el Usuario de la BD 
-		usuarioDAO.delete(usuario);
-
-		RepositorioUsuarios.INSTANCE.removeUsuario(usuario);
-		return true;
-	}
-	*/
 	public LinkedList<Contacto> getContactosUsuario() {
 		return this.usuarioActual.getContactos();
 	}

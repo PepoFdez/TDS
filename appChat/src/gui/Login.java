@@ -21,47 +21,12 @@ public class Login {
 		frame.setVisible(true);
 	}
 
-	/**
-	 * Launch the application.
-	 */
-	/*public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Login window = new Login();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}*/
-
-	/**
-	 * Create the application.
-	 */
 	public Login() {
 		initialize();
 	}
 	
-
-	/**
-	 * Initialize the contents of the frame.
-	 */
 	private void initialize() {
 		frame = new JFrame();
-		/*frame.setBounds(100, 100, 450, 300);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		JRadioButton rdbtnNewRadioButton = new JRadioButton("Botón de prueba");
-		frame.getContentPane().add(rdbtnNewRadioButton, BorderLayout.CENTER);
-		
-		JButton btnNewButton = new JButton("JC Gay");
-		frame.getContentPane().add(btnNewButton, BorderLayout.EAST);
-		
-		JButton btnNewButton_1 = new JButton("Pepo más gay");
-		frame.getContentPane().add(btnNewButton_1, BorderLayout.SOUTH);*/
-		
 		frame.setTitle("Login AppChat");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(new BorderLayout());
@@ -78,14 +43,6 @@ public class Login {
 	    frame.getContentPane().add(panel_Norte, BorderLayout.NORTH);
 	    panel_Norte.setLayout(new BoxLayout(panel_Norte, BoxLayout.Y_AXIS));
 
-	    // Rótulo de "AppChat"
-	    /*JLabel lblTitulo = new JLabel("AppChat");
-	    lblTitulo.setFont(new Font("Tahoma", Font.PLAIN, 20));
-	    lblTitulo.setForeground(Color.DARK_GRAY);
-	    lblTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
-	    panel_Norte.add(lblTitulo);*/
-
-	    // Espaciado entre el título y el logo
 	    panel_Norte.add(Box.createRigidArea(new Dimension(0, 10)));
 
 	    // Logo de "AppChat"

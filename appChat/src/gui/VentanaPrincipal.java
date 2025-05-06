@@ -75,10 +75,6 @@ public class VentanaPrincipal {
 				premiumButton.setText("Activar Premium");
 				premiumButton.setForeground(Color.RED);
 			}
-			// Si hay un contacto seleccionado, actualizar también sus mensajes
-			if (contactoSeleccionado != null) {
-				// cargarMensajes(contactoSeleccionado);
-			}
 		});
 		timer.setRepeats(true); // Para que se repita indefinidamente
 		timer.start(); // Iniciar el timer
@@ -111,8 +107,7 @@ public class VentanaPrincipal {
 		leftPanel = createContactsPanel();
 		JScrollPane leftScrollPane = new JScrollPane(leftPanel);
 		leftScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-		// ajustar el tamaño de los contactos, para que no aparezca el scroll
-		// horizontal, mientras, lo desactivo
+		// ajustar el tamaño de los contactos, para que no aparezca el scroll horizontal
 		leftScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		leftScrollPane.setPreferredSize(new Dimension(250, 0));
 
@@ -296,7 +291,7 @@ public class VentanaPrincipal {
 		contactInfoPanel.add(contactPanel, BorderLayout.NORTH);
 		panel.add(contactInfoPanel, BorderLayout.NORTH);
 
-		// Área de chat con nuestro nuevo ChatPanel
+		// Área de chat con ChatPanel
 		chatPanel = new ChatPanel();
 		chatScrollPane = new JScrollPane(chatPanel);
 		chatScrollPane.setBorder(null);
@@ -500,9 +495,6 @@ public class VentanaPrincipal {
 		editButton.setFocusPainted(false);
 		editButton.setOpaque(false);
 		editButton.addActionListener(e -> {
-			// Evitar que el evento se propague al panel del contacto
-			// e.stopPropagation();
-			// Aquí abriremos la ventana ModificarContacto en el futuro
 			new ModificarContacto(contacto).mostrarVentana();
 		});
 
@@ -535,16 +527,5 @@ public class VentanaPrincipal {
 		}
 
 	}
-
-	/*
-	 * private void enviarMensaje() { if (contactoSeleccionado == null ||
-	 * messageField.getText().trim().isEmpty()) { return; }
-	 * 
-	 * String contenido = messageField.getText().trim();
-	 * Controlador.INSTANCE.enviarMensaje(contactoSeleccionado.getId(), contenido);
-	 * 
-	 * // Actualizar el chat cargarMensajes(contactoSeleccionado);
-	 * messageField.setText(""); }
-	 */
 
 }

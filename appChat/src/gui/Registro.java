@@ -218,28 +218,6 @@ public class Registro extends JDialog {
 
         return lineaPassword;
     }
-
-    /*private JPanel crearLineaFechaNacimiento() {
-        JPanel lineaFechaNacimiento = new JPanel();
-        lineaFechaNacimiento.setAlignmentX(JLabel.LEFT_ALIGNMENT);
-        lineaFechaNacimiento.setLayout(new BorderLayout(0, 0));
-
-        panelCamposFechaNacimiento = new JPanel();
-        lineaFechaNacimiento.add(panelCamposFechaNacimiento, BorderLayout.CENTER);
-
-        lblFechaNacimiento = new JLabel("Fecha de Nacimiento: ", JLabel.RIGHT);
-        panelCamposFechaNacimiento.add(lblFechaNacimiento);
-        fixedSize(lblFechaNacimiento, 130, 20);
-        txtFechaNacimiento = new JTextField();
-        panelCamposFechaNacimiento.add(txtFechaNacimiento);
-        fixedSize(txtFechaNacimiento, 215, 20);
-        lblFechaNacimientoError = new JLabel("Introduce la fecha de nacimiento", SwingConstants.CENTER);
-        fixedSize(lblFechaNacimientoError, 150, 15);
-        lblFechaNacimientoError.setForeground(Color.RED);
-        lineaFechaNacimiento.add(lblFechaNacimientoError, BorderLayout.SOUTH);
-
-        return lineaFechaNacimiento;
-    }*/
     
     private JPanel crearLineaFechaNacimiento() {
         JPanel lineaFechaNacimiento = new JPanel();
@@ -421,12 +399,6 @@ public class Registro extends JDialog {
             txtPasswordChk.setBorder(BorderFactory.createLineBorder(Color.RED));
             salida = false;
         }
-        /*if (txtFechaNacimiento.getText().isEmpty()) {
-            lblFechaNacimientoError.setVisible(true);
-            lblFechaNacimiento.setForeground(Color.RED);
-            txtFechaNacimiento.setBorder(BorderFactory.createLineBorder(Color.RED));
-            salida = false;
-        }*/
 
         this.revalidate();
         this.pack();
