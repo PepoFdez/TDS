@@ -229,9 +229,16 @@ public enum Controlador {
 			}
 		} else if (telefono != null && !telefono.isEmpty()) {
 			for (Contacto contacto : this.usuarioActual.getContactos()) {
-				if (((ContactoIndividual) contacto).getUsuario().getMovil().equals(telefono)) {
-					for (Mensaje mensaje : contacto.getMensajesEnviados()) {
-						mensajes.add(contacto.getNombre() + " " + mensaje.getFecha() + ": " +  mensaje.getTexto());
+				//Comprobamos que el contacto es un contacto individual
+				if (contacto instanceof ContactoIndividual) {
+					if (((ContactoIndividual) contacto).getUsuario().getMovil().equals(telefono)) {
+						for (Mensaje mensaje : contacto.getMensajesEnviados()) {
+							if (!mensaje.getTexto().equals("")) {
+								mensajes.add(contacto.getNombre() + " " + mensaje.getFecha() + ": " +  mensaje.getTexto());
+							} else {
+								mensajes.add(contacto.getNombre() + " " + mensaje.getFecha() + ": Emoticono " +  mensaje.getEmoticono());
+							}			
+						}
 					}
 				}
 			}
@@ -239,7 +246,11 @@ public enum Controlador {
 			for (Contacto contacto : this.usuarioActual.getContactos()) {
 				if (contacto.getNombre().contains(nContacto)) {
 					for (Mensaje mensaje : contacto.getMensajesEnviados()) {
-						mensajes.add(contacto.getNombre() + " " + mensaje.getFecha() + ": " +  mensaje.getTexto());
+						if (!mensaje.getTexto().equals("")) {
+							mensajes.add(contacto.getNombre() + " " + mensaje.getFecha() + ": " +  mensaje.getTexto());
+						} else {
+							mensajes.add(contacto.getNombre() + " " + mensaje.getFecha() + ": Emoticono " +  mensaje.getEmoticono());
+						}
 					}
 				}
 			}
