@@ -236,7 +236,7 @@ public enum Controlador {
 							if (!mensaje.getTexto().equals("")) {
 								mensajes.add(contacto.getNombre() + " " + mensaje.getFecha() + ": " +  mensaje.getTexto());
 							} else {
-								mensajes.add(contacto.getNombre() + " " + mensaje.getFecha() + ": Emoticono " +  mensaje.getEmoticono());
+								mensajes.add(contacto.getNombre() + " " + mensaje.getFecha().format(Utils.formatoFechaHora) + ": Emoticono " +  mensaje.getEmoticono());
 							}			
 						}
 					}
@@ -244,7 +244,7 @@ public enum Controlador {
 			}
 		} else if (nContacto != null && !nContacto.isEmpty()) {
 			for (Contacto contacto : this.usuarioActual.getContactos()) {
-				if (contacto.getNombre().contains(nContacto)) {
+				if (contacto.getNombre().equals(nContacto)) {
 					for (Mensaje mensaje : contacto.getMensajesEnviados()) {
 						if (!mensaje.getTexto().equals("")) {
 							mensajes.add(contacto.getNombre() + " " + mensaje.getFecha() + ": " +  mensaje.getTexto());
@@ -290,9 +290,9 @@ public enum Controlador {
 		return true;
 	}
 
-	public boolean exportarChatPDF(Contacto contactoSeleccionado) {
+	public boolean exportarChatPDF(Contacto contactoSeleccionado, String filePath) {
 		utils.ExportPDF.exportChatToPDF(contactoSeleccionado.getMensajesEnviados(), 
-				"resources/" + contactoSeleccionado.getNombre() + ".pdf", contactoSeleccionado.getNombre());
+				filePath + ".pdf", contactoSeleccionado.getNombre());
 		return true;
 	}
 
@@ -310,7 +310,7 @@ public enum Controlador {
 		if (contacto instanceof ContactoIndividual) {
 			return ((ContactoIndividual) contacto).getUsuario().getMovil();
 		} else if (contacto instanceof Grupo) {
-			return ("Grupo: " + ((Grupo) contacto).getNombre());
+			return ("Grupo");
 		}
 		return null;
 	}
@@ -424,5 +424,13 @@ public enum Controlador {
 	public double getPrecioDescuento() {
 		Descuento mejorDescuento = FactoriaDescuentos.INSTANCE.getMejorDescuento(usuarioActual, PRECIO_APLICACION);
 		return mejorDescuento.getPrecio(PRECIO_APLICACION);
+	}
+
+	public String getSaludoContacto(Contacto contacto) {
+		if (contacto instanceof ContactoIndividual) {
+			return ((ContactoIndividual) contacto).getUsuario().getSaludo();
+		} else {
+			return "";
+		}
 	}
 }

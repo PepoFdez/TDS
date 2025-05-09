@@ -45,9 +45,10 @@ public class ChatPanel extends JPanel implements Scrollable {
         removeAll();
         List<BubbleText> mensajes = convertirMensajesABurbujas(contacto);
         mensajes.forEach(this::add);
+        add(Box.createVerticalGlue());
         revalidate();
         repaint();
-        scrollToBottom();
+        javax.swing.SwingUtilities.invokeLater(this::scrollToBottom);
     }
     
     public void enviarMensaje(String texto) {

@@ -60,7 +60,7 @@ public class ExportPDF {
 				document.add(message);
 				
 				// Hora
-				Paragraph time = new Paragraph(msg.getFecha().toString(), timeFont);
+				Paragraph time = new Paragraph(msg.getFecha().format(Utils.formatoFechaHora), timeFont);
 				time.setIndentationLeft(40);
 				time.setSpacingAfter(15f);
 				document.add(time);

@@ -251,7 +251,7 @@ public class VentanaPrincipal {
 	    profileButton.setContentAreaFilled(false);
 	    profileButton.addActionListener(e -> {
 	        // Aquí abrimos la nueva pantalla InfoUsuario
-	        InfoUsuario.getInstance().mostrarVentana();
+	        InfoUsuario.mostrarInfoUsuarioActual();
 	    });
 
 	    userPanel.add(userNameLabel);
@@ -283,6 +283,14 @@ public class VentanaPrincipal {
 
 		currentContactImage = new JLabel();
 		currentContactImage.setPreferredSize(new Dimension(40, 40));
+		currentContactImage.addMouseListener(new MouseAdapter() {
+	        @Override
+	        public void mouseClicked(MouseEvent e) {
+	            if (contactoSeleccionado != null) {
+	                InfoUsuario.mostrarInfoContacto(contactoSeleccionado);
+	            }
+	        }
+	    });
 
 		JPanel contactPanel = new JPanel(new BorderLayout(10, 0));
 		contactPanel.add(currentContactLabel, BorderLayout.CENTER);
@@ -313,11 +321,13 @@ public class VentanaPrincipal {
 
 		messageField = new JTextField();
 		messageField.setToolTipText("Escribe tu mensaje aquí");
+		messageField.addActionListener(this::enviarMensaje);
+	    inputPanel.add(messageField, BorderLayout.CENTER);
 		inputPanel.add(messageField, BorderLayout.CENTER);
 
 		JButton sendButton = new JButton("Enviar");
 		sendButton.setPreferredSize(new Dimension(80, 0));
-		sendButton.addActionListener(this::enviarMensaje);
+		sendButton.addActionListener(this::enviarMensaje);		
 
 		messagePanel.add(inputPanel, BorderLayout.CENTER);
 		messagePanel.add(sendButton, BorderLayout.EAST);

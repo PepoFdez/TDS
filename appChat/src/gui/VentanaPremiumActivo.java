@@ -3,8 +3,11 @@ package gui;
 import dominio.Contacto;
 import controlador.Controlador;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.io.File;
 import java.util.LinkedList;
 
 public class VentanaPremiumActivo {
@@ -133,31 +136,60 @@ public class VentanaPremiumActivo {
     }
 
     private void exportarPDF(ActionEvent e) {
-    	String telefono = contactosComboBox.getSelectedItem().toString().split(":")[1];
-    	String nombre = contactosComboBox.getSelectedItem().toString().split(":")[0];
-    	Contacto contactoSeleccionado = null;
-    	System.out.println("Telefono: " + telefono);
-    	if (!telefono.equals("Grupo")) {
-    		contactoSeleccionado = Controlador.INSTANCE.getContactoConMovil(telefono);
-    	} else {
-    		System.out.println("Grupo seleccionado: " + nombre);
-    		contactoSeleccionado = Controlador.INSTANCE.getGrupoConNombre(nombre);
-    	}
+        String telefono = contactosComboBox.getSelectedItem().toString().split(":")[1];
+        String nombre = contactosComboBox.getSelectedItem().toString().split(":")[0];
+        Contacto contactoSeleccionado = null;
         
-        System.out.println("Exportando chat de " + contactoSeleccionado.getNombre() + "...");
+        if (!telefono.equals("Grupo")) {
+            contactoSeleccionado = Controlador.INSTANCE.getContactoConMovil(telefono);
+        } else {
+            contactoSeleccionado = Controlador.INSTANCE.getGrupoConNombre(nombre);
+        }
+        
         if (contactoSeleccionado != null) {
-            boolean exito = Controlador.INSTANCE.exportarChatPDF(contactoSeleccionado);
+            // Crear el diálogo para seleccionar la ubicación del archivo
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Guardar chat como PDF");
+            fileChooser.setSelectedFile(new File(contactoSeleccionado.getNombre() + "_chat.pdf"));
+            fileChooser.setFileFilter(new FileNameExtensionFilter("Archivos PDF (*.pdf)", "pdf"));
             
-            if (exito) {
-                JOptionPane.showMessageDialog(frame,
-                    "Chat exportado correctamente como PDF",
-                    "Exportación exitosa",
-                    JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(frame,
-                    "Error al exportar el chat a PDF",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
+            int userSelection = fileChooser.showSaveDialog(frame);
+            
+            if (userSelection == JFileChooser.APPROVE_OPTION) {
+                File fileToSave = fileChooser.getSelectedFile();
+                // Asegurarse de que tenga la extensión .pdf
+                String filePath = fileToSave.getAbsolutePath();
+                if (!filePath.toLowerCase().endsWith(".pdf")) {
+                    filePath += ".pdf";
+                    fileToSave = new File(filePath);
+                }
+                
+                // Verificar si el archivo ya existe
+                if (fileToSave.exists()) {
+                    int overwrite = JOptionPane.showConfirmDialog(frame,
+                        "El archivo ya existe. ¿Desea sobrescribirlo?",
+                        "Archivo existente",
+                        JOptionPane.YES_NO_OPTION);
+                    
+                    if (overwrite != JOptionPane.YES_OPTION) {
+                        return;
+                    }
+                }
+                
+                System.out.println("Exportando chat de " + contactoSeleccionado.getNombre() + " a: " + filePath);
+                boolean exito = Controlador.INSTANCE.exportarChatPDF(contactoSeleccionado, filePath);
+                
+                if (exito) {
+                    JOptionPane.showMessageDialog(frame,
+                        "Chat exportado correctamente como PDF\n" + filePath,
+                        "Exportación exitosa",
+                        JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(frame,
+                        "Error al exportar el chat a PDF",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                }
             }
         }
     }
