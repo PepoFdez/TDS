@@ -20,9 +20,9 @@ import beans.Entidad;
 import beans.Propiedad;
 
 /**
- * 
+ *
  * Clase que implementa el Adaptador DAO concreto de Usuario para el tipo H2.
- * 
+ *
  */
 public final class TDSUsuarioDAO implements UsuarioDAO {
 
@@ -40,44 +40,55 @@ public final class TDSUsuarioDAO implements UsuarioDAO {
 	private static final String GRUPOS = "grupos";
 	private static final String FECHA_REGISTRO = "fechaRegistro";
 
-	private ServicioPersistencia servPersistencia; 
+	private ServicioPersistencia servPersistencia;
 	private static TDSUsuarioDAO unicaInstancia = null;
-	
+
+	/**
+	 * Constructor privado para asegurar una única instancia (Singleton).
+	 */
 	private TDSUsuarioDAO() {
 		servPersistencia = FactoriaServicioPersistencia.getInstance().getServicioPersistencia();
 	}
 
+	/**
+	 * Obtiene la instancia única de TDSUsuarioDAO.
+	 * @return La instancia única de TDSUsuarioDAO.
+	 */
 	public static TDSUsuarioDAO getInstance() {
 		if (unicaInstancia == null) {
 			unicaInstancia = new TDSUsuarioDAO();
 		}
 		return unicaInstancia;
 	}
-	
+
+	/**
+	 * Registra un usuario en la capa de persistencia.
+	 * @param user El objeto Usuario a registrar.
+	 */
 	@Override
 	public void registrarUsuario(Usuario user) {
 		//comprobamos que el usuaio no esté registrado
 		Optional<Entidad> eUsuario = Optional.ofNullable(servPersistencia.recuperarEntidad(user.getId()));
 		if(eUsuario.isPresent()) return;
-		
+
 		//REGISTRAMOS AGRAGADOS
 
 		List<Contacto> grupos = user.getContactos().stream()
 												   .filter(c -> c instanceof Grupo)
 												   .collect(Collectors.toList());
-		
+
 		List<Contacto> contactosInd = user.getContactos().stream()
 														 .filter(c -> c instanceof ContactoIndividual)
 														 .collect(Collectors.toList());
-		
+
 		grupos.stream().forEach(g -> TDSGrupoDAO.getInstance().registrarGrupo((Grupo)g));
 		contactosInd.forEach(c -> TDSContactoIndividualDAO.getInstance().registrarContactoIndividual((ContactoIndividual) c));
-		
-		
+
+
 		//creamos la entidad
 		Entidad eNuevoUsuario = new Entidad();
 		eNuevoUsuario.setNombre(USUARIO);
-		
+
 		eNuevoUsuario.setPropiedades(
 				new ArrayList<Propiedad>(Arrays.asList(
 						new Propiedad(NOMBRE, user.getNombre()),
@@ -90,20 +101,25 @@ public final class TDSUsuarioDAO implements UsuarioDAO {
 						new Propiedad(SALUDO, user.getSaludo()),
 						new Propiedad(PREMIUM, String.valueOf(user.isPremium())),
 						new Propiedad(FECHA_REGISTRO, Utils.formatoFecha.format(user.getFechaRegistro())),
-						new Propiedad(CONTACTOS,  obtenerCodigosContactos(contactosInd)), 
-						new Propiedad(GRUPOS,  obtenerCodigosContactos(grupos)) 
+						new Propiedad(CONTACTOS,  obtenerCodigosContactos(contactosInd)),
+						new Propiedad(GRUPOS,  obtenerCodigosContactos(grupos))
 		)));
-		
+
 		eNuevoUsuario = servPersistencia.registrarEntidad(eNuevoUsuario);
 		user.setId(eNuevoUsuario.getId());
 		PoolDAO.INSTANCE.addObject(user.getId(), user);
 	}
 
+	/**
+	 * Elimina un usuario de la capa de persistencia.
+	 * También elimina los grupos y contactos individuales asociados a este usuario.
+	 * @param user El objeto Usuario a eliminar.
+	 */
 	@Override
 	public void eliminarUsuario(Usuario user) {
 		Optional<Entidad> eUsuario = Optional.ofNullable(servPersistencia.recuperarEntidad(user.getId()));
 		if(!eUsuario.isPresent()) return;
-		
+
 		List<Contacto> grupos = user.getContactos().stream()
 				   					.filter(c -> c instanceof Grupo)
 				   					.collect(Collectors.toList());
@@ -111,20 +127,24 @@ public final class TDSUsuarioDAO implements UsuarioDAO {
 		List<Contacto> contactosInd = user.getContactos().stream()
 								 						 .filter(c -> c instanceof ContactoIndividual)
 								 						 .collect(Collectors.toList());
-		
+
 		grupos.stream()
 			  .forEach(g -> TDSGrupoDAO.getInstance().eliminarGrupo((Grupo)g));
 		contactosInd.stream()
 					.forEach(c -> TDSContactoIndividualDAO.getInstance().eliminarContactoIndividual((ContactoIndividual) c));
-		
+
 		servPersistencia.borrarEntidad(eUsuario.get());
 		if(PoolDAO.INSTANCE.contains(user.getId())) PoolDAO.INSTANCE.removeObjet(user.getId());
 	}
-	
+
 	/**
 	 * Permite que un Usuario modifique su perfil: password y email
 	 */
-	
+
+	/**
+	 * Actualiza la información de un usuario en la capa de persistencia.
+	 * @param user El objeto Usuario con la información actualizada.
+	 */
 	@Override
 	public void updateUsuario(Usuario user) {
 		Entidad eUsuario = servPersistencia.recuperarEntidad(user.getId());
@@ -162,32 +182,37 @@ public final class TDSUsuarioDAO implements UsuarioDAO {
 			} else if (prop.getNombre().equals(GRUPOS)) {
 				prop.setValor(obtenerCodigosContactos(grupos));
 			}
-			
+
 			servPersistencia.modificarPropiedad(prop);
 		}
 	}
-	
+
+	/**
+	 * Recupera un usuario de la capa de persistencia dado su identificador.
+	 * @param id El identificador único del usuario.
+	 * @return El objeto Usuario correspondiente al id, o null si no se encuentra.
+	 */
 	@Override
 	public Usuario getUsuario(int id) {
 		if(PoolDAO.INSTANCE.contains(id)) return (Usuario) PoolDAO.INSTANCE.getObject(id);
 		Entidad eUsuario = servPersistencia.recuperarEntidad(id);
-		
+
 		String nombre = servPersistencia.recuperarPropiedadEntidad(eUsuario, NOMBRE);
 		String apellidos = servPersistencia.recuperarPropiedadEntidad(eUsuario, APELLIDOS);
 		String email = servPersistencia.recuperarPropiedadEntidad(eUsuario, EMAIL);
 		String movil = servPersistencia.recuperarPropiedadEntidad(eUsuario, MOVIL);
 		String password = servPersistencia.recuperarPropiedadEntidad(eUsuario, PASSWORD);
-		LocalDate fechaNacimiento = 
+		LocalDate fechaNacimiento =
 				LocalDate.parse(servPersistencia.recuperarPropiedadEntidad(eUsuario, FECHA_NACIMIENTO), Utils.formatoFecha);
 		String URLImagen = servPersistencia.recuperarPropiedadEntidad(eUsuario, IMAGEN);
 		String saludo = servPersistencia.recuperarPropiedadEntidad(eUsuario, SALUDO);
 		boolean premium = Boolean.parseBoolean(servPersistencia.recuperarPropiedadEntidad(eUsuario, PREMIUM));
 		LocalDate fechaRegistro = LocalDate.parse(servPersistencia.recuperarPropiedadEntidad(eUsuario, FECHA_REGISTRO),
 				Utils.formatoFecha);
-		
+
 		//falta mirar bien para aplicar patrón builder o similar para agilizar creación de usuarios
 		//Usuario user = new Usuario(nombre, apellidos, email, movil, password, fechaNacimiento, URLImagen, saludo, premium, fechaRegistro);
-		Usuario.Builder builderUser = new Usuario.Builder(nombre, 
+		Usuario.Builder builderUser = new Usuario.Builder(nombre,
 													  apellidos,
 													  email,
 													  movil,
@@ -197,24 +222,28 @@ public final class TDSUsuarioDAO implements UsuarioDAO {
 		builderUser.addSaludo(saludo);
 		builderUser.addPremium(premium);
 		builderUser.addFechaRegistro(fechaRegistro);
-		
+
 		Usuario user = builderUser.build();
-				
+
 		user.setId(id);
 		PoolDAO.INSTANCE.addObject(id, user);
-		
+
 		List<Contacto> contactosInd = obtenerContactosIndDeCodigos(
 				servPersistencia.recuperarPropiedadEntidad(eUsuario, CONTACTOS));
-		
+
 		List<Contacto> grupos = obtenerGruposDeCodigos(
 				servPersistencia.recuperarPropiedadEntidad(eUsuario, GRUPOS));
-		
+
 		contactosInd.stream().forEach(user::addContacto);
 		grupos.stream().forEach(user::addContacto);
-		
+
 		return user;
 	}
 
+	/**
+	 * Recupera todos los usuarios existentes en la capa de persistencia.
+	 * @return Una lista de todos los objetos Usuario.
+	 */
 	@Override
 	public List<Usuario> getAll() {
 		List<Usuario> usuarios = new LinkedList<Usuario>();
@@ -222,32 +251,44 @@ public final class TDSUsuarioDAO implements UsuarioDAO {
 
 		entidades.stream()
 				 .forEach(e -> usuarios.add(getUsuario(e.getId())));
-		
-	
+
+
 		return usuarios;
 	}
 
-	
+	/**
+	 * Convierte una lista de contactos a una cadena de texto con sus códigos separados por espacios.
+	 * @param cont La lista de contactos.
+	 * @return Una cadena de texto con los códigos de los contactos.
+	 */
 	private String obtenerCodigosContactos(List<Contacto> cont) {
-			
+
 			return cont.stream().map(c -> String.valueOf(c.getId())).reduce("", (i, c) -> i + c + " ").trim();
 	}
-	
+
+	/**
+	 * Convierte una cadena de texto con códigos de contactos individuales separados por espacios a una lista de contactos.
+	 * @param codigos La cadena de texto con los códigos.
+	 * @return Una lista de objetos Contacto (individuales).
+	 */
 	private List<Contacto> obtenerContactosIndDeCodigos(String codigos) {
 	    return Arrays.stream(codigos.split(" "))
-	                 .filter(c -> !c.isEmpty()) 
+	                 .filter(c -> !c.isEmpty())
 	                 .map(c -> TDSContactoIndividualDAO.getInstance().getContactoIndividual(Integer.parseInt(c)))
-	                 .collect(Collectors.toList()); 
+	                 .collect(Collectors.toList());
 	}
-	
+
+	/**
+	 * Convierte una cadena de texto con códigos de grupos separados por espacios a una lista de contactos.
+	 * @param codigos La cadena de texto con los códigos.
+	 * @return Una lista de objetos Contacto (grupos).
+	 */
 	private List<Contacto> obtenerGruposDeCodigos(String codigos) {
 	    return Arrays.stream(codigos.split(" "))
-	                 .filter(c -> !c.isEmpty()) 
+	                 .filter(c -> !c.isEmpty())
 	                 .map(c -> TDSGrupoDAO.getInstance().getGrupo(Integer.parseInt(c)))
-	                 .collect(Collectors.toList()); 
+	                 .collect(Collectors.toList());
 	}
-	
-	
 
 
 }
