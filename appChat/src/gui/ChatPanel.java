@@ -17,18 +17,29 @@ import javax.swing.Scrollable;
 import controlador.Controlador;
 import dominio.Contacto;
 
-
+/**
+ * Panel de chat que muestra los mensajes entre el usuario y un contacto.
+ * Admite tanto mensajes de texto como emojis.
+ */
 public class ChatPanel extends JPanel implements Scrollable {
-    
+
     private static final long serialVersionUID = 1L;
+
+    /** Formateador de fecha y hora para los mensajes */
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-    
+
+    /**
+     * Crea un nuevo panel de chat con un mensaje inicial.
+     */
     public ChatPanel() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(Color.WHITE);
         mostrarMensajeInicial();
     }
-    
+
+    /**
+     * Muestra un mensaje inicial cuando no se ha seleccionado ningún contacto.
+     */
     private void mostrarMensajeInicial() {
         removeAll();
         add(Box.createVerticalGlue());
@@ -40,7 +51,11 @@ public class ChatPanel extends JPanel implements Scrollable {
         revalidate();
         repaint();
     }
-    
+
+    /**
+     * Muestra el historial de mensajes del contacto seleccionado.
+     * @param contacto El contacto con el que se desea mostrar la conversación.
+     */
     public void mostrarChat(Contacto contacto) {
         removeAll();
         List<BubbleText> mensajes = convertirMensajesABurbujas(contacto);
@@ -50,7 +65,11 @@ public class ChatPanel extends JPanel implements Scrollable {
         repaint();
         javax.swing.SwingUtilities.invokeLater(this::scrollToBottom);
     }
-    
+
+    /**
+     * Envía y muestra un mensaje de texto en el chat.
+     * @param texto Texto del mensaje enviado.
+     */
     public void enviarMensaje(String texto) {
         String fecha = LocalDateTime.now().format(formatter);
         BubbleText burbuja = new BubbleText(this, texto, 
@@ -62,7 +81,11 @@ public class ChatPanel extends JPanel implements Scrollable {
         add(burbuja);
         scrollToBottom();
     }
-    
+
+    /**
+     * Envía y muestra un emoji en el chat.
+     * @param emojiId Identificador del emoji enviado.
+     */
     public void enviarEmoji(int emojiId) {
         String fecha = LocalDateTime.now().format(formatter);
         BubbleText burbuja = new BubbleText(this, emojiId, 
@@ -74,29 +97,38 @@ public class ChatPanel extends JPanel implements Scrollable {
         add(burbuja);
         scrollToBottom();
     }
-    
+
+    /**
+     * Convierte los mensajes de un contacto en burbujas de texto o emoji para el chat.
+     * @param contacto Contacto cuyos mensajes se van a mostrar.
+     * @return Lista de objetos BubbleText representando los mensajes.
+     */
     private List<BubbleText> convertirMensajesABurbujas(Contacto contacto) {
         List<Object> textoMensajes = Controlador.INSTANCE.getContenidoMensajes(contacto);
         List<String> infoMensajes = Controlador.INSTANCE.getInfoMensajes(contacto);
         List<BubbleText> burbujas = textoMensajes.stream()
-			.map(texto -> {
-				String[] info = infoMensajes.get(textoMensajes.indexOf(texto)).split(utils.Utils.SEPARATOR);
-				String fechaHora = info[0];
-				Integer tipo = Integer.parseInt(info[1]);
-				
-				Color color = tipo.equals(BubbleText.SENT) ? new Color(220, 248, 198) : Color.LIGHT_GRAY;
-				String nombre = tipo.equals(BubbleText.SENT) ? "Tú" : contacto.getNombre();
-				int tipoBurbuja = tipo.equals(BubbleText.SENT) ? BubbleText.SENT : BubbleText.RECEIVED;
-				if (texto instanceof Integer) {
-					return new BubbleText(this, (Integer) texto, color, nombre + " - " + fechaHora, tipoBurbuja, 24);
-				} else { 
-					return new BubbleText(this, (String) texto, color, nombre + " - " + fechaHora, tipoBurbuja, 14);
-				}
-			})
-			.collect(Collectors.toList());
+            .map(texto -> {
+                String[] info = infoMensajes.get(textoMensajes.indexOf(texto)).split(utils.Utils.SEPARATOR);
+                String fechaHora = info[0];
+                Integer tipo = Integer.parseInt(info[1]);
+
+                Color color = tipo.equals(BubbleText.SENT) ? new Color(220, 248, 198) : Color.LIGHT_GRAY;
+                String nombre = tipo.equals(BubbleText.SENT) ? "Tú" : contacto.getNombre();
+                int tipoBurbuja = tipo.equals(BubbleText.SENT) ? BubbleText.SENT : BubbleText.RECEIVED;
+
+                if (texto instanceof Integer) {
+                    return new BubbleText(this, (Integer) texto, color, nombre + " - " + fechaHora, tipoBurbuja, 24);
+                } else {
+                    return new BubbleText(this, (String) texto, color, nombre + " - " + fechaHora, tipoBurbuja, 14);
+                }
+            })
+            .collect(Collectors.toList());
         return burbujas;
     }
-    
+
+    /**
+     * Desplaza automáticamente el panel hasta el último mensaje.
+     */
     private void scrollToBottom() {
         revalidate();
         repaint();
@@ -105,7 +137,8 @@ public class ChatPanel extends JPanel implements Scrollable {
         scrollRectToVisible(visibleRect);
     }
 
-    // Implementación de Scrollable
+    // Métodos del interfaz Scrollable
+
     @Override
     public Dimension getPreferredScrollableViewportSize() {
         return getPreferredSize();

@@ -26,9 +26,15 @@ import com.toedter.calendar.JDateChooser;
 
 import controlador.Controlador;
 
+/**
+ * Diálogo para modificar los datos del usuario.
+ * Permite al usuario actualizar su información personal como nombre, apellidos, email, contraseña, etc.
+ */
 public class ModificarUsuario extends JDialog {
 
     private static final long serialVersionUID = 1L;
+    
+    // Componentes de la interfaz
     private JLabel lblNombre;
     private JLabel lblApellidos;
     private JLabel lblFechaNacimiento;
@@ -49,11 +55,14 @@ public class ModificarUsuario extends JDialog {
     private JButton btnGuardar;
     private JButton btnCancelar;
 
+    // Componentes para mostrar errores
     private JLabel lblNombreError;
     private JLabel lblApellidosError;
     private JLabel lblFechaNacimientoError;
     private JLabel lblEmailError;
     private JLabel lblPasswordError;
+    
+    // Paneles para organizar los componentes
     private JPanel panelCampoNombre;
     private JPanel panel;
     private JPanel panelCampoApellidos;
@@ -66,6 +75,11 @@ public class ModificarUsuario extends JDialog {
     private JFrame owner;
     private JDateChooser dateChooser;
     
+    /**
+     * Constructor que crea el diálogo de modificación de usuario.
+     * 
+     * @param owner Ventana padre sobre la que se centrará este diálogo
+     */
     public ModificarUsuario(JFrame owner) {
         super(owner, "Modificar Perfil", true);
         this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -79,6 +93,9 @@ public class ModificarUsuario extends JDialog {
         cargarDatosUsuario();
     }
 
+    /**
+     * Carga los datos actuales del usuario desde el controlador y los muestra en los campos.
+     */
     private void cargarDatosUsuario() {
         // Obtener datos actuales del usuario desde el controlador
         List<String> datosUsuario = Controlador.INSTANCE.getDatosUsuario();
@@ -102,6 +119,9 @@ public class ModificarUsuario extends JDialog {
         txtImagen.setText(datosUsuario.size() > 7 ? datosUsuario.get(7) : ""); // Imagen es opcional
     }
 
+    /**
+     * Crea el panel principal con todos los componentes de la interfaz.
+     */
     private void crearPanelModificacion() {
         this.getContentPane().setLayout(new BorderLayout());
 
@@ -128,6 +148,11 @@ public class ModificarUsuario extends JDialog {
         this.pack();
     }
 
+    /**
+     * Crea la línea con el campo para el nombre del usuario.
+     * 
+     * @return Panel con los componentes del campo nombre
+     */
     private JPanel creaLineaNombre() {
         JPanel lineaNombre = new JPanel();
         lineaNombre.setAlignmentX(JLabel.LEFT_ALIGNMENT);
@@ -151,6 +176,11 @@ public class ModificarUsuario extends JDialog {
         return lineaNombre;
     }
 
+    /**
+     * Crea la línea con el campo para los apellidos del usuario.
+     * 
+     * @return Panel con los componentes del campo apellidos
+     */
     private JPanel crearLineaApellidos() {
         JPanel lineaApellidos = new JPanel();
         lineaApellidos.setAlignmentX(JLabel.LEFT_ALIGNMENT);
@@ -174,6 +204,11 @@ public class ModificarUsuario extends JDialog {
         return lineaApellidos;
     }
 
+    /**
+     * Crea la línea con el campo para el email del usuario.
+     * 
+     * @return Panel con los componentes del campo email
+     */
     private JPanel crearLineaEmail() {
         JPanel lineaEmail = new JPanel();
         lineaEmail.setAlignmentX(JLabel.LEFT_ALIGNMENT);
@@ -196,6 +231,11 @@ public class ModificarUsuario extends JDialog {
         return lineaEmail;
     }
 
+    /**
+     * Crea la línea con el campo para el teléfono del usuario (no editable).
+     * 
+     * @return Panel con los componentes del campo teléfono
+     */
     private JPanel crearLineaUsuario() {
         JPanel lineaUsuario = new JPanel();
         lineaUsuario.setAlignmentX(JLabel.LEFT_ALIGNMENT);
@@ -215,6 +255,11 @@ public class ModificarUsuario extends JDialog {
         return lineaUsuario;
     }
 
+    /**
+     * Crea la línea con los campos para la contraseña y su confirmación.
+     * 
+     * @return Panel con los componentes de los campos de contraseña
+     */
     private JPanel crearLineaPassword() {
         JPanel lineaPassword = new JPanel();
         lineaPassword.setAlignmentX(JLabel.LEFT_ALIGNMENT);
@@ -243,6 +288,11 @@ public class ModificarUsuario extends JDialog {
         return lineaPassword;
     }
 
+    /**
+     * Crea la línea con el campo para la fecha de nacimiento del usuario.
+     * 
+     * @return Panel con los componentes del campo fecha de nacimiento
+     */
     private JPanel crearLineaFechaNacimiento() {
         JPanel lineaFechaNacimiento = new JPanel();
         lineaFechaNacimiento.setAlignmentX(JLabel.LEFT_ALIGNMENT);
@@ -268,6 +318,11 @@ public class ModificarUsuario extends JDialog {
         return lineaFechaNacimiento;
     }
     
+    /**
+     * Crea la línea con el campo para el saludo personal del usuario.
+     * 
+     * @return Panel con los componentes del campo saludo
+     */
     private JPanel crearLineaSaludo() {
         JPanel lineaSaludo = new JPanel();
         lineaSaludo.setAlignmentX(JLabel.LEFT_ALIGNMENT);
@@ -286,6 +341,11 @@ public class ModificarUsuario extends JDialog {
         return lineaSaludo;
     }
     
+    /**
+     * Crea la línea con el campo para la imagen de perfil del usuario.
+     * 
+     * @return Panel con los componentes del campo imagen de perfil
+     */
     private JPanel crearLineaImagen() {
         JPanel lineaImagen = new JPanel();
         lineaImagen.setAlignmentX(JLabel.LEFT_ALIGNMENT);
@@ -304,6 +364,9 @@ public class ModificarUsuario extends JDialog {
         return lineaImagen;
     }
 
+    /**
+     * Crea el panel con los botones de guardar y cancelar.
+     */
     private void crearPanelBotones() {
         JPanel lineaBotones = new JPanel();
         this.getContentPane().add(lineaBotones, BorderLayout.SOUTH);
@@ -318,9 +381,12 @@ public class ModificarUsuario extends JDialog {
 
         this.crearManejadorBotonGuardar();
         this.crearManejadorBotonCancelar();
-    
     }
 
+    /**
+     * Crea el manejador de eventos para el botón Guardar.
+     * Valida los campos y actualiza los datos del usuario si son correctos.
+     */
     private void crearManejadorBotonGuardar() {
         btnGuardar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -364,6 +430,10 @@ public class ModificarUsuario extends JDialog {
         });
     }
 
+    /**
+     * Crea el manejador de eventos para el botón Cancelar.
+     * Cierra el diálogo sin guardar cambios.
+     */
     private void crearManejadorBotonCancelar() {
         btnCancelar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -372,7 +442,11 @@ public class ModificarUsuario extends JDialog {
         });
     }
 
-
+    /**
+     * Valida los campos del formulario.
+     * 
+     * @return true si todos los campos obligatorios son válidos, false en caso contrario
+     */
     private boolean checkFields() {
         boolean salida = true;
         ocultarErrores();
@@ -418,6 +492,9 @@ public class ModificarUsuario extends JDialog {
         return salida;
     }
 
+    /**
+     * Oculta todos los mensajes de error y restablece los estilos visuales de los campos.
+     */
     private void ocultarErrores() {
         lblNombreError.setVisible(false);
         lblApellidosError.setVisible(false);
@@ -440,6 +517,13 @@ public class ModificarUsuario extends JDialog {
         lblFechaNacimiento.setForeground(Color.BLACK);
     }
 
+    /**
+     * Establece un tamaño fijo para un componente.
+     * 
+     * @param o Componente al que se le aplicará el tamaño fijo
+     * @param x Ancho del componente
+     * @param y Alto del componente
+     */
     private void fixedSize(JComponent o, int x, int y) {
         Dimension d = new Dimension(x, y);
         o.setMinimumSize(d);
@@ -447,6 +531,9 @@ public class ModificarUsuario extends JDialog {
         o.setPreferredSize(d);
     }
 
+    /**
+     * Muestra la ventana centrada respecto a su ventana padre.
+     */
     public void mostrarVentana() {
         this.setLocationRelativeTo(owner);
         this.setVisible(true);

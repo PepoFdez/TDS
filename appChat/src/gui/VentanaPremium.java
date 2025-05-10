@@ -138,11 +138,4 @@ public class VentanaPremium {
                 JOptionPane.ERROR_MESSAGE);
         }
     }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            VentanaPremium ventana = new VentanaPremium();
-            ventana.mostrarVentana();
-        });
-    }
 }

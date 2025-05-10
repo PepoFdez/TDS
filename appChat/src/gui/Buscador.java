@@ -9,35 +9,68 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.LinkedList;
 
+/**
+ * Clase que representa una ventana para buscar mensajes según texto, teléfono o contacto.
+ * Proporciona una interfaz gráfica para filtrar mensajes a través de distintos criterios.
+ */
 public class Buscador {
-	private static Buscador instance;
+    /** Instancia única del buscador (patrón Singleton) */
+    private static Buscador instance;
+
+    /** Ventana principal del buscador */
     private JFrame frame;
-    private JTextField txtTexto, txtTelefono;
+
+    /** Campo de texto para buscar por contenido del mensaje */
+    private JTextField txtTexto;
+
+    /** Campo de texto para buscar por teléfono */
+    private JTextField txtTelefono;
+
+    /** Desplegable para seleccionar un contacto */
     private JComboBox<String> cbContacto;
+
+    /** Botón para lanzar la búsqueda */
     private JButton btnBuscar;
+
+    /** Modelo de lista para mostrar los mensajes encontrados */
     private DefaultListModel<String> modeloMensajes;
+
+    /** Componente de lista donde se muestran los mensajes */
     private JList<String> listaMensajes;
 
+    /**
+     * Constructor que inicializa la ventana del buscador.
+     */
     public Buscador() {
         initialize();
     }
 
+    /**
+     * Obtiene la instancia única del buscador.
+     * @return Instancia del buscador.
+     */
     public static Buscador getInstance() {
-		if (instance == null) {
-			instance = new Buscador();
-		}
-		return instance;
-	}
-    
+        if (instance == null) {
+            instance = new Buscador();
+        }
+        return instance;
+    }
+
+    /**
+     * Muestra la ventana del buscador, trayéndola al frente si ya está visible.
+     */
     public void mostrarVentana() {
         if (frame != null && frame.isVisible()) {
-            frame.toFront(); // Traer al frente si ya está abierta
+            frame.toFront();
             return;
         }
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
 
+    /**
+     * Inicializa los componentes gráficos de la ventana del buscador.
+     */
     private void initialize() {
         frame = new JFrame("Buscador de Mensajes");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -46,19 +79,17 @@ public class Buscador {
         frame.setLayout(new BorderLayout(10, 10));
         frame.getContentPane().setBackground(new Color(240, 240, 240));
 
-        // Panel superior: Búsqueda
         JPanel panelBusqueda = new JPanel(new GridBagLayout());
         panelBusqueda.setBorder(BorderFactory.createCompoundBorder(
             new TitledBorder("Criterios de Búsqueda"),
             BorderFactory.createEmptyBorder(10, 10, 10, 10)));
         panelBusqueda.setBackground(Color.WHITE);
-        
+
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Campo de texto
         JLabel lblTexto = new JLabel("Texto del mensaje:");
         lblTexto.setFont(new Font("Arial", Font.PLAIN, 14));
         gbc.gridx = 0; gbc.gridy = 0;
@@ -70,7 +101,6 @@ public class Buscador {
         gbc.weightx = 1.0;
         panelBusqueda.add(txtTexto, gbc);
 
-        // Campo de teléfono
         JLabel lblTelefono = new JLabel("Teléfono relacionado:");
         lblTelefono.setFont(new Font("Arial", Font.PLAIN, 14));
         gbc.gridx = 0; gbc.gridy = 1;
@@ -83,7 +113,6 @@ public class Buscador {
         gbc.weightx = 1.0;
         panelBusqueda.add(txtTelefono, gbc);
 
-        // ComboBox de contactos
         JLabel lblContacto = new JLabel("Contacto:");
         lblContacto.setFont(new Font("Arial", Font.PLAIN, 14));
         gbc.gridx = 0; gbc.gridy = 2;
@@ -97,7 +126,6 @@ public class Buscador {
         gbc.weightx = 1.0;
         panelBusqueda.add(cbContacto, gbc);
 
-        // Botón Buscar
         btnBuscar = new JButton("Buscar Mensajes");
         btnBuscar.setFont(new Font("Arial", Font.BOLD, 14));
         btnBuscar.setBackground(new Color(70, 130, 180));
@@ -109,7 +137,6 @@ public class Buscador {
 
         frame.add(panelBusqueda, BorderLayout.NORTH);
 
-        // Panel central: Resultados
         JPanel panelResultados = new JPanel(new BorderLayout());
         panelResultados.setBorder(BorderFactory.createCompoundBorder(
             new TitledBorder("Resultados de la Búsqueda"),
@@ -120,30 +147,36 @@ public class Buscador {
         listaMensajes = new JList<>(modeloMensajes);
         listaMensajes.setFont(new Font("Arial", Font.PLAIN, 14));
         listaMensajes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        
+
         JScrollPane scrollPane = new JScrollPane(listaMensajes);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         panelResultados.add(scrollPane, BorderLayout.CENTER);
 
         frame.add(panelResultados, BorderLayout.CENTER);
 
-        // Acción del botón Buscar
         btnBuscar.addActionListener(this::realizarBusqueda);
     }
-    
+
+    /**
+     * Carga los contactos del usuario actual en el combo desplegable.
+     */
     private void cargarContactos() {
         LinkedList<Contacto> contactos = Controlador.INSTANCE.getContactosUsuario();
         for (Contacto contacto : contactos) {
             cbContacto.addItem(contacto.getNombre());
         }
     }
-    
+
+    /**
+     * Ejecuta la búsqueda de mensajes según los criterios introducidos y muestra los resultados.
+     * @param e Evento de acción disparado por el botón de búsqueda.
+     */
     private void realizarBusqueda(ActionEvent e) {
         String texto = txtTexto.getText().trim();
         String telefono = txtTelefono.getText().trim();
         String contactoSeleccionado = (String) cbContacto.getSelectedItem();
         String contacto = contactoSeleccionado;
-        // Validación
+
         if (texto.isEmpty() && telefono.isEmpty() && contacto == null) {
             JOptionPane.showMessageDialog(frame, 
                 "Por favor, ingrese al menos un criterio de búsqueda", 
@@ -151,13 +184,11 @@ public class Buscador {
             return;
         }
 
-        // Realizar búsqueda a través del controlador
         LinkedList<String> resultados = Controlador.INSTANCE.buscarMensajes(
             texto, telefono, contacto);
 
-        // Mostrar resultados
         modeloMensajes.clear();
-        
+
         if (resultados.isEmpty()) {
             modeloMensajes.addElement("No se encontraron mensajes con los criterios especificados.");
         } else {

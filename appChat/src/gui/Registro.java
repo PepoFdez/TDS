@@ -25,9 +25,15 @@ import com.toedter.calendar.JDateChooser;
 
 import controlador.Controlador;
 
+/**
+ * Diálogo para el registro de nuevos usuarios.
+ * Permite introducir todos los datos necesarios para crear una nueva cuenta de usuario.
+ */
 public class Registro extends JDialog {
 
     private static final long serialVersionUID = 1L;
+    
+    // Componentes de la interfaz
     private JLabel lblNombre;
     private JLabel lblApellidos;
     private JLabel lblFechaNacimiento;
@@ -49,13 +55,15 @@ public class Registro extends JDialog {
     private JButton btnRegistrar;
     private JButton btnCancelar;
 
-
+    // Componentes para mostrar errores
     private JLabel lblNombreError;
     private JLabel lblApellidosError;
     private JLabel lblFechaNacimientoError;
     private JLabel lblEmailError;
     private JLabel lblUsuarioError;
     private JLabel lblPasswordError;
+    
+    // Paneles para organizar los componentes
     private JPanel panelCampoNombre;
     private JPanel panel;
     private JPanel panelCampoApellidos;
@@ -67,14 +75,21 @@ public class Registro extends JDialog {
 
     private JDateChooser dateChooser; // Campo para la selección de la fecha
     
+    /**
+     * Constructor que crea el diálogo de registro de usuario.
+     * 
+     * @param owner Ventana padre sobre la que se centrará este diálogo
+     */
     public Registro(JFrame owner) {
         super(owner, "Registro Usuario", true);
         this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         this.setResizable(false);
         this.crearPanelRegistro();
-
     }
 
+    /**
+     * Crea el panel principal con todos los componentes de la interfaz de registro.
+     */
     private void crearPanelRegistro() {
         this.getContentPane().setLayout(new BorderLayout());
 
@@ -94,13 +109,17 @@ public class Registro extends JDialog {
         datosPersonales.add(crearLineaImagen());
 
         this.crearPanelBotones();
-
         this.ocultarErrores();
 
         this.revalidate();
         this.pack();
     }
 
+    /**
+     * Crea la línea con el campo para el nombre del usuario.
+     * 
+     * @return Panel con los componentes del campo nombre
+     */
     private JPanel creaLineaNombre() {
         JPanel lineaNombre = new JPanel();
         lineaNombre.setAlignmentX(JLabel.LEFT_ALIGNMENT);
@@ -124,6 +143,11 @@ public class Registro extends JDialog {
         return lineaNombre;
     }
 
+    /**
+     * Crea la línea con el campo para los apellidos del usuario.
+     * 
+     * @return Panel con los componentes del campo apellidos
+     */
     private JPanel crearLineaApellidos() {
         JPanel lineaApellidos = new JPanel();
         lineaApellidos.setAlignmentX(JLabel.LEFT_ALIGNMENT);
@@ -147,6 +171,11 @@ public class Registro extends JDialog {
         return lineaApellidos;
     }
 
+    /**
+     * Crea la línea con el campo para el email del usuario.
+     * 
+     * @return Panel con los componentes del campo email
+     */
     private JPanel crearLineaEmail() {
         JPanel lineaEmail = new JPanel();
         lineaEmail.setAlignmentX(JLabel.LEFT_ALIGNMENT);
@@ -169,6 +198,11 @@ public class Registro extends JDialog {
         return lineaEmail;
     }
 
+    /**
+     * Crea la línea con el campo para el teléfono del usuario.
+     * 
+     * @return Panel con los componentes del campo teléfono
+     */
     private JPanel crearLineaUsuario() {
         JPanel lineaUsuario = new JPanel();
         lineaUsuario.setAlignmentX(JLabel.LEFT_ALIGNMENT);
@@ -191,6 +225,11 @@ public class Registro extends JDialog {
         return lineaUsuario;
     }
 
+    /**
+     * Crea la línea con los campos para la contraseña y su confirmación.
+     * 
+     * @return Panel con los componentes de los campos de contraseña
+     */
     private JPanel crearLineaPassword() {
         JPanel lineaPassword = new JPanel();
         lineaPassword.setAlignmentX(JLabel.LEFT_ALIGNMENT);
@@ -219,6 +258,11 @@ public class Registro extends JDialog {
         return lineaPassword;
     }
     
+    /**
+     * Crea la línea con el campo para la fecha de nacimiento del usuario.
+     * 
+     * @return Panel con los componentes del campo fecha de nacimiento
+     */
     private JPanel crearLineaFechaNacimiento() {
         JPanel lineaFechaNacimiento = new JPanel();
         lineaFechaNacimiento.setAlignmentX(JLabel.LEFT_ALIGNMENT);
@@ -256,6 +300,11 @@ public class Registro extends JDialog {
         return lineaFechaNacimiento;
     }
 
+    /**
+     * Crea la línea con el campo para el saludo personal del usuario.
+     * 
+     * @return Panel con los componentes del campo saludo
+     */
     private JPanel crearLineaSaludo() {
         JPanel lineaSaludo = new JPanel();
         lineaSaludo.setAlignmentX(JLabel.LEFT_ALIGNMENT);
@@ -274,6 +323,11 @@ public class Registro extends JDialog {
         return lineaSaludo;
     }
     
+    /**
+     * Crea la línea con el campo para la imagen de perfil del usuario.
+     * 
+     * @return Panel con los componentes del campo imagen de perfil
+     */
     private JPanel crearLineaImagen() {
         JPanel lineaImagen = new JPanel();
         lineaImagen.setAlignmentX(JLabel.LEFT_ALIGNMENT);
@@ -292,6 +346,9 @@ public class Registro extends JDialog {
         return lineaImagen;
     }
 
+    /**
+     * Crea el panel con los botones de registrar y cancelar.
+     */
     private void crearPanelBotones() {
         JPanel lineaBotones = new JPanel();
         this.getContentPane().add(lineaBotones, BorderLayout.SOUTH);
@@ -308,6 +365,10 @@ public class Registro extends JDialog {
         this.crearManejadorBotonCancelar();
     }
 
+    /**
+     * Crea el manejador de eventos para el botón Registrar.
+     * Valida los campos y registra al usuario si son correctos.
+     */
     private void crearManejadorBotonRegistrar() {
         btnRegistrar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -335,6 +396,10 @@ public class Registro extends JDialog {
         });
     }
 
+    /**
+     * Crea el manejador de eventos para el botón Cancelar.
+     * Cierra el diálogo y muestra la ventana de login.
+     */
     private void crearManejadorBotonCancelar() {
         btnCancelar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -345,7 +410,11 @@ public class Registro extends JDialog {
         });
     }
     
-    
+    /**
+     * Valida los campos del formulario de registro.
+     * 
+     * @return true si todos los campos obligatorios son válidos, false en caso contrario
+     */
     private boolean checkFields() {
         boolean salida = true;
         ocultarErrores();
@@ -406,6 +475,9 @@ public class Registro extends JDialog {
         return salida;
     }
 
+    /**
+     * Oculta todos los mensajes de error y restablece los estilos visuales de los campos.
+     */
     private void ocultarErrores() {
         lblNombreError.setVisible(false);
         lblApellidosError.setVisible(false);
@@ -436,6 +508,13 @@ public class Registro extends JDialog {
         lblImagen.setForeground(Color.BLACK);
     }
 
+    /**
+     * Establece un tamaño fijo para un componente.
+     * 
+     * @param o Componente al que se le aplicará el tamaño fijo
+     * @param x Ancho del componente
+     * @param y Alto del componente
+     */
     private void fixedSize(JComponent o, int x, int y) {
         Dimension d = new Dimension(x, y);
         o.setMinimumSize(d);
