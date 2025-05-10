@@ -76,6 +76,22 @@ public class ContactoIndividual extends Contacto implements AgregableGrupos {
 		return URLImagen;
 	}
 	
+	/**
+	 * Devuelve el saludo del {@link Usuario} asociado a este contacto individual.
+	 * 
+	 */
+	public String getSaludo() {
+		return this.usuario.getSaludo();
+	}
+	
+	/**
+	 * Devuelve el número de teléfono móvil del {@link Usuario} asociado a este contacto individual.
+	 * 
+	 */
+	public String getMovil() {
+		return this.usuario.getMovil();
+	}
+	
 	
 
 }

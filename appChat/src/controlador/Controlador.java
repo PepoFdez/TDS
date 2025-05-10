@@ -428,7 +428,7 @@ public enum Controlador {
 
 	public String getSaludoContacto(Contacto contacto) {
 		if (contacto instanceof ContactoIndividual) {
-			return ((ContactoIndividual) contacto).getUsuario().getSaludo();
+			return ((ContactoIndividual) contacto).getSaludo();
 		} else {
 			return "";
 		}
