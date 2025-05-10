@@ -433,4 +433,22 @@ public enum Controlador {
 			return "";
 		}
 	}
+
+	public boolean isContactoIndividual(Contacto contacto) {
+		return contacto instanceof ContactoIndividual;
+	}
+
+	public boolean modificarGrupo(Grupo grupo, String nuevoNombre, LinkedList<ContactoIndividual> nuevosMiembros) {
+		if (grupo != null) {
+			grupo.setNombre(nuevoNombre);
+			grupo.setMiembros(nuevosMiembros);
+			grupoDAO.updateGrupo(grupo);
+			return true;
+		}
+		return false;
+	}
+
+	public LinkedList<Contacto> getMiembrosGrupo(Grupo grupo) {
+		return (LinkedList<Contacto>) grupo.getMiembros();	
+	}
 }

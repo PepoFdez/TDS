@@ -616,7 +616,12 @@ public class VentanaPrincipal {
 		editButton.setOpaque(false);
 		editButton.addActionListener(e -> {
 			// Acción: abrir ventana para modificar este contacto
-			new ModificarContacto(contacto).mostrarVentana();
+			if (Controlador.INSTANCE.isContactoIndividual(contacto)) {
+				new ModificarContacto(contacto).mostrarVentana();
+			} else {
+				new ModificarGrupo(contacto).mostrarVentana();
+			}
+			
 		});
 
 		// Panel para el botón de edición

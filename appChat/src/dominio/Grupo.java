@@ -1,7 +1,6 @@
 package dominio;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -70,14 +69,14 @@ public class Grupo extends Contacto {
     }
 
     /**
-     * Obtiene una lista inmutable de los miembros de este grupo.
+     * Obtiene una nueva lista de los miembros de este grupo.
      *
      * @return Una nueva lista ({@link LinkedList}) conteniendo los miembros del grupo.
      * Devuelve una lista vacía si el grupo no tiene miembros.
      */
     public List<Contacto> getMiembros() {
         // Devolver una copia para proteger la encapsulación del Set interno.
-        return Collections.unmodifiableList(new LinkedList<>(this.miembros));
+        return new LinkedList<>(this.miembros);
     }
 
     /**
@@ -134,5 +133,35 @@ public class Grupo extends Contacto {
     public String getURLImagen() {
         return (this.URLImagen != null) ? this.URLImagen : "";
     }
+
+	public void setMiembros(LinkedList<ContactoIndividual> nuevosMiembros) {
+		this.miembros.clear();
+		this.miembros.addAll(nuevosMiembros);
+	}
+
+	@Override
+	public String toString() {
+		return "Grupo{" +
+				"nombre='" + getNombre() + '\'' +
+				", miembros=" + miembros +
+				", URLImagen='" + URLImagen + '\'' +
+				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Grupo)) return false;
+		Grupo grupo = (Grupo) o;
+		return Objects.equals(getNombre(), grupo.getNombre()) &&
+			   Objects.equals(miembros, grupo.miembros) &&
+			   Objects.equals(URLImagen, grupo.URLImagen);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(getNombre(), miembros, URLImagen);
+		
+	}
 
 }
