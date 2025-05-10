@@ -133,6 +133,13 @@ public class Usuario {
 		return movil;
 	}
 
+	/**
+     * Establece el número de teléfono móvil del usuario.
+     * @param movil El nuevo número de móvil. No debe ser nulo.
+     * TODO: Considerar validación de formato y si se permite el cambio,
+     * asegurar la unicidad si es un identificador clave.
+     * @throws NullPointerException si el móvil es nulo.
+     */
 	public void setMovil(String movil) {
 		this.movil = Objects.requireNonNull(movil, "El movil no puede ser nulo.");;
 	}
@@ -150,6 +157,15 @@ public class Usuario {
 		return password;
 	}
 
+	/**
+     * Establece la contraseña del usuario (en texto plano).
+     * <p>
+     * <b>Advertencia de Seguridad:</b> Almacenar o establecer contraseñas en texto plano es inseguro.
+     * Este método se mantiene por compatibilidad con la estructura original.
+     * </p>
+     * @param password La nueva contraseña. No debe ser nula.
+     * @throws NullPointerException si la contraseña es nula.
+     */
 	public void setPassword(String password) {
 		this.password =  Objects.requireNonNull(password, "La contraseña no puede ser nula.");;
 	}
@@ -162,6 +178,10 @@ public class Usuario {
 		return fechaNacimiento;
 	}
 
+	/**
+     * Establece la fecha de nacimiento del usuario.
+     * @param fechaNacimiento La nueva fecha de nacimiento (puede ser {@code null}).
+     */
 	public void setFechaNacimiento(LocalDate fechaNacimiento) {
 		this.fechaNacimiento = fechaNacimiento;
 	}
@@ -174,9 +194,14 @@ public class Usuario {
 		return URLimagen;
 	}
 
-	public void setURLImagen(String imagen) {
-		this.URLimagen = imagen;
-	}
+	/**
+     * Establece la URL de la imagen de perfil del usuario.
+     * Si la URL es {@code null}, se establece como una cadena vacía.
+     * @param URLimagen La nueva URL de la imagen.
+     */
+	public void setURLImagen(String URLimagen) {
+        this.URLimagen = (URLimagen != null) ? URLimagen : "";
+    }
 
 	 /**
      * Obtiene el mensaje de saludo del perfil del usuario.
@@ -186,6 +211,11 @@ public class Usuario {
 		return saludo;
 	}
 
+	/**
+     * Establece el mensaje de saludo del perfil del usuario.
+     * Si el saludo es {@code null}, se establece como una cadena vacía.
+     * @param saludo El nuevo mensaje de saludo.
+     */
 	public void setSaludo(String saludo) {
 		this.saludo = saludo;
 	}
@@ -198,10 +228,16 @@ public class Usuario {
 		return premium;
 	}
 
+	/**
+     * Activa el estado Premium del usuario.
+     */
 	public void activarPremium() {
 		this.premium = true;
 	}
 	
+	/**
+     * Desactiva el estado Premium del usuario.
+     */
 	public void desactivarPremium() {
 		this.premium = false;
 	}
@@ -216,16 +252,17 @@ public class Usuario {
 	}
 	
 	/**
-     * Devuelve una lista del conjunto de todos los contactos (individuales y grupos)
-     * de este usuario.
-     * @return Un {@link LinkedList} de {@link Contacto}.
+     * Devuelve una nueva lista (copia defensiva) que contiene todos los contactos
+     * (individuales y grupos) de este usuario.
+     * Las modificaciones a la lista devuelta no afectarán a la colección interna de contactos.
+     * @return Una nueva {@link List} (actualmente {@link LinkedList}) de {@link Contacto}.
      */
 	public LinkedList<Contacto> getContactos() {
 		return new LinkedList<>(contactos);
 	}
 	
 	/**
-     * Devuelve una lista del conjunto de contactos que son individuales (no grupos)
+     * Devuelve una nueva lista del conjunto de contactos que son individuales (no grupos)
      * de este usuario.
      * @return Un {@link List} de {@link ContactoIndividual}.
      */
@@ -233,13 +270,24 @@ public class Usuario {
 		return new LinkedList<>(contactosIndividuales);
 	}
 
+	/**
+     * Añade un contacto a la lista de contactos del usuario.
+     * @param contacto El {@link Contacto} a añadir. No debe ser nulo.
+     * @throws NullPointerException si {@code contacto} es nulo.
+     */
 	public void addContacto(Contacto contacto) {
+		Objects.requireNonNull(contacto, "El contacto a añadir no puede ser nulo.");
 		this.contactos.add(contacto);
 		if (contacto instanceof ContactoIndividual) {
 			this.contactosIndividuales.add((ContactoIndividual) contacto);
 		}
 	}
 	
+	/**
+     * Elimina un contacto de la lista de contactos del usuario.
+     * @param contacto El {@link Contacto} a eliminar. No debe ser nulo.
+     * @throws NullPointerException si {@code contacto} es nulo.
+     */
 	public void removeContacto(Contacto contacto) {
 		this.contactos.remove(contacto);
 		if (contacto instanceof ContactoIndividual) {
@@ -247,7 +295,13 @@ public class Usuario {
 		}
 	}
 	
-	 // Clase Builder interna
+
+	// --- Clase Builder Interna Estática ---
+    /**
+     * Clase Builder para construir instancias de {@link Usuario} de forma fluida y legible.
+     * Permite establecer campos obligatorios en el constructor y campos opcionales
+     * mediante métodos encadenados.
+     */
     public static class Builder {
         private String nombre;
         private String apellidos;
@@ -260,6 +314,15 @@ public class Usuario {
         private boolean premium = false;
         private LocalDate fechaRegistro = LocalDate.now();
 
+        /**
+         * Constructor del Builder para los campos considerados obligatorios al crear un usuario.
+         *
+         * @param nombre Nombre del usuario.
+         * @param apellidos Apellidos del usuario.
+         * @param email Email del usuario.
+         * @param movil Número de móvil, usado para identificación.
+         * @param password Contraseña del usuario (en texto plano).
+         */
         public Builder(String nombre, String apellidos, String email, String movil, String password, LocalDate fechaNacimiento) {
             this.nombre = nombre;
             this.apellidos = apellidos;
@@ -269,43 +332,87 @@ public class Usuario {
             this.fechaNacimiento = fechaNacimiento;
         }
 
+        /**
+         * Establece la URL de la imagen de perfil (opcional).
+         * @param URLimagen La URL de la imagen.
+         * @return Este mismo Builder para encadenamiento.
+         */
         public Builder addURLimagen(String URLimagen) {
             this.URLimagen = URLimagen;
             return this;
         }
 
+        /**
+         * Establece el saludo del perfil (opcional).
+         * @param saludo El mensaje de saludo.
+         * @return Este mismo Builder para encadenamiento.
+         */
         public Builder addSaludo(String saludo) {
             this.saludo = saludo;
             return this;
         }
 
+        /**
+         * Establece el estado Premium del usuario (opcional, por defecto {@code false}).
+         * @param premium {@code true} si el usuario es premium, {@code false} en caso contrario.
+         * @return Este mismo Builder para encadenamiento.
+         */
         public Builder addPremium(boolean premium) {
             this.premium = premium;
             return this;
         }
 
+        /**
+         * Establece la fecha de registro (opcional, por defecto la fecha actual).
+         * @param fechaRegistro La fecha de registro.
+         * @return Este mismo Builder para encadenamiento.
+         */
         public Builder addFechaRegistro(LocalDate fechaRegistro) {
             this.fechaRegistro = fechaRegistro;
             return this;
         }
 
+        /**
+         * Construye y devuelve una instancia de {@link Usuario} con la configuración actual del Builder.
+         * Realiza validaciones sobre los campos obligatorios (nombre, apellidos, email, móvil, password).
+         * @return La instancia de {@link Usuario} creada.
+         * @throws IllegalArgumentException si alguno de los campos obligatorios es nulo o está vacío.
+         */
         public Usuario build() {
-            // Validaciones de seguridad
-            if (nombre == null ||apellidos==null || email == null || movil == null || password == null || fechaNacimiento == null) {
-                throw new IllegalArgumentException("Faltan campos obligatorios");
+            if (nombre == null || nombre.trim().isEmpty() ||
+                apellidos == null || apellidos.trim().isEmpty() ||
+                email == null || email.trim().isEmpty() ||
+                movil == null || movil.trim().isEmpty() ||
+                password == null || password.isEmpty()) {
+                throw new IllegalArgumentException("Faltan campos obligatorios o están vacíos: nombre, apellidos, email, móvil, password.");
             }
             return new Usuario(this);
         }
     }
     
-	public boolean tieneContactoConMovil(String movil2) {
-		
-		return contactosIndividuales.stream()
-									.map(c -> c.getUsuario().getMovil())
-									.anyMatch(m -> m.equals(movil2));
-	}
+    /**
+     * Verifica si el usuario tiene un contacto individual asociado a un número de móvil específico.
+     *
+     * @param movilABuscar El número de móvil a buscar entre los contactos individuales del usuario.
+     * @return {@code true} si existe un {@link ContactoIndividual} cuyo {@link Usuario} asociado
+     * tiene el móvil especificado, {@code false} en caso contrario o si {@code movilABuscar} es nulo.
+     */
+    public boolean tieneContactoConMovil(String movilABuscar) {
+        if (movilABuscar == null) {
+            return false;
+        }
+        return contactosIndividuales.stream()
+        			.map(c -> c.getUsuario().getMovil())
+        			.anyMatch(m -> m.equals(movilABuscar));
+    }
 	
 
+    /**
+     * Obtiene el {@link ContactoIndividual} asociado a un número de móvil específico, si existe.
+     *
+     * @param movilABuscar El número de móvil a buscar.
+     * @return Un {@link ContactoIndividual} si lo encuentra o {@link <code>null</code>} si no lo encuentra. 
+     */
 	public ContactoIndividual getContactoConMovil(String movil2) {
 	    return contactosIndividuales.stream()
 	        .filter(contacto -> contacto.getUsuario().getMovil().equals(movil2))
@@ -313,9 +420,13 @@ public class Usuario {
 	        .orElse(null);
 	}
 
-
+	/**
+     * Obtiene el {@link Contacto} asociado a id, si existe.
+     *
+     * @param movilABuscar El número de móvil a buscar.
+     * @return Un {@link ContactoIndividual} si lo encuentra o {@link <code>null</code>} si no lo encuentra. 
+     */
 	public Contacto enviarMensaje(Mensaje mensaje, int idContacto) {
-		// TODO Auto-generated method stub
 		Contacto contacto = this.contactos.stream()
 				.filter(c -> c.getId() == idContacto)
 				.findFirst()
@@ -324,21 +435,31 @@ public class Usuario {
 		if (contacto != null) {
 			System.out.println("Enviando mensaje a " + contacto.getNombre() + ": " + mensaje.getTexto());
 			contacto.addMensaje(mensaje);
-			/*for (Contacto c : this.contactos) {
-				for (Mensaje m : c.getMensajesEnviados()) {
-					System.out.println("Mensaje: " + m.getTexto());
-				}
-			}*/
-			// Aquí puedes agregar la lógica para enviar el mensaje al contact
 		}
 		return contacto;
 	}
 
+	/**
+     * Obtiene el texto del último mensaje de un {@link Contacto} dado.
+     * Este método asume que el contacto proporcionado es relevante para el usuario actual.
+     *
+     * @param contacto El {@link Contacto} del cual obtener el último mensaje. No debe ser nulo.
+     * @return El texto del último mensaje del contacto (según {@link Contacto#getTextoUltimoMensaje()}),
+     * o un mensaje placeholder si no hay mensajes.
+     * @throws NullPointerException si {@code contacto} es nulo.
+     */
 	public String getUltimoMensaje(Contacto contacto) {
-		// TODO Auto-generated method stub
+		Objects.requireNonNull(contacto, "El contacto para obtener el último mensaje no puede ser nulo.");
 		return contacto.getUltimoMensaje();
 	}
 
+	/**
+     * Busca un {@link Grupo} específico por su nombre entre los contactos del usuario.
+     *
+     * @param nombreGrupo El nombre del grupo a buscar. La búsqueda es sensible a mayúsculas/minúsculas.
+     * @return Un {@link Optional<Grupo>} que contiene el grupo si se encuentra, o un <code>null</code> 
+     * si {@code nombreGrupo} es nulo, vacío o no se encuentra un grupo con ese nombre.
+     */
 	public Contacto getGrupoConNombre(String nombre) {
 	    return this.contactos.stream()
 	            .filter(c -> c instanceof Grupo && c.getNombre().equals(nombre))
@@ -346,6 +467,12 @@ public class Usuario {
 	            .orElse(null);
 	}
 
+	/**
+     * Calcula el número total de mensajes que este usuario ha enviado (cuyo tipo es {@code BubbleText.SENT})
+     * a través de todos sus contactos durante el mes natural anterior al actual.
+     *
+     * @return El recuento de mensajes enviados el mes pasado.
+     */
 	public int getNumeroMensajesEnviadosMesPasado() {
 		return (int) contactos.stream()
 				.flatMap(c -> c.getTodosLosMensajesEnviados().stream())
