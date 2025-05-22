@@ -476,7 +476,7 @@ public class Usuario {
 	public int getNumeroMensajesEnviadosMesPasado() {
 		return (int) contactos.stream()
 				.flatMap(c -> c.getTodosLosMensajesEnviados().stream())
-				.filter(m-> m.getFecha().isEqual(LocalDateTime.now().minusMonths(1)))
+				.filter(m-> m.getFecha().isAfter(LocalDateTime.now().minusMonths(1)))
 				.count();
 	}
 }

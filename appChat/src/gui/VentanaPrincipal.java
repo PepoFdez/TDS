@@ -205,6 +205,7 @@ public class VentanaPrincipal {
 		JButton contactsButton = new JButton("Contactos");
 		contactsButton.addActionListener(e -> {
 			// Acción: abrir ventana de contactos
+			VentanaContactos.getInstance().cargarContactosExternamente();
 			VentanaContactos.getInstance().mostrarVentana();
 		});
 		centerPanel.add(contactsButton);

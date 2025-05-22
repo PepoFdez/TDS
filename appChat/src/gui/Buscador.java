@@ -125,6 +125,8 @@ public class Buscador {
         gbc.gridx = 1; gbc.gridy = 2;
         gbc.weightx = 1.0;
         panelBusqueda.add(cbContacto, gbc);
+        cbContacto.addItem("Selecciona un contacto");
+        cbContacto.setSelectedItem("Selecciona un contacto");
 
         btnBuscar = new JButton("Buscar Mensajes");
         btnBuscar.setFont(new Font("Arial", Font.BOLD, 14));

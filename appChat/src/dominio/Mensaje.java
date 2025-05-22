@@ -135,8 +135,11 @@ public class Mensaje {
      * @return Una cadena con la hora y el tipo del mensaje formateados.
      */
     public String getInfoFormateada() {
-        return this.getHora() + Utils.SEPARATOR + this.tipo;
+        return this.getFechaHora() + Utils.SEPARATOR + this.tipo;
     }
 
+    public String getFechaHora() {
+		return this.fecha.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+	}
  
 }

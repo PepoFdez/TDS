@@ -1,6 +1,7 @@
 package dominio;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Objects;
 
 
@@ -15,9 +16,9 @@ import java.util.Objects;
  */
 public class DescuentoPorFecha implements Descuento {
 
-	private static final LocalDate FECHA_INICIO = LocalDate.of(2025, 04, 1);
-	private static final LocalDate FECHA_FIN = LocalDate.of(2025, 05, 1);
-	private static final double DESC = 0.37;
+	private static final LocalDateTime FECHA_INICIO = LocalDateTime.of(2025, 04, 21, 0, 0, 0);
+	private static final LocalDateTime FECHA_FIN = LocalDateTime.of(2025, 05, 22, 23, 59, 59);
+	private static final double DESC = 0.18;
 	
 	/**
      * Calcula el precio final aplicando un 37% de descuento.
@@ -45,7 +46,8 @@ public class DescuentoPorFecha implements Descuento {
 	public boolean isAplicable(Usuario user) {
 		Objects.requireNonNull(user, "El usuario no puede ser nulo.");
 		Objects.requireNonNull(user.getFechaRegistro(), "La fecha de registro del usuario no puede ser nula.");
-		return (user.getFechaRegistro().isAfter(FECHA_INICIO) && user.getFechaRegistro().isBefore(FECHA_FIN));
+		LocalDateTime fechaRegistro = LocalDateTime.of(user.getFechaRegistro(), LocalTime.of(0, 0, 1));
+		return (fechaRegistro.isAfter(FECHA_INICIO) && fechaRegistro.isBefore(FECHA_FIN));
 	}
 
 }

@@ -128,7 +128,11 @@ public class InfoUsuario {
             addDetail(detailsPanel, "Email", Controlador.INSTANCE.getEmailUsuario(), gbc);
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-            addDetail(detailsPanel, "Nacimiento", dateFormat.format(Controlador.INSTANCE.getFechaNacimientoUsuario()), gbc);
+            if (dateFormat.format(Controlador.INSTANCE.getFechaNacimientoUsuario()).equals("01/01/1970")) {
+				addDetail(detailsPanel, "Nacimiento", "-", gbc);
+			} else {
+				addDetail(detailsPanel, "Nacimiento", dateFormat.format(Controlador.INSTANCE.getFechaNacimientoUsuario()), gbc);
+			}
             addDetail(detailsPanel, "Miembro desde", dateFormat.format(Controlador.INSTANCE.getFechaCreacionCuentaUsuario()), gbc);
         }
 

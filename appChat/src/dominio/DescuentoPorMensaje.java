@@ -10,7 +10,7 @@ import java.util.Objects;
 public class DescuentoPorMensaje implements Descuento {
 
     private static final double PORCENTAJE_DESCUENTO = 0.2; // 20%
-    private static final int UMBRAL_MENSAJES_MES_PASADO = 0;
+    private static final int UMBRAL_MENSAJES_MES_PASADO = 4;
 
     /**
      * Calcula el precio final aplicando un 20% de descuento.
