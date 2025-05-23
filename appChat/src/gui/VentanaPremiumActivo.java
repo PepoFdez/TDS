@@ -117,9 +117,13 @@ public class VentanaPremiumActivo {
 		exportarButton.setFont(new Font("Arial", Font.BOLD, 14));
 		exportarButton.setForeground(Color.WHITE);
 		exportarButton.setBackground(new Color(0, 153, 51)); // Color verde
-		exportarButton.setFocusPainted(false); // Quitar el borde de foco
+
+		exportarButton.setOpaque(true);
+		exportarButton.setBorderPainted(false); // importante en macOS
+
+		exportarButton.setFocusPainted(false); 
 		exportarButton.setPreferredSize(new Dimension(150, 35)); // Tamaño preferido
-		exportarButton.setEnabled(false); // Deshabilitado inicialmente
+		exportarButton.setEnabled(false); 
 		exportarButton.addActionListener(this::exportarPDF); // Listener para exportar
 
 		cancelarSuscripcionButton = new JButton("Anular Suscripción");
