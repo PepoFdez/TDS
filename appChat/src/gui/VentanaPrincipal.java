@@ -197,6 +197,7 @@ public class VentanaPrincipal {
 		JButton searchMessagesButton = new JButton("Buscar mensajes");
 		searchMessagesButton.addActionListener(e -> {
 			// Acción: abrir ventana de búsqueda
+			Buscador.getInstance().cargarContactosExternamente();
 			Buscador.getInstance().mostrarVentana();
 		});
 		centerPanel.add(searchMessagesButton);

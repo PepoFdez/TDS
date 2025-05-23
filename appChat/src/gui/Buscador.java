@@ -170,9 +170,15 @@ public class Buscador {
      */
     private void cargarContactos() {
         LinkedList<Contacto> contactos = Controlador.INSTANCE.getContactosUsuario();
+        cbContacto.addItem("Selecciona un contacto");
         for (Contacto contacto : contactos) {
             cbContacto.addItem(contacto.getNombre());
         }
+    }
+    
+    public void cargarContactosExternamente() {
+    	cbContacto.removeAllItems();
+    	cargarContactos();
     }
 
     /**
