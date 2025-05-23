@@ -132,9 +132,15 @@ public class Buscador {
         btnBuscar.setFont(new Font("Arial", Font.BOLD, 14));
         btnBuscar.setBackground(new Color(70, 130, 180));
         btnBuscar.setForeground(Color.WHITE);
+
+        // --- Soluciones para macOS ---
+        btnBuscar.setOpaque(true); // Clave para que setBackground funcione bien en Mac
+        btnBuscar.setBorderPainted(false); // Ayuda a evitar que el L&F de Mac interfiera
+
         btnBuscar.setFocusPainted(false);
+
         gbc.gridx = 1; gbc.gridy = 3;
-        gbc.anchor = GridBagConstraints.EAST;
+        gbc.anchor = GridBagConstraints.EAST; 
         panelBusqueda.add(btnBuscar, gbc);
 
         frame.add(panelBusqueda, BorderLayout.NORTH);
