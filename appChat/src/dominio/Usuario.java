@@ -2,11 +2,15 @@ package dominio;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+
+import dto.MensajeContextualizado;
+import utils.Utils;
 
 
 /**
@@ -426,17 +430,17 @@ public class Usuario {
      * @param movilABuscar El número de móvil a buscar.
      * @return Un {@link ContactoIndividual} si lo encuentra o {@link <code>null</code>} si no lo encuentra. 
      */
-	public Contacto enviarMensaje(Mensaje mensaje, int idContacto) {
+	public Mensaje enviarMensaje(int idContacto, Object contenido, int sent) {
 		Contacto contacto = this.contactos.stream()
 				.filter(c -> c.getId() == idContacto)
 				.findFirst()
 				.orElse(null);
-		
 		if (contacto != null) {
-			System.out.println("Enviando mensaje a " + contacto.getNombre() + ": " + mensaje.getTexto());
-			contacto.addMensaje(mensaje);
+			//mensaje = new Mensaje(contenido, sent); //AQUÍ O EN CONTACTO????
+			//System.out.println("Enviando mensaje a " + contacto.getNombre() + ": " + mensaje.getTexto());
+			return contacto.addMensaje(contenido, sent);
 		}
-		return contacto;
+		return null;
 	}
 
 	/**
@@ -478,6 +482,107 @@ public class Usuario {
 				.flatMap(c -> c.getTodosLosMensajesEnviados().stream())
 				.filter(m-> m.getFecha().isAfter(LocalDateTime.now().minusMonths(1)))
 				.count();
+	}
+
+	public Contacto getContactoConId(int id2) {
+		return this.contactos.stream()
+				.filter(c -> c.getId() == id2)
+				.findFirst()
+				.orElse(null);
+	}
+
+	public Contacto addContactoIndividual(Usuario usuario, String movil2) {
+		ContactoIndividual contacto = new ContactoIndividual(usuario, movil2);
+		this.contactos.add(contacto);
+		this.contactosIndividuales.add(contacto);
+		return contacto;
+	}
+
+	public Grupo addGrupo(String nombreGrupo, ContactoIndividual[] array) {
+		Grupo grupo = new Grupo(nombreGrupo, array);
+		this.contactos.add(grupo);
+		return grupo;
+	}
+
+	public List<String> getDatosUsuario() {
+		List<String> datos = new LinkedList<>();
+		datos.add(this.getNombre());
+		datos.add(this.getApellidos());
+		datos.add(this.getEmail());
+		datos.add(this.getMovil());
+		datos.add(this.getPassword());
+		datos.add(this.getFechaNacimiento().format(Utils.formatoFecha));
+		datos.add(this.getSaludo());
+		datos.add(this.getURLImagen());
+		return datos;
+	}
+	
+	/**
+	 * Busca mensajes entre los contactos del usuario según los criterios especificados.
+	 *
+	 * @param textoCrit El texto a buscar en el contenido de los mensajes.
+	 * @param telefonoCrit El número de teléfono del contacto para filtrar.
+	 * @param nombreContactoCrit El nombre del contacto para filtrar. "Selecciona un contacto" se ignora.
+	 * @return Una lista de {@link MensajeContextualizado} (nueva clase DTO) que coinciden con los criterios,
+	 * ordenados por fecha del mensaje.
+	 */
+	public List<MensajeContextualizado> buscarMisMensajes(String textoCrit, String telefonoCrit, String nombreContactoCrit) {
+	    List<MensajeContextualizado> mensajesEncontrados = new LinkedList<>();
+	    boolean buscarPorTexto = (textoCrit != null && !textoCrit.trim().isEmpty());
+	    boolean buscarPorTelefono = (telefonoCrit != null && !telefonoCrit.trim().isEmpty());
+	    boolean buscarPorNombreContacto = (nombreContactoCrit != null && 
+	                                       !nombreContactoCrit.trim().isEmpty() && 
+	                                       !"Selecciona un contacto".equalsIgnoreCase(nombreContactoCrit));
+
+	    // Si no hay ningún criterio de filtrado real (texto, teléfono o nombre de contacto específico),
+	    // podríamos devolver todos los mensajes o una lista vacía.
+	    // Para ser consistentes con la idea de "búsqueda", devolvemos vacío si no hay criterio.
+	    if (!buscarPorTexto && !buscarPorTelefono && !buscarPorNombreContacto) {
+	        return mensajesEncontrados;
+	    }
+
+	    Set<Contacto> contactosAProcesar = new HashSet<>();
+
+	    if (buscarPorNombreContacto) {
+	        this.getContactos().stream() // getContactos() devuelve una LinkedList<Contacto>
+	            .filter(c -> c.getNombre().equalsIgnoreCase(nombreContactoCrit))
+	            .forEach(contactosAProcesar::add);
+	    } else if (buscarPorTelefono) { // Usar 'else if' para que el teléfono solo filtre si no se filtró por nombre
+	        Contacto contactoPorTel = this.getContactoConMovil(telefonoCrit); // Este método ya existe
+	        if (contactoPorTel != null) {
+	            contactosAProcesar.add(contactoPorTel);
+	        }
+	    } else {
+	        // Si no se filtra por nombre ni teléfono, pero sí por texto, se procesan todos los contactos
+	        contactosAProcesar.addAll(this.getContactos());
+	    }
+	    
+	    // Si después de filtrar contactos por nombre/teléfono no queda ninguno, y no se busca por texto en todos, retornar vacío.
+	    if (contactosAProcesar.isEmpty() && (buscarPorNombreContacto || buscarPorTelefono)) {
+	        return mensajesEncontrados;
+	    }
+
+
+	    for (Contacto contacto : contactosAProcesar) {
+	        List<Mensaje> mensajesDelContacto;
+	        if (buscarPorTexto) {
+	            mensajesDelContacto = contacto.buscarMensajesPorTexto(textoCrit);
+	        } else {
+	            // Si el contacto fue seleccionado por nombre/teléfono pero no hay filtro de texto,
+	            // se incluyen todos sus mensajes.
+	            mensajesDelContacto = contacto.getMensajesEnviados(); // Devuelve una lista inmutable
+	        }
+	        
+	        for (Mensaje mensaje : mensajesDelContacto) {
+	            String nombreInterlocutor = (mensaje.getTipo() == tds.BubbleText.SENT) ? this.getNombre() : contacto.getNombre();
+	            mensajesEncontrados.add(new MensajeContextualizado(mensaje, nombreInterlocutor, this.getNombre()));
+	        }
+	    }
+	    
+	    // Opcional: Ordenar los mensajes globalmente por fecha
+	    mensajesEncontrados.sort(Comparator.comparing(mc -> mc.getMensaje().getFecha()));
+
+	    return mensajesEncontrados;
 	}
 }
 

@@ -91,6 +91,18 @@ public class ContactoIndividual extends Contacto implements AgregableGrupos {
 	public String getMovil() {
 		return this.usuario.getMovil();
 	}
+
+	public Contacto getContactoConMovil(String movil) {
+		return this.usuario.getContactoConMovil(movil);
+	}
+
+	public boolean tieneContactoConMovil(String movil) {
+		return this.usuario.tieneContactoConMovil(movil);
+	}
+
+	public Contacto addContactoIndividual(Usuario usuario, String movil) {
+		return this.usuario.addContactoIndividual(usuario, movil);
+	}
 	
 	
 

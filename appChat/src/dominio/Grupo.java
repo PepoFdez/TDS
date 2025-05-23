@@ -108,11 +108,12 @@ public class Grupo extends Contacto {
      * @param mensaje El {@link Mensaje} a añadir y distribuir. No debe ser nulo.
      */
     @Override
-    public void addMensaje(Mensaje mensaje) {
-        super.addMensaje(mensaje); // Añade el mensaje al historial del propio grupo.
+    public Mensaje addMensaje(Object mensaje, int tipo) {
+        Mensaje m = super.addMensaje(mensaje, tipo); // Añade el mensaje al historial del propio grupo.
         Objects.requireNonNull(mensaje, "El mensaje a propagar no puede ser nulo.");
         // Propaga el mensaje a todos los miembros.
-        this.miembros.forEach(miembro -> miembro.addMensaje(mensaje));
+        this.miembros.forEach(miembro -> miembro.addMensaje(mensaje, tipo));
+        return m;
     }
 
     /**

@@ -5,10 +5,8 @@ import dao.UsuarioDAO;
 import java.time.LocalDate;
 
 import java.util.Date;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import dao.ContactoIndividualDAO;
 import dao.DAOException;
@@ -16,6 +14,7 @@ import dao.FactoriaDAO;
 import dao.GrupoDAO;
 import dao.MensajeDAO;
 import dominio.Usuario;
+import dto.MensajeContextualizado;
 import tds.BubbleText;
 import utils.Utils;
 import dominio.Contacto;
@@ -229,13 +228,13 @@ public enum Controlador {
 	 * @param contenido El texto del mensaje.
 	 */
 	public void enviarMensaje(int id, String contenido) {
-		Mensaje mensajeSent = new Mensaje(contenido, BubbleText.SENT);
+		Mensaje mensajeSent = this.usuarioActual.enviarMensaje(id, contenido, BubbleText.SENT);
 		mensajeDAO.registrarMensaje(mensajeSent);
 
 		usuarioDAO.updateUsuario(usuarioActual);
 		// Añadir el contacto al usuario actual como enviado, se recibe el contacto por
 		// su id
-		Contacto receptor = this.usuarioActual.enviarMensaje(mensajeSent, id);
+		Contacto receptor = this.usuarioActual.getContactoConId(id);
 
 		// Añadir el mensaje al usuario asociado al contacto como recibido
 		// Si es un grupo, se añade a todos los miembros del grupo
@@ -247,16 +246,11 @@ public enum Controlador {
 			recibirMensaje(contenido, -1, contactoIndividual);
 		} else if (receptor instanceof Grupo grupo) {
 			grupoDAO.updateGrupo((Grupo) receptor);
-			for (Contacto miembro : grupo.getMiembros()) {
+			grupo.getMiembros().forEach(miembro -> {
 				contactoIndividualDAO.updateContactoIndividual((ContactoIndividual) miembro);
-				if (miembro instanceof ContactoIndividual contactoIndividualMiembro) {
-					// Si el miembro es un contacto individual, se añade el mensaje al contacto como
-					// recibido
-					recibirMensaje(contenido, -1, contactoIndividualMiembro);
-				}
-			}
+				recibirMensaje(contenido, -1, (ContactoIndividual) miembro);
+			});
 		}
-
 	}
 
 	/**
@@ -266,22 +260,19 @@ public enum Controlador {
 	 * @param emojiId El identificador del emoticono.
 	 */
 	public void enviarEmoji(int id, int emojiId) {
-		Mensaje mensajeSent = new Mensaje(emojiId, BubbleText.SENT);
+		Mensaje mensajeSent = this.usuarioActual.enviarMensaje(id, emojiId, BubbleText.SENT);
 		mensajeDAO.registrarMensaje(mensajeSent);
 		// Añadir el contacto al usuario actual como enviado
-		Contacto receptor = this.usuarioActual.enviarMensaje(mensajeSent, id);
+		Contacto receptor = this.usuarioActual.getContactoConId(id);
 		if (receptor instanceof ContactoIndividual contactoIndividual) {
 			contactoIndividualDAO.updateContactoIndividual((ContactoIndividual) receptor);
 			recibirMensaje("", emojiId, contactoIndividual);
 		} else if (receptor instanceof Grupo grupo) {
 			grupoDAO.updateGrupo((Grupo) receptor);
-			for (Contacto miembro : grupo.getMiembros()) {
-				if (miembro instanceof ContactoIndividual contactoIndividualMiembro) {
-					// Si el miembro es un contacto individual, se añade el mensaje al contacto como
-					// recibido
-					recibirMensaje("", emojiId, contactoIndividualMiembro);
-				}
-			}
+			grupo.getMiembros().forEach(miembro -> {
+				contactoIndividualDAO.updateContactoIndividual((ContactoIndividual) miembro);
+				recibirMensaje("", emojiId, (ContactoIndividual) miembro);
+			});
 		}
 	}
 
@@ -296,12 +287,11 @@ public enum Controlador {
 	// Recibe un mensaje enviado por el usuario actual y hace que aparezca en el
 	// usuario receptor
 	private void recibirMensaje(String contenido, int emoji, ContactoIndividual receptor) {
-		Mensaje mensajeRec = null;
-		if (emoji != -1) {
-			mensajeRec = new Mensaje(emoji, BubbleText.RECEIVED);
-		} else {
-			mensajeRec = new Mensaje(contenido, BubbleText.RECEIVED);
-		}
+		/*
+		 * Mensaje mensajeRec = null; //TODO: ESTE DIRíA QUE ESTÁ BIEN if (emoji != -1)
+		 * { mensajeRec = new Mensaje(emoji, BubbleText.RECEIVED); } else { mensajeRec =
+		 * new Mensaje(contenido, BubbleText.RECEIVED); }
+		 */
 
 		// mensajeDAO.registrarMensaje(mensajeRec);
 		// Añadir el mensaje al usuario asociado al contacto como recibido
@@ -309,12 +299,18 @@ public enum Controlador {
 		// Si es un contacto individual, se añade al contacto, si existe.
 		// Si no existe, creamos el contacto con el número de teléfono del emisor como
 		// nombre
-		boolean existe = receptor.getUsuario().tieneContactoConMovil(usuarioActual.getMovil());
+
+		// boolean existe =
+		// receptor.getUsuario().tieneContactoConMovil(usuarioActual.getMovil());
+		boolean existe = receptor.tieneContactoConMovil(usuarioActual.getMovil());
 		// Si existe, se añade el mensaje al contacto como recibido
+
 		if (existe) {
-			Contacto opuestoContacto = receptor.getUsuario().getContactoConMovil(usuarioActual.getMovil());
-			opuestoContacto.addMensaje(mensajeRec);
-			mensajeDAO.registrarMensaje(mensajeRec);
+			// Contacto opuestoContacto =
+			// receptor.getUsuario().getContactoConMovil(usuarioActual.getMovil());//TODO:
+			Contacto opuestoContacto = receptor.getContactoConMovil(usuarioActual.getMovil());
+			Mensaje m = opuestoContacto.addMensaje(contenido, BubbleText.RECEIVED);
+			mensajeDAO.registrarMensaje(m);
 			contactoIndividualDAO.updateContactoIndividual((ContactoIndividual) opuestoContacto);
 			// usuarioDAO.updateUsuario(receptor.getUsuario());
 		} else {
@@ -323,11 +319,12 @@ public enum Controlador {
 			// y se añade el mensaje al contacto como recibido
 			// Contacto nuevoContacto = new ContactoIndividual(usuarioActual,
 			// this.usuarioActual.getNombre());
-			Contacto nuevoContacto = new ContactoIndividual(usuarioActual, this.usuarioActual.getMovil());
+			Contacto nuevoContacto = receptor.addContactoIndividual(usuarioActual, usuarioActual.getMovil());
+			// new ContactoIndividual(usuarioActual, this.usuarioActual.getMovil());
 			contactoIndividualDAO.registrarContactoIndividual((ContactoIndividual) nuevoContacto);
-			nuevoContacto.addMensaje(mensajeRec);
-			mensajeDAO.registrarMensaje(mensajeRec);
-			receptor.getUsuario().addContacto(nuevoContacto);
+			Mensaje m = nuevoContacto.addMensaje(contenido, BubbleText.RECEIVED);
+			mensajeDAO.registrarMensaje(m);
+			// receptor.getUsuario().addContacto(nuevoContacto);
 			contactoIndividualDAO.updateContactoIndividual((ContactoIndividual) nuevoContacto);
 			usuarioDAO.updateUsuario(receptor.getUsuario());
 		}
@@ -336,144 +333,24 @@ public enum Controlador {
 	/**
 	 * Busca mensajes en las conversaciones del usuario actual basándose en un
 	 * criterio.
-	 * 
+	 *
 	 * @param texto     Texto a buscar en el contenido de los mensajes.
 	 * @param telefono  Número de teléfono del contacto para filtrar la búsqueda.
 	 * @param nContacto Nombre del contacto para filtrar la búsqueda.
-	 * @return Una LinkedList de cadenas de texto que representan los mensajes
+	 * @return Una {@link List} de objetos {@link Usuario.MensajeContextualizado}
 	 *         encontrados.
 	 */
-	public LinkedList<String> buscarMensajes(String texto, String telefono, String nContacto) {
-		LinkedList<String> mensajesEncontrados = new LinkedList<>();
-
-		if (this.usuarioActual == null || this.usuarioActual.getContactos() == null) {
-			return mensajesEncontrados;
+	public List<MensajeContextualizado> buscarMensajes(String texto, String telefono, String nContacto) { // Cambia
+																													// el
+																													// tipo
+																													// de
+																													// retorno
+		if (this.usuarioActual == null) {
+			return new LinkedList<>(); // Devuelve lista vacía si no hay usuario logueado
 		}
-
-		// Normalize nContacto: if "Selecciona un contacto", treat as null for filtering
-		String effectiveNContacto = nContacto;
-		if ("Selecciona un contacto".equalsIgnoreCase(nContacto)) {
-			effectiveNContacto = null;
-		}
-
-		boolean buscarPorTexto = (texto != null && !texto.isEmpty());
-		boolean buscarPorTelefono = (telefono != null && !telefono.isEmpty());
-		boolean buscarPorNombreContacto = (effectiveNContacto != null && !effectiveNContacto.isEmpty());
-
-		// If no active search criteria are provided, return an empty list
-		if (!buscarPorTexto && !buscarPorTelefono && !buscarPorNombreContacto) {
-			return mensajesEncontrados;
-		}
-
-		Set<Contacto> contactsToProcess = new LinkedHashSet<>(); // Use LinkedHashSet to maintain order and avoid
-																	// duplicates
-
-		// Determine the pool of contacts to search within based on nContacto and
-		// telefono
-		if (buscarPorNombreContacto && buscarPorTelefono) {
-			// Both criteria are active: OR logic for contacts
-			// Find contacts matching name OR phone
-			for (Contacto contacto : this.usuarioActual.getContactos()) {
-				boolean matchesName = contacto.getNombre().equalsIgnoreCase(effectiveNContacto);
-				boolean matchesPhone = false;
-				if (contacto instanceof ContactoIndividual) {
-					ContactoIndividual ci = (ContactoIndividual) contacto;
-					if (ci.getUsuario() != null && ci.getUsuario().getMovil().equals(telefono)) {
-						matchesPhone = true;
-					}
-				}
-				if (matchesName || matchesPhone) {
-					contactsToProcess.add(contacto);
-				}
-			}
-		} else if (buscarPorNombreContacto) {
-			// Only name criterion is active
-			for (Contacto contacto : this.usuarioActual.getContactos()) {
-				if (contacto.getNombre().equalsIgnoreCase(effectiveNContacto)) {
-					contactsToProcess.add(contacto);
-				}
-			}
-		} else if (buscarPorTelefono) {
-			// Only phone criterion is active
-			Contacto contacto = this.usuarioActual.getContactoConMovil(telefono);
-			if (contacto != null) {
-				contactsToProcess.add(contacto);
-			}
-
-		} else {
-			// No contact-specific filters (name or phone) were active,
-			// but buscarPorTexto must be true if we reached here (due to the initial
-			// check).
-			// So, search for text in all contacts.
-			contactsToProcess.addAll(this.usuarioActual.getContactos());
-		}
-
-		// Now, iterate through the selected contacts and filter their messages by text
-		// if needed
-		for (Contacto contacto : contactsToProcess) {
-			// Assuming getMensajesChat() gives all messages (sent & received) for this
-			// contact
-			for (Mensaje mensaje : contacto.getMensajesEnviados()) {
-				boolean textMatchesQuery;
-				if (buscarPorTexto) {
-					textMatchesQuery = (mensaje.getTexto() != null
-							&& mensaje.getTexto().toLowerCase().contains(texto.toLowerCase()));
-				} else {
-					// If not searching by text, then any message from a selected contact is a
-					// candidate
-					textMatchesQuery = true;
-				}
-
-				if (textMatchesQuery) {
-					addMensajeToLista(mensajesEncontrados, contacto, mensaje);
-				}
-			}
-		}
-		return mensajesEncontrados;
-	}
-
-	// TODO: JAVADOC
-	// addMensajeToLista method remains the same as in the previous response.
-	// It handles formatting based on BubbleText.SENT/RECEIVED.
-	private void addMensajeToLista(LinkedList<String> lista, Contacto contacto, Mensaje mensaje) {
-		String nombreEmisor;
-
-		if (mensaje.getTipo() == BubbleText.RECEIVED) {
-			nombreEmisor = contacto.getNombre();
-		} else if (mensaje.getTipo() == BubbleText.SENT) {
-			nombreEmisor = this.usuarioActual.getNombre();
-		} else {
-			nombreEmisor = "Desconocido";
-			System.err.println("Tipo de mensaje (" + mensaje.getTipo()
-					+ ") no manejado explícitamente. Usando 'Desconocido'. Texto: " + mensaje.getTexto());
-		}
-
-		String fechaFormateada;
-		try {
-			if (mensaje.getTexto() != null && !mensaje.getTexto().isEmpty()) {
-				fechaFormateada = mensaje.getFecha().toString(); // Placeholder, adapt to your Date/Time object
-				lista.add(nombreEmisor + " " + fechaFormateada + ": " + mensaje.getTexto());
-			} else if ((Integer) mensaje.getEmoticono() != null) {
-				try {
-					fechaFormateada = mensaje.getFecha().format(Utils.formatoFechaHora);
-				} catch (UnsupportedOperationException | NullPointerException | ClassCastException uoe) {
-					System.err.println(
-							"Nota: mensaje.getFecha().format() no es directamente usable con el tipo actual de 'fecha' en el stub ("
-									+ (mensaje.getFecha() != null ? mensaje.getFecha().getClass().getName() : "null")
-									+ "). Usando toString().");
-					fechaFormateada = mensaje.getFecha() != null ? mensaje.getFecha().toString() : "Fecha Indefinida";
-				}
-				lista.add(nombreEmisor + " " + fechaFormateada + ": Emoticono " + mensaje.getEmoticono());
-			}
-		} catch (Exception e) {
-			System.err.println("Error formateando mensaje o fecha: " + e.getMessage());
-			String fallbackFecha = (mensaje.getFecha() != null) ? mensaje.getFecha().toString() : "Fecha Desconocida";
-			if (mensaje.getTexto() != null && !mensaje.getTexto().isEmpty()) {
-				lista.add(nombreEmisor + " " + fallbackFecha + ": " + mensaje.getTexto());
-			} else if ((Integer) mensaje.getEmoticono() != null) {
-				lista.add(nombreEmisor + " " + fallbackFecha + ": Emoticono " + mensaje.getEmoticono());
-			}
-		}
+		// La lógica de si nContacto es "Selecciona un contacto" se maneja dentro de
+		// Usuario.buscarMisMensajes
+		return this.usuarioActual.buscarMisMensajes(texto, telefono, nContacto);
 	}
 
 	/**
@@ -488,9 +365,13 @@ public enum Controlador {
 		if (this.usuarioActual.tieneContactoConMovil(movil)) {
 			return "Ya existe un contacto con este número de móvil.";
 		} else {
-			Contacto contacto = new ContactoIndividual(RepositorioUsuarios.INSTANCE.findUsuario(movil), nombre);
+			// Contacto contacto = new
+			// ContactoIndividual(RepositorioUsuarios.INSTANCE.findUsuario(movil), nombre);
+			// TODO:
+			Contacto contacto = this.usuarioActual
+					.addContactoIndividual(RepositorioUsuarios.INSTANCE.findUsuario(movil), nombre);
 			contactoIndividualDAO.registrarContactoIndividual((ContactoIndividual) contacto);
-			this.usuarioActual.addContacto(contacto);
+			// this.usuarioActual.addContacto(contacto);
 			usuarioDAO.updateUsuario(usuarioActual);
 			return "Contacto creado correctamente.";
 		}
@@ -506,9 +387,11 @@ public enum Controlador {
 	 */
 	public boolean crearGrupo(String nombreGrupo, LinkedList<ContactoIndividual> miembros) {
 		// Comprobamos que no existe un grupo con el mismo nombre
-		Grupo grupo = new Grupo(nombreGrupo, miembros.toArray(new ContactoIndividual[0]));
+		// Grupo grupo = new Grupo(nombreGrupo, miembros.toArray(new
+		// ContactoIndividual[0]));
+		Grupo grupo = this.usuarioActual.addGrupo(nombreGrupo, miembros.toArray(new ContactoIndividual[0]));
 		grupoDAO.registrarGrupo(grupo);
-		this.usuarioActual.addContacto(grupo);
+		// this.usuarioActual.addContacto(grupo);
 		usuarioDAO.updateUsuario(usuarioActual);
 		return true;
 	}
@@ -577,7 +460,7 @@ public enum Controlador {
 	 */
 	public String getTelefono(Contacto contacto) {
 		if (contacto instanceof ContactoIndividual) {
-			return ((ContactoIndividual) contacto).getUsuario().getMovil();
+			return ((ContactoIndividual) contacto).getMovil();
 		} else if (contacto instanceof Grupo) {
 			return ("Grupo");
 		}
@@ -649,15 +532,7 @@ public enum Controlador {
 	 * @return Una lista de cadenas de texto con los datos del usuario.
 	 */
 	public List<String> getDatosUsuario() {
-		List<String> datos = new LinkedList<>();
-		datos.add(usuarioActual.getNombre());
-		datos.add(usuarioActual.getApellidos());
-		datos.add(usuarioActual.getEmail());
-		datos.add(usuarioActual.getMovil());
-		datos.add(usuarioActual.getPassword());
-		datos.add(usuarioActual.getFechaNacimiento().format(Utils.formatoFecha));
-		datos.add(usuarioActual.getSaludo());
-		datos.add(usuarioActual.getURLImagen());
+		List<String> datos = this.usuarioActual.getDatosUsuario();
 		return datos;
 	}
 

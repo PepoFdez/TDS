@@ -93,10 +93,21 @@ public abstract class Contacto {
      *
      * @param mensaje El {@link Mensaje} a añadir. No debe ser nulo.
      */
+	public Mensaje addMensaje(Object mensaje, int tipo) {
+		Mensaje mensajeret = null;
+		if (mensaje instanceof String) {
+			mensajeret = new Mensaje((String) mensaje, tipo);
+		} else if (mensaje instanceof Integer) {
+			mensajeret = new Mensaje((Integer) mensaje, tipo);
+		} else {
+			throw new IllegalArgumentException("El mensaje debe ser un String o un Integer");
+		}
+		this.mensajes.add(mensajeret);
+		return mensajeret;
+	}
+	
 	public void addMensaje(Mensaje mensaje) {
-		if (mensaje == null) {
-            throw new IllegalArgumentException("El mensaje a añadir no puede ser nulo.");
-        }
+		Objects.requireNonNull(mensaje, "El mensaje no puede ser nulo");
 		this.mensajes.add(mensaje);
 	}
 	
@@ -160,7 +171,32 @@ public abstract class Contacto {
 					.collect(Collectors.toList());
 	};
 	
-	
+	/**
+	 * Filtra los mensajes de este contacto que contienen el texto especificado.
+	 * La búsqueda de texto no distingue entre mayúsculas y minúsculas.
+	 *
+	 * @param textoBusqueda El texto a buscar en los mensajes. Si es nulo o está vacío,
+	 * se podrían devolver todos los mensajes o una lista vacía,
+	 * dependiendo del comportamiento deseado. Para este ejemplo,
+	 * si textoBusqueda es vacío, filtra mensajes que son literalmente vacíos o nulos.
+	 * Si se desea devolver todos, la lógica cambiaría.
+	 * @return Una nueva lista de {@link Mensaje} que coinciden con el criterio de texto.
+	 */
+	public List<Mensaje> buscarMensajesPorTexto(String textoBusqueda) {
+	    if (textoBusqueda == null) { // Si textoBusqueda es null, no hay nada que buscar
+	        return new LinkedList<>();
+	    }
+	    String textoLower = textoBusqueda.toLowerCase().trim();
+	    if (textoLower.isEmpty()) { // Si después de trim queda vacío, solo buscar mensajes vacíos
+	        return this.getMensajesEnviados().stream() // getMensajesEnviados() ya devuelve una lista
+	            .filter(mensaje -> mensaje.getTexto() == null || mensaje.getTexto().trim().isEmpty())
+	            .collect(Collectors.toList());
+	    }
+	    return this.getMensajesEnviados().stream() // getMensajesEnviados() ya devuelve una lista
+	            .filter(mensaje -> mensaje.getTexto() != null && 
+	                               mensaje.getTexto().toLowerCase().contains(textoLower))
+	            .collect(Collectors.toList());
+	}
 	
 
 }

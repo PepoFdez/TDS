@@ -2,11 +2,14 @@ package gui;
 
 import controlador.Controlador;
 import dominio.Contacto;
+import dominio.Mensaje;
+import dto.MensajeContextualizado;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 
 /**
@@ -177,6 +180,7 @@ public class Buscador {
     }
     
     public void cargarContactosExternamente() {
+    	initialize(); // Re-inicializa la ventana
     	cbContacto.removeAllItems();
     	cargarContactos();
     }
@@ -188,26 +192,58 @@ public class Buscador {
     private void realizarBusqueda(ActionEvent e) {
         String texto = txtTexto.getText().trim();
         String telefono = txtTelefono.getText().trim();
-        String contactoSeleccionado = (String) cbContacto.getSelectedItem();
-        String contacto = contactoSeleccionado;
+        String contactoSeleccionadoNombre = (String) cbContacto.getSelectedItem();
 
-        if (texto.isEmpty() && telefono.isEmpty() && contacto == null) {
-            JOptionPane.showMessageDialog(frame, 
-                "Por favor, ingrese al menos un criterio de búsqueda", 
+        // No es necesario convertir "Selecciona un contacto" a null aquí, 
+        // ya que Usuario.buscarMisMensajes lo maneja.
+
+        if (texto.isEmpty() && telefono.isEmpty() && 
+            ("Selecciona un contacto".equalsIgnoreCase(contactoSeleccionadoNombre) || contactoSeleccionadoNombre == null || contactoSeleccionadoNombre.isEmpty())) {
+            JOptionPane.showMessageDialog(frame,
+                "Por favor, ingrese al menos un criterio de búsqueda",
                 "Búsqueda vacía", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        LinkedList<String> resultados = Controlador.INSTANCE.buscarMensajes(
-            texto, telefono, contacto);
+        // Llamada al controlador, ahora devuelve List<Usuario.MensajeContextualizado>
+        java.util.List<MensajeContextualizado> resultados = Controlador.INSTANCE.buscarMensajes(
+            texto, telefono, contactoSeleccionadoNombre); //
 
         modeloMensajes.clear();
 
         if (resultados.isEmpty()) {
             modeloMensajes.addElement("No se encontraron mensajes con los criterios especificados.");
         } else {
-            for (String mensaje : resultados) {
-                modeloMensajes.addElement(mensaje);
+            DateTimeFormatter formatter = utils.Utils.formatoFechaHora; // Asumiendo que existe en Utils
+                                                                     // o DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+            for (MensajeContextualizado mc : resultados) {
+                Mensaje mensaje = mc.getMensaje();
+                String nombreEmisor;
+
+                // Determinar quién es el emisor para la visualización
+                if (mensaje.getTipo() == tds.BubbleText.SENT) {
+                     // Si el mensaje fue enviado por el usuario actual, el interlocutor es el contacto.
+                     // Pero para la búsqueda, queremos mostrar "Tú" o el nombre del usuario actual.
+                     nombreEmisor = mc.getNombreUsuarioActual(); // O simplemente "Tú"
+                } else {
+                     // Si fue recibido, el interlocutor directo es el nombre del contacto que lo envió.
+                     nombreEmisor = mc.getNombreInterlocutorDirecto();
+                }
+
+                String mensajeDisplay;
+                if (mensaje.getEmoticono() != Mensaje.SIN_EMOTICONO) { //
+                    mensajeDisplay = String.format("%s (%s): [Emoji %d]",
+                        nombreEmisor,
+                        mensaje.getFecha().format(formatter),
+                        mensaje.getEmoticono());
+                } else {
+                    mensajeDisplay = String.format("%s (%s): %s",
+                        nombreEmisor,
+                        mensaje.getFecha().format(formatter),
+                        mensaje.getTexto());
+                }
+                modeloMensajes.addElement(mensajeDisplay);
             }
         }
     }
