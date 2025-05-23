@@ -173,6 +173,11 @@ public class VentanaPremiumActivo {
 		// Habilitar/deshabilitar el botón de exportar al cargar los contactos
 		exportarButton.setEnabled(contactosComboBox.getSelectedItem() != null);
 	}
+	
+	public void cargarContactosExternamente() {
+		contactosComboBox.removeAllItems(); // Limpiar el ComboBox
+		cargarContactos(); // Volver a cargar los contactos
+	}
 
 	/**
 	 * Maneja el evento del botón Exportar PDF.

@@ -224,6 +224,7 @@ public class VentanaPrincipal {
 		premiumButton.addActionListener(e -> {
 			// Acción: abrir ventana premium (activo o para activar)
 			if (Controlador.INSTANCE.isUsuarioPremium()) {
+				VentanaPremiumActivo.getInstance().cargarContactosExternamente();
 				VentanaPremiumActivo.getInstance().mostrarVentana();
 			} else {
 				VentanaPremium.getInstance().mostrarVentana();
