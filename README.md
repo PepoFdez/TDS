@@ -60,7 +60,7 @@ El proyecto está organizado en los siguientes paquetes principales:
 
 ## 🚀 Instrucciones para ejecutar el proyecto
 
-Sigue estos pasos para ejecutar StudyMate en tu entorno local:
+Sigue estos pasos para ejecutar AppChat en tu entorno local:
 
 1. **Clona el repositorio**
    ```bash
