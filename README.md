@@ -74,11 +74,26 @@ Sigue estos pasos para ejecutar AppChat en tu entorno local:
 
 3. **Abre el proyecto en tu IDE favorita**
    - Puedes utilizar cualquier IDE compatible con Java y Maven, como **IntelliJ IDEA**, **Eclipse**, **VSCode**, etc.
-   - Importa el proyecto como un proyecto Maven desde la carpeta `AppChat`.
+   - Importa el proyecto como un proyecto Maven desde la carpeta `appChat`.
 
 4. **Ejecuta la aplicación**
    - Desde tu IDE, busca la clase principal del proyecto `Lanzador` y ejecútala.
 
+5. **Lanza el Servidor de Persistencia**
+   - Abre una terminal en la carpeta `TDS/appChat`
+   - Ejecuta la siguiente orden:
+```
+java -jar ServidorPersistenciaH2.jar
+```
+6. **Consulta la base de datos**
+   - Abre una terminal en la carpeta `TDS/appChat`
+   - Cierra el servidor de persistencia si está en ejecución.
+   - Ejecuta la siguiente orden:
+```
+java -jar lib/h2-1.3.160.jar
+```
+  - Inicia sesión con las credenciales **TDS:TDS**
+  - Realiza las consultas que necesites
 ---
 
 ¿Tienes dudas? Consulta la [Documentación](doc/Doc.pdf) para una guía paso a paso del uso de la aplicación.
