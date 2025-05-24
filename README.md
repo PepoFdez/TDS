@@ -26,7 +26,8 @@ AppChat es una aplicación de chat de escritorio desarrollada en Java que permit
 * **Perfiles de Usuario**:
     * Visualización de la información del perfil del usuario actual y de los contactos.
     * Modificación de los datos del perfil del usuario (nombre, contraseña, saludo, imagen, etc.).
-* **Búsqueda Avanzada**: Funcionalidad para buscar mensajes por contenido de texto, número de teléfono o contacto específico.
+* **Búsqueda Avanzada**:
+    * Funcionalidad para buscar mensajes por contenido de texto, número de teléfono o contacto específico.
 * **Funcionalidades Premium**:
     * Opción para que los usuarios activen una suscripción Premium.
     * Sistema de descuentos aplicables al activar la suscripción Premium.
