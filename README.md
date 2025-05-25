@@ -12,7 +12,7 @@
 
 AppChat es una aplicación de chat de escritorio desarrollada en Java que permite a los usuarios comunicarse mediante mensajes de texto y emojis, tanto en conversaciones individuales como grupales. Ofrece gestión de contactos, perfiles de usuario y funcionalidades premium como la exportación de chats a PDF.
 
-## ❕ Características Principales
+## ✨ Características Principales
 
 * **Autenticación de Usuarios**: Registro e inicio de sesión seguros para los usuarios.
 * **Gestión de Contactos**:
