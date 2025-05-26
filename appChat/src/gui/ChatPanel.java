@@ -40,7 +40,7 @@ public class ChatPanel extends JPanel implements Scrollable {
     /**
      * Muestra un mensaje inicial cuando no se ha seleccionado ningún contacto.
      */
-    private void mostrarMensajeInicial() {
+    public void mostrarMensajeInicial() {
         removeAll();
         add(Box.createVerticalGlue());
         JLabel lblInicio = new JLabel("Selecciona un contacto para iniciar el chat");

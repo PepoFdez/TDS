@@ -306,10 +306,14 @@ public enum Controlador {
 		// Si existe, se añade el mensaje al contacto como recibido
 
 		if (existe) {
-			// Contacto opuestoContacto =
-			// receptor.getUsuario().getContactoConMovil(usuarioActual.getMovil());//TODO:
 			Contacto opuestoContacto = receptor.getContactoConMovil(usuarioActual.getMovil());
-			Mensaje m = opuestoContacto.addMensaje(contenido, BubbleText.RECEIVED);
+			Mensaje m;
+			if (emoji != Mensaje.SIN_EMOTICONO && (contenido == null || contenido.isEmpty())) {
+			    // Si se recibió un emoji válido y el contenido de texto original estaba vacío (caso típico de envío de emoji)
+			    m = opuestoContacto.addMensaje(emoji, BubbleText.RECEIVED); // Se pasa el 'emoji' (Integer)
+			} else {
+			    m = opuestoContacto.addMensaje(contenido, BubbleText.RECEIVED); // Se pasa el 'contenido' (String)
+			}
 			mensajeDAO.registrarMensaje(m);
 			contactoIndividualDAO.updateContactoIndividual((ContactoIndividual) opuestoContacto);
 			// usuarioDAO.updateUsuario(receptor.getUsuario());
@@ -317,14 +321,15 @@ public enum Controlador {
 			// Si no existe, se crea el contacto con el número de teléfono del emisor como
 			// nombre
 			// y se añade el mensaje al contacto como recibido
-			// Contacto nuevoContacto = new ContactoIndividual(usuarioActual,
-			// this.usuarioActual.getNombre());
 			Contacto nuevoContacto = receptor.addContactoIndividual(usuarioActual, usuarioActual.getMovil());
-			// new ContactoIndividual(usuarioActual, this.usuarioActual.getMovil());
 			contactoIndividualDAO.registrarContactoIndividual((ContactoIndividual) nuevoContacto);
-			Mensaje m = nuevoContacto.addMensaje(contenido, BubbleText.RECEIVED);
-			mensajeDAO.registrarMensaje(m);
-			// receptor.getUsuario().addContacto(nuevoContacto);
+			Mensaje m_nuevo;
+			if (emoji != Mensaje.SIN_EMOTICONO && (contenido == null || contenido.isEmpty())) {
+			    m_nuevo = nuevoContacto.addMensaje(emoji, BubbleText.RECEIVED);
+			} else {
+			    m_nuevo = nuevoContacto.addMensaje(contenido, BubbleText.RECEIVED);
+			}
+			mensajeDAO.registrarMensaje(m_nuevo); // Usar m_nuevo
 			contactoIndividualDAO.updateContactoIndividual((ContactoIndividual) nuevoContacto);
 			usuarioDAO.updateUsuario(receptor.getUsuario());
 		}
@@ -340,11 +345,7 @@ public enum Controlador {
 	 * @return Una {@link List} de objetos {@link Usuario.MensajeContextualizado}
 	 *         encontrados.
 	 */
-	public List<MensajeContextualizado> buscarMensajes(String texto, String telefono, String nContacto) { // Cambia
-																													// el
-																													// tipo
-																													// de
-																													// retorno
+	public List<MensajeContextualizado> buscarMensajes(String texto, String telefono, String nContacto) {
 		if (this.usuarioActual == null) {
 			return new LinkedList<>(); // Devuelve lista vacía si no hay usuario logueado
 		}

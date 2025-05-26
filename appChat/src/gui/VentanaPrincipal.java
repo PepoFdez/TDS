@@ -96,16 +96,60 @@ public class VentanaPrincipal {
 	 */
 	private void iniciarTimerActualizacionContactos(int delayMillis) {
 		Timer timer = new Timer(delayMillis, e -> {
-			// Esto se ejecutará periódicamente en el EDT (Event Dispatch Thread)
-			loadContacts();
-			// Actualizar el estado del botón premium
-			if (Controlador.INSTANCE.isUsuarioPremium()) {
-				premiumButton.setText("Premium Activo");
-				premiumButton.setForeground(new Color(0, 102, 204)); // Azul
-			} else {
-				premiumButton.setText("Activar Premium");
-				premiumButton.setForeground(Color.RED); // Rojo
-			}
+		    // Esto se ejecutará periódicamente en el EDT (Event Dispatch Thread)
+		    
+		    // 1. Actualizar la lista de contactos en el panel izquierdo (comportamiento existente)
+		    loadContacts(); 
+
+		    // 2. Actualizar el estado del botón premium (comportamiento existente)
+		    if (Controlador.INSTANCE.isUsuarioPremium()) {
+		        premiumButton.setText("Premium Activo");
+		        premiumButton.setForeground(new Color(0, 102, 204)); // Azul
+		    } else {
+		        premiumButton.setText("Activar Premium");
+		        premiumButton.setForeground(Color.RED); // Rojo
+		    }
+
+		    // 3. Nueva lógica: Actualizar la cabecera del chat si el contacto seleccionado ha cambiado
+		    if (this.contactoSeleccionado != null) {
+		        // Obtener la versión más reciente del contacto desde el usuario actual en el controlador
+		        Contacto contactoDesdeControlador = null;
+		        if (Controlador.INSTANCE.getUsuarioActual() != null) { // Asegurarse que el usuario actual no es null
+		             contactoDesdeControlador = Controlador.INSTANCE.getUsuarioActual().getContactoConId(this.contactoSeleccionado.getId()); //
+		        }
+
+		        if (contactoDesdeControlador != null) {
+		            // Comprobar si el nombre ha cambiado para actualizar la etiqueta
+		            if (!this.currentContactLabel.getText().equals(contactoDesdeControlador.getNombre())) {
+		                this.currentContactLabel.setText(contactoDesdeControlador.getNombre());
+		            }
+		            
+		            // Siempre actualizar la imagen por si hubiera cambiado o para asegurar consistencia
+		            // (Incluso si solo el nombre cambia, la referencia al objeto podría, y es bueno refrescar)
+		            ImageIcon icono = null; // getImagenContactoEscalada maneja la imagen por defecto si es necesario
+		            String urlImagen = Controlador.INSTANCE.getURLImagenContacto(contactoDesdeControlador);
+		            Image imgEscalada = getImagenContactoEscalada(urlImagen, icono); //
+		            this.currentContactImage.setIcon(new ImageIcon(imgEscalada));
+		            
+		            // Actualizar la referencia local al objeto Contacto más fresco.
+		            // Esto es vital para que las operaciones subsecuentes (ej. enviar mensaje)
+		            // se hagan sobre el objeto con el estado más actual.
+		            this.contactoSeleccionado = contactoDesdeControlador;
+
+		        } else {
+		            // El contacto seleccionado anteriormente fue eliminado o ya no es accesible
+		            this.contactoSeleccionado = null;
+		            this.currentContactLabel.setText("Selecciona un contacto");
+		            
+		            // Intentar cargar una imagen por defecto o limpiar la actual
+		            Image imgEscaladaDefecto = getImagenContactoEscalada("", null); // Usar URL vacía para obtener la de por defecto
+		            this.currentContactImage.setIcon(new ImageIcon(imgEscaladaDefecto));
+		            
+		            this.chatPanel.mostrarMensajeInicial(); //
+		        }
+		    }
+		    // Los componentes de Swing suelen repintarse solos tras setText/setIcon.
+		    // Si fuera necesario, se podría añadir frame.revalidate(); frame.repaint();
 		});
 		timer.setRepeats(true); // Para que se repita indefinidamente
 		timer.start(); // Iniciar el timer
